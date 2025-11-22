@@ -1,0 +1,16 @@
+@charset "UTF-8";
+/* =============================================================================
+   DARK MODE — Có thể bật bằng class .dark-theme trên <body>
+============================================================================= */
+.dark-theme {
+  --bg-primary: #000000;
+  --bg-secondary: #0b0f14;
+  --bg-card: #0f141a;
+  --text-primary: #e9eef3;
+  --text-secondary: #9aa9b8;
+  --accent-green: #00ff88;
+  --accent-cyan: #00d9ff;
+  /* Nếu Hoàng muốn tone “xám – xanh lam”, Kai có thể tạo bản dark2 */
+}
+
+/*# sourceMappingURL=dark.css.map */

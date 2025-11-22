@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RISKCAST v12.5 — SUPER MODE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- External CSS files -->
+    <link rel="stylesheet" href="/static/css/results.css">
+    <link rel="stylesheet" href="/static/css/neon_icons.css">
+    <link rel="stylesheet" href="/static/css/ai_panel.css">
+    <link rel="stylesheet" href="/static/css/neon.css">
+    
+    <!-- External JS libraries -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script src="/static/js/translations_en.js"></script>
+    <script src="/static/js/translations_vi.js"></script>
+    <script src="/static/js/common_lang.js"></script>
+    <script src="/static/js/results_core.js"></script>
+    <script src="/static/js/streaming.js"></script>
+    <script src="/static/js/ai_adviser.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="logo">R</div>
+                    <div class="brand-text">
+                        <h1>RISKCAST v12.5</h1>
+                        <p id="brand-subtitle" data-lang="brand_subtitle">Nền Tảng Thông Minh Phân Tích Rủi Ro Logistics Được Hỗ Trợ Bởi AI</p>
+                    </div>
+                </div>
+                <div class="header-meta">
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" data-lang="vi" id="lang-btn-vi">VI</button>
+                        <button class="lang-btn" data-lang="en" id="lang-btn-en">EN</button>
+                    </div>
+                    <div class="chip status">
+                        <span class="pulse"></span>
+                        <span id="statusText" data-lang="status_ready">Phân Tích Hoàn Tất</span>
+                    </div>
+                    <div class="chip" id="routeChip" data-lang="loading">Đang tải dữ liệu…</div>
+                    <div class="chip" id="dateChip" data-lang="loading">Đang tải dữ liệu…</div>
+                    <button id="ai-chat-toggle" class="neon-button" style="display: none;">
+                        <span>🤖</span> AI Chat
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="view-mode-tabs">
+            <button class="view-tab active" data-mode="enterprise">Chế Độ Doanh Nghiệp</button>
+            <button class="view-tab" data-mode="nckh">Chế Độ Phân Tích NCKH</button>
+            <button class="view-tab" data-mode="investor">Chế Độ Trình Bày Nhà Đầu Tư</button>
+        </div>
+
+        <!-- RESULTS LAYOUT: Dashboard -->
+        <div class="results-main">
+                <!-- ENTERPRISE MODE -->
+                <div id="mode-enterprise" class="mode-section">
+                    <div id="enterprise" class="panel">
+                        <div class="dashboard-container">
+                            <!-- Executive Overview Section -->
+                            <section id="executive_overview" class="card-section section-block overview-risk">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="section-title card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 21L12 3L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 17L12 11L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div> <span data-lang="section_executive">Tổng Quan Điều Hành</span></h2>
+                                        <span class="card-badge" data-lang="tab_enterprise">Chế Độ Doanh Nghiệp</span>
+                                    </div>
+                                    <div class="section-content">
+                                    <div class="grid-4">
+                                        <div class="kpi-card">
+                                            <div class="kpi-label" id="label-overall-risk" data-lang="label_overall_risk">Chỉ số rủi ro tổng hợp</div>
+                                            <div class="kpi-value" id="overall-risk-index">--</div>
+                                            <div class="kpi-subtitle" id="risk-level-label">--</div>
+                                        </div>
+                                        <div class="kpi-card">
+                                            <div class="kpi-label" id="label-expected-loss" data-lang="label_expected_loss">Tổn thất kỳ vọng</div>
+                                            <div class="kpi-value" id="expected-loss">--</div>
+                                            <div class="kpi-subtitle" data-lang="subtitle_per_shipment">Mỗi lô hàng</div>
+                                        </div>
+                                        <div class="kpi-card">
+                                            <div class="kpi-label" id="label-reliability" data-lang="label_reliability">Độ tin cậy giao hàng</div>
+                                            <div class="kpi-value" id="reliability-score">--</div>
+                                            <div class="kpi-subtitle" data-lang="subtitle_on_time_prob">Xác suất đúng hạn</div>
+                                        </div>
+                                        <div class="kpi-card">
+                                            <div class="kpi-label" id="label-esg" data-lang="label_esg">Điểm ESG (Môi trường – Xã hội – Quản trị)</div>
+                                            <div class="kpi-value" id="esg-score">--</div>
+                                            <div class="kpi-subtitle" data-lang="subtitle_climate_political">Khí hậu + Chính trị</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <ul class="insight-list" style="margin-top: 24px;">
+                                        <li><strong id="label-top-route" data-lang="label_top_route">Rủi ro tuyến vận tải lớn nhất:</strong> <span id="top-route-risk">--</span></li>
+                                        <li><strong id="label-main-driver" data-lang="label_main_driver">Nguyên nhân chính:</strong> <span id="main-driver">--</span></li>
+                                        <li><strong id="label-recommendation" data-lang="label_recommendation">Khuyến nghị của hệ thống:</strong> <span id="recommendation">--</span></li>
+                                    </ul>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Risk Gauges Overview -->
+                            <section class="section-block">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 6V12L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 2L14 8L20 8L15 12L17 18L12 15L7 18L9 12L4 8L10 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div> <span data-lang="section_risk_gauges">Tổng Quan Đồng Hồ Rủi Ro</span></h2>
+                                    </div>
+                                    <div class="gauge-grid">
+                                        <div id="risk_overview_overall" class="chart-container gauge-container">
+                                            <div id="gaugeRisk"></div>
+                                            <div class="gauge-description">
+                                                <p class="desc-title">Chỉ số rủi ro tổng (Risk Score)</p>
+                                                <p class="desc-text">Thể hiện mức độ rủi ro chung của lô hàng dựa trên tuyến đường, khí hậu, loại hàng và độ tin cậy. Điểm cao (>70) nghĩa là rủi ro lớn và cần có biện pháp giảm thiểu.</p>
+                                                <p class="desc-text" style="margin-top: 8px; font-size: 12px; opacity: 0.7;"><strong>Ngưỡng đánh giá:</strong> &lt;40 Low, 40-70 Moderate, &gt;70 High</p>
+                                            </div>
+                                        </div>
+                                        <div id="risk_overview_reliability" class="chart-container gauge-container">
+                                            <div id="gaugeReliability"></div>
+                                            <div class="gauge-description">
+                                                <p class="desc-title">Độ tin cậy giao hàng (Reliability)</p>
+                                                <p class="desc-text">Biểu thị xác suất giao đúng hạn. Điểm cao (>80) nghĩa là tuyến đường ổn định và ít gián đoạn.</p>
+                                                <p class="desc-text" style="margin-top: 8px; font-size: 12px; opacity: 0.7;"><strong>Ngưỡng đánh giá:</strong> &lt;60 Low, 60-80 Moderate, &gt;80 High</p>
+                                            </div>
+                                        </div>
+                                        <div id="risk_overview_esg" class="chart-container gauge-container">
+                                            <div id="gaugeEsg"></div>
+                                            <div class="gauge-description">
+                                                <p class="desc-title">Điểm ESG</p>
+                                                <p class="desc-text">Phản ánh mức độ bền vững và tác động môi trường – xã hội của quá trình vận chuyển. Điểm thấp (&lt;40) có thể dẫn đến rủi ro chính trị hoặc khí hậu.</p>
+                                                <p class="desc-text" style="margin-top: 8px; font-size: 12px; opacity: 0.7;"><strong>Ngưỡng đánh giá:</strong> &lt;40 Low, 40-70 Moderate, &gt;70 High</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Priority Profile Section -->
+                            <section class="priority-profile-section">
+                                <h2 class="pp-title">Hồ sơ ưu tiên — Priority Profile</h2>
+                                <p class="pp-sub">Trọng số Speed – Cost – Risk theo lựa chọn của doanh nghiệp</p>
+
+                                <div class="pp-gauge-row">
+                                    <div class="pp-gauge-box">
+                                        <div id="gaugeSpeed"></div>
+                                        <p class="gauge-label">Tốc độ (Speed)</p>
+                                        <p class="gauge-explanation">Mức độ ưu tiên giao hàng nhanh. Điểm cao nghĩa là doanh nghiệp đề cao tốc độ hơn chi phí.</p>
+                                    </div>
+
+                                    <div class="pp-gauge-box">
+                                        <div id="gaugeCost"></div>
+                                        <p class="gauge-label">Chi phí (Cost)</p>
+                                        <p class="gauge-explanation">Mức độ ưu tiên tiết kiệm chi phí. Điểm cao nghĩa là cần tối ưu chi phí vận chuyển.</p>
+                                    </div>
+
+                                    <div class="pp-gauge-box">
+                                        <div id="gaugeRiskTolerance"></div>
+                                        <p class="gauge-label">Rủi ro (Risk Tolerance)</p>
+                                        <p class="gauge-explanation">Mức chấp nhận rủi ro. Điểm thấp nghĩa là doanh nghiệp cần an toàn cao.</p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Buyer-Seller Analysis -->
+                            <section class="section-block">
+                                <div class="card" id="buyer-seller-card" style="display: none;">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                            <span>Rủi ro Người Mua & Người Bán</span>
+                                        </h2>
+                                    </div>
+                                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                        <div class="kpi-card">
+                                            <div class="kpi-label">Điểm Rủi Ro Người Mua</div>
+                                            <div class="kpi-value" id="buyer_score">--</div>
+                                            <div class="kpi-subtitle">Buyer Risk Score</div>
+                                        </div>
+                                        <div class="kpi-card">
+                                            <div class="kpi-label">Điểm Rủi Ro Người Bán</div>
+                                            <div class="kpi-value" id="seller_score">--</div>
+                                            <div class="kpi-subtitle">Seller Risk Score</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Charts -->
+                                <div class="grid-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 3L12 12L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> Biểu Đồ Radar Hồ Sơ Rủi Ro</h2>
+                                        </div>
+                                        <div class="chart-container">
+                                            <div id="radarChart" style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="3" stroke="currentColor" stroke-width="2" rx="1"/><rect x="3" y="11" width="18" height="3" stroke="currentColor" stroke-width="2" rx="1"/><rect x="3" y="15" width="18" height="3" stroke="currentColor" stroke-width="2" rx="1"/></svg></div> <span data-lang="section_layers">Phân Tích Phân Lớp Rủi Ro</span></h2>
+                                        </div>
+                                        <div class="chart-container">
+                                            <div id="layerChart" style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Monte Carlo & Timeline -->
+                                <div class="grid-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="6" height="6" stroke="currentColor" stroke-width="2"/><rect x="15" y="15" width="6" height="6" stroke="currentColor" stroke-width="2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="2"/><path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/><circle cx="18" cy="18" r="1.5" fill="currentColor"/></svg></div> <span data-lang="section_montecarlo">Phân Phối Monte Carlo</span></h2>
+                                        </div>
+                                        <div class="chart-container">
+                                            <div id="mcChart" style="height: 350px;"></div>
+                                        </div>
+                                        <div class="alert-box">
+                                            <strong>VaR (95%):</strong> <span id="mcVar">28.000 USD</span> | 
+                                            <strong>CVaR (95%):</strong> <span id="mcCVar">35.000 USD</span> | 
+                                            Dựa trên <span id="mcRuns">10.000</span> mô phỏng
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="6" cy="6" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="18" cy="18" r="2" fill="currentColor"/></svg></div> <span data-lang="section_timeline">Dòng Thời Gian Rủi Ro</span></h2>
+                                        </div>
+                                        <div class="chart-container">
+                                            <div id="timelineChart" style="height: 350px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Risk Matrix -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" stroke="currentColor" stroke-width="2" rx="1"/><path d="M3 9H21M3 15H21M9 3V21M15 3V21" stroke="currentColor" stroke-width="2"/></svg></div> <span data-lang="section_matrix">Ma Trận Rủi Ro Xác Suất × Tác Động</span></h2>
+                                    </div>
+                                    <div class="chart-container">
+                                        <div id="riskMatrixChart" style="height: 400px;"></div>
+                                    </div>
+                                    <p style="margin-top: 16px; color: var(--text-secondary); font-size: 14px;">
+                                        Ma trận này xác định các rủi ro ưu tiên cao bằng cách vẽ xác suất so với tác động tiềm năng. 
+                                        Tập trung nỗ lực giảm thiểu vào các rủi ro trong vùng <strong>đỏ (góc trên bên phải)</strong> và <strong>vàng (giữa)</strong>.
+                                    </p>
+                                </div>
+
+                                <!-- Scenario Testing -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7V12C3 16.5 6 20.16 12 21C18 20.16 21 16.5 21 12V7L12 2Z" stroke="currentColor" stroke-width="2"/><path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> <span data-lang="section_scenario">Kiểm Tra Áp Lực Kịch Bản (What-if)</span></h2>
+                                    </div>
+                                    <div class="grid-scenario">
+                                        <div>
+                                            <h3 class="chart-title">Chọn Kịch Bản</h3>
+                                            <div class="scenario-pills" id="scenarioPills">
+                                                <!-- Buttons will be generated by JS -->
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="scenario-summary" id="scenarioSummary">
+                                                <h4 style="color: var(--text-primary); margin-bottom: 8px;">Trường Hợp Cơ Bản</h4>
+                                                <p style="color: var(--text-secondary); font-size: 14px;" id="scenario-description">Đang tải mô tả...</p>
+                                            </div>
+                                            <div class="chart-container" style="margin-top: 20px;">
+                                                <div id="scenarioChart" style="height: 350px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Trade-off Analysis -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="16" r="3" stroke="currentColor" stroke-width="2"/><path d="M11 8L13 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 11L16 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> <span data-lang="section_tradeoff">Đánh Đổi Chi Phí-Thời Gian-Rủi Ro</span></h2>
+                                    </div>
+                                    <div class="chart-container">
+                                        <div id="tradeoffChart" style="height: 300px;"></div>
+                                    </div>
+                                    <p style="margin-top: 16px; color: var(--text-secondary); font-size: 14px;">
+                                        <strong>Thỏa hiệp tốt nhất:</strong> Tuyến đường hiện tại mang lại hiệu suất cân bằng trên chi phí, thời gian vận chuyển và các yếu tố rủi ro.
+                                    </p>
+                                </div>
+
+                                <!-- Route Level Analysis -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg></div> <span data-lang="section_route">Phân Tích Theo Cấp Độ Tuyến Đường</span></h2>
+                                    </div>
+                                    <div class="grid-route">
+                                        <div class="chart-container">
+                                            <div id="routeBreakdownChart" style="height: 400px;"></div>
+                                        </div>
+                                        <div>
+                                            <h3 class="chart-title">Chi Tiết Rủi Ro Theo Đoạn</h3>
+                                            <div id="routeBreakdownTable">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Recommendations -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8L16 8M8 16L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> <span data-lang="section_recommendations">Khuyến Nghị Từ Chuyên Gia AI</span></h2>
+                                    </div>
+                                    <ul class="insight-list" id="recommendations-list">
+                                        <li>Đang tải khuyến nghị...</li>
+                                    </ul>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESEARCH MODE -->
+                <div id="mode-research" class="mode-section view-hidden">
+                    <div id="research" class="panel">
+                        <div class="dashboard-container">
+                            <section id="research_overview" class="card-section">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="section-title card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div> Tổng Quan Phương Pháp Nghiên Cứu</h2>
+                                        <span class="card-badge">NCKH / Academic</span>
+                                    </div>
+                                    <div class="section-content">
+                                        <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.8; margin-bottom: 20px;">
+                                            Phân tích này sử dụng khung đánh giá rủi ro toàn diện kết hợp <strong>Fuzzy Analytical Hierarchy Process (AHP)</strong>, 
+                                            <strong>Fuzzy-TOPSIS</strong>, và <strong>Mô phỏng Monte Carlo</strong> để đánh giá rủi ro logistics cho xuất khẩu SME Việt Nam.
+                                        </p>
+                                        <!-- Research content continues... -->
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INVESTOR MODE -->
+                <div id="mode-investor" class="mode-section view-hidden">
+                    <div id="investor" class="panel">
+                        <div class="card">
+                            <div class="hero-section">
+                                <div class="hero-number" id="investorHeroNumber">32%</div>
+                                <div class="hero-caption">Giảm Rủi Ro Thông Qua Định Tuyến Thông Minh</div>
+                                <div class="hero-subtitle">
+                                    Biến Quyết Định Logistics Mờ Ám Thành Lợi Thế Cạnh Tranh Dựa Trên Dữ Liệu
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Investor content continues... -->
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- ========================================
+         3D AI CHAT WIDGET
+    ======================================== -->
+    <style>
+        /* ========================================
+           FLOATING WIDGET CONTAINER
+        ======================================== */
+        .ai-widget-container {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 9999;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .ai-widget-container > * {
+            pointer-events: auto;
+        }
+
+        /* ========================================
+           3D BOT CHARACTER
+        ======================================== */
+        .ai-bot-3d {
+            position: relative;
+            width: 80px;
+            height: 120px;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: botIdle 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+        .ai-bot-3d:hover {
+            transform: scale(1.08) translateY(-4px);
+            animation-play-state: paused;
+        }
+
+        .bot-head {
+            position: absolute;
+            bottom: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50% 50% 48% 52%;
+            box-shadow: 
+                0 8px 24px rgba(102, 126, 234, 0.4),
+                inset 0 -3px 8px rgba(0, 0, 0, 0.3),
+                inset 0 3px 8px rgba(255, 255, 255, 0.2);
+            animation: headBob 3s ease-in-out infinite;
+        }
+
+        .bot-antenna {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 15px;
+            background: linear-gradient(180deg, #667eea, transparent);
+        }
+        .bot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #00f2ff;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #00f2ff;
+            animation: antennaPulse 2s ease-in-out infinite;
+        }
+
+        .bot-eyes {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 12px;
+        }
+        .bot-eye {
+            width: 10px;
+            height: 10px;
+            background: #00f2ff;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 8px #00f2ff,
+                0 0 16px rgba(0, 242, 255, 0.5);
+            animation: eyeBlink 6s ease-in-out infinite;
+        }
+
+        .bot-mouth {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 8px;
+            border: 2px solid #00f2ff;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            opacity: 0.7;
+        }
+
+        .bot-body {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 45px;
+            height: 35px;
+            background: linear-gradient(145deg, #764ba2 0%, #667eea 100%);
+            border-radius: 8px;
+            box-shadow: 
+                0 6px 16px rgba(102, 126, 234, 0.3),
+                inset 0 -2px 6px rgba(0, 0, 0, 0.2);
+        }
+        .bot-body::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background: #00f2ff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00f2ff;
+        }
+
+        .bot-arm {
+            position: absolute;
+            top: 5px;
+            width: 18px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+        .bot-arm.left {
+            left: -14px;
+            transform: rotate(-25deg);
+            animation: armWave 3s ease-in-out infinite;
+        }
+        .bot-arm.right {
+            right: -14px;
+            transform: rotate(25deg);
+            animation: armWave 3s ease-in-out infinite 0.5s;
+        }
+
+        .bot-legs {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .bot-leg {
+            width: 12px;
+            height: 20px;
+            background: linear-gradient(180deg, #764ba2, #667eea);
+            border-radius: 6px 6px 4px 4px;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-chat-button {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 
+                0 8px 32px rgba(102, 126, 234, 0.5),
+                0 0 0 0 rgba(102, 126, 234, 0.7);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .ai-chat-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+            border-radius: 50%;
+        }
+        .ai-chat-button:hover {
+            transform: scale(1.12) rotate(5deg);
+            box-shadow: 
+                0 12px 48px rgba(102, 126, 234, 0.6),
+                0 0 0 8px rgba(102, 126, 234, 0.2);
+        }
+        .ai-chat-button:hover::before {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border-radius: 50%;
+            border: 3px solid #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        .ai-chat-popup {
+            position: fixed;
+            bottom: 115px;
+            right: 28px;
+            width: 380px;
+            height: 550px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 22px;
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #667eea, #764ba2, #f093fb) 1;
+            box-shadow: 
+                0 24px 64px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(102, 126, 234, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: none;
+            flex-direction: column;
+            z-index: 9998;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .ai-chat-popup.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .chat-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border-radius: 20px 20px 0 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .chat-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .chat-title h3 {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .chat-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #48bb78;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #48bb78;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+        .chat-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .chat-close:hover {
+            background: rgba(255, 107, 107, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+        .message {
+            display: flex;
+            gap: 10px;
+            animation: messageSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+        }
+        .message-bubble {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .message.ai .message-bubble {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #e2e8f0;
+            border-radius: 18px 18px 18px 4px;
+        }
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+            border-radius: 18px 18px 4px 18px;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .chat-input-container {
+            padding: 16px 20px 20px;
+            background: rgba(26, 26, 46, 0.8);
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 0 0 20px 20px;
+        }
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            padding: 4px 4px 4px 16px;
+            transition: all 0.3s ease;
+        }
+        .chat-input-wrapper:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        .chat-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: #ffffff;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            outline: none;
+            padding: 10px 0;
+        }
+        .chat-input::placeholder {
+            color: #718096;
+        }
+        .chat-send-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+        .chat-send-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+        .typing-indicator.active {
+            display: flex;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes botIdle {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(-2deg) translateY(-2px); }
+            75% { transform: rotate(2deg) translateY(-2px); }
+        }
+        @keyframes headBob {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-3px); }
+        }
+        @keyframes eyeBlink {
+            0%, 96%, 100% { transform: scaleY(1); }
+            98% { transform: scaleY(0.1); }
+        }
+        @keyframes antennaPulse {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.6; transform: translateX(-50%) scale(1.3); }
+        }
+        @keyframes armWave {
+            0%, 100% { transform: rotate(-25deg); }
+            50% { transform: rotate(-35deg); }
+        }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(238, 90, 111, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(238, 90, 111, 0); }
+        }
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 480px) {
+            .ai-chat-popup {
+                width: calc(100vw - 32px);
+                height: calc(100vh - 140px);
+                right: 16px;
+                bottom: 100px;
+            }
+            .ai-widget-container {
+                bottom: 20px;
+                right: 20px;
+            }
+            .ai-bot-3d {
+                width: 70px;
+                height: 100px;
+            }
+            .ai-chat-button {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+        }
+    </style>
+
+    <!-- HTML STRUCTURE -->
+    <div class="ai-widget-container">
+        <!-- 3D Bot Character -->
+        <div class="ai-bot-3d" id="aiBot">
+            <div class="bot-head">
+                <div class="bot-antenna"></div>
+                <div class="bot-eyes">
+                    <div class="bot-eye"></div>
+                    <div class="bot-eye"></div>
+                </div>
+                <div class="bot-mouth"></div>
+                <div class="bot-body">
+                    <div class="bot-arm left"></div>
+                    <div class="bot-arm right"></div>
+                </div>
+            </div>
+            <div class="bot-legs">
+                <div class="bot-leg"></div>
+                <div class="bot-leg"></div>
+            </div>
+        </div>
+
+        <!-- Floating Chat Button -->
+        <button class="ai-chat-button" id="chatButton">
+            🤖
+            <span class="notification-badge" id="notificationBadge" style="display: none;">3</span>
+        </button>
+    </div>
+
+    <!-- Chat Popup -->
+    <div class="ai-chat-popup" id="chatPopup">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-title">
+                    <h3>RISKCAST AI Assistant</h3>
+                    <div class="chat-status">
+                        <span class="status-dot"></span>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+            <button class="chat-close" id="chatClose">✕</button>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai">
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    Xin chào! Tôi là RISKCAST AI Assistant. Tôi có thể giúp bạn phân tích rủi ro logistics. 👋
+                </div>
+            </div>
+            <div class="message ai">
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    Bạn có thể hỏi tôi về bất kỳ điều gì liên quan đến rủi ro vận tải, bảo hiểm, ESG, hoặc khuyến nghị tuyến đường!
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Container -->
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Nhập tin nhắn..."
+                    autocomplete="off"
+                >
+                <button class="chat-send-btn" id="sendButton">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // DOM ELEMENTS
+        // ========================================
+        const chatButton = document.getElementById('chatButton');
+        const aiBot = document.getElementById('aiBot');
+        const chatPopup = document.getElementById('chatPopup');
+        const chatClose = document.getElementById('chatClose');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const chatMessages = document.getElementById('chatMessages');
+        const notificationBadge = document.getElementById('notificationBadge');
+
+        // ========================================
+        // OPEN/CLOSE CHAT POPUP
+        // ========================================
+        function openChat() {
+            chatPopup.classList.add('active');
+            chatInput.focus();
+            if (notificationBadge) {
+                notificationBadge.style.display = 'none';
+            }
+        }
+
+        function closeChat() {
+            chatPopup.classList.remove('active');
+        }
+
+        if (chatButton) chatButton.addEventListener('click', openChat);
+        if (aiBot) aiBot.addEventListener('click', openChat);
+        if (chatClose) chatClose.addEventListener('click', closeChat);
+
+        // ========================================
+        // BOT HOVER EFFECT
+        // ========================================
+        if (aiBot) {
+            aiBot.addEventListener('mousemove', (e) => {
+                const rect = aiBot.getBoundingClientRect();
+                const botCenterX = rect.left + rect.width / 2;
+                const botCenterY = rect.top + rect.height / 2;
+                
+                const deltaX = e.clientX - botCenterX;
+                const deltaY = e.clientY - botCenterY;
+                
+                const angle = Math.atan2(deltaY, deltaX);
+                const rotation = (angle * 180 / Math.PI) / 10;
+                
+                const head = aiBot.querySelector('.bot-head');
+                if (head) {
+                    head.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+                }
+            });
+
+            aiBot.addEventListener('mouseleave', () => {
+                const head = aiBot.querySelector('.bot-head');
+                if (head) {
+                    head.style.transform = 'translateX(-50%) rotate(0deg)';
+                }
+            });
+        }
+
+        // ========================================
+        // SEND MESSAGE FUNCTION (Real API)
+        // ========================================
+        async function sendMessage() {
+            const messageText = chatInput.value.trim();
+            
+            if (!messageText) return;
+
+            addMessage(messageText, 'user');
+            chatInput.value = '';
+            sendButton.disabled = true;
+            showTypingIndicator();
+            
+            try {
+                const response = await fetch('/api/ai/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: messageText, context: {} })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                hideTypingIndicator();
+
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai';
+                const aiAvatar = document.createElement('div');
+                aiAvatar.className = 'message-avatar';
+                aiAvatar.textContent = '🤖';
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'message-bubble';
+                aiBubble.textContent = '';
+                aiMessageDiv.appendChild(aiAvatar);
+                aiMessageDiv.appendChild(aiBubble);
+                chatMessages.appendChild(aiMessageDiv);
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
+
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const parsed = JSON.parse(data);
+                                if (parsed.text) {
+                                    fullText += parsed.text;
+                                    aiBubble.textContent = fullText;
+                                    scrollToBottom();
+                                } else if (parsed.error) {
+                                    throw new Error(parsed.error);
+                                }
+                            } catch (e) {
+                                if (data !== '[DONE]') {
+                                    fullText += data;
+                                    aiBubble.textContent = fullText;
+                                    scrollToBottom();
+                                }
+                            }
+                        } else {
+                            fullText += line;
+                            aiBubble.textContent = fullText;
+                            scrollToBottom();
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                hideTypingIndicator();
+                addMessage('Xin lỗi, đã xảy ra lỗi khi kết nối với AI. Vui lòng thử lại sau.', 'ai');
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'ai' ? '🤖' : '👤';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message ai';
+            indicator.id = 'typingIndicator';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '🤖';
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message-bubble typing-indicator active';
+            typingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            
+            indicator.appendChild(avatar);
+            indicator.appendChild(typingDiv);
+            chatMessages.appendChild(indicator);
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        if (sendButton) sendButton.addEventListener('click', sendMessage);
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        }
+
+        if (chatPopup) {
+            chatPopup.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+    </script>
+
+    <script src="/static/js/results.js"></script>
+</body>
+</html>

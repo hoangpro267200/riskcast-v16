@@ -1,0 +1,37 @@
+{
+    "python.defaultInterpreterPath": "C:/Users/ASUS/RICK CAST/venv/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.experiments.enabled": false,
+
+    // Force all links to open in external browser (Chrome)
+    "window.openExternal": true,
+
+    // 🔥 CRITICAL — Force HTML to open NOT in VSCode
+    "workbench.editorAssociations": {
+        "*.html": "default"
+    },
+
+    // Disable preview mode in editor
+    "workbench.editor.enablePreview": false,
+
+    // Disable HTML preview in VSCode
+    "html.preview.enabled": false,
+
+    // Open Markdown links in external browser
+    "markdown.preview.openMarkdownLinks": "inBrowser",
+
+    // Set Chrome as default external browser
+    "workbench.externalBrowser": "chrome",
+    "openInExternalBrowser.default": "chrome",
+
+    // Live Server configuration - use Chrome
+    "liveServer.settings.NoBrowser": false,
+    "liveServer.settings.CustomBrowser": "chrome",
+
+    // Disable Simple Browser
+    "simpleBrowser.focusLockIndicator.enabled": false,
+
+    // Disable Live Preview (Microsoft)
+    "livePreview.autoRefreshPreview": false
+}

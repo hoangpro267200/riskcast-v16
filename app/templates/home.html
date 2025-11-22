@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISKCAST - Logistics Risk Intelligence AI</title>
+    <meta name="description" content="RISKCAST phân tích rủi ro tuyến đường, Incoterm, tàu – cảng, thời tiết, container và tình trạng vận hành để giúp doanh nghiệp giảm thiểu sự cố vận chuyển, tối ưu chi phí bảo hiểm hàng hóa và nâng độ tin cậy chuỗi cung ứng.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/home.css">
+</head>
+<body>
+    <!-- Matrix Canvas Background -->
+    <canvas id="matrixCanvas" aria-hidden="true"></canvas>
+
+    <!-- Grid Background -->
+    <div class="grid-background" aria-hidden="true"></div>
+    <div class="grid-background grid-fine" aria-hidden="true"></div>
+
+    <!-- Glow Radial Gradients -->
+    <div class="glow-radial glow-bottom-left" aria-hidden="true"></div>
+    <div class="glow-radial glow-top-right" aria-hidden="true"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-container" role="navigation">
+        <div class="nav-content">
+            <div class="nav-logo">
+                <span class="logo-text">RISKCAST</span>
+                <span class="logo-badge">AI</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Tính năng</a>
+                <a href="#demo" class="nav-link">Demo</a>
+                <a href="#customers" class="nav-link">Khách hàng</a>
+                <a href="#contact" class="nav-link-cta">Liên hệ</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title fade-in">
+                        Dự báo rủi ro vận tải hàng hóa
+                        <span class="hero-highlight">bằng Trí tuệ nhân tạo</span>
+                    </h1>
+                    <p class="hero-subtitle fade-in">
+                        RISKCAST phân tích rủi ro tuyến đường, Incoterm, tàu – cảng, thời tiết, container và tình trạng vận hành.
+                    </p>
+                    <p class="hero-description fade-in">
+                        Giúp doanh nghiệp giảm thiểu sự cố vận chuyển, tối ưu chi phí bảo hiểm hàng hóa và nâng độ tin cậy chuỗi cung ứng.
+                    </p>
+                    <div class="hero-cta fade-in">
+                        <a href="/input" class="btn-primary">
+                            Trải nghiệm ngay
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <button class="btn-secondary" type="button">Xem demo 30s</button>
+                    </div>
+                    <div class="hero-stats fade-in">
+                        <div class="stat-item">
+                            <span class="stat-number">95%</span>
+                            <span class="stat-label">Chính xác cảnh báo rủi ro</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">2.4s</span>
+                            <span class="stat-label">Thời gian phân tích một lô hàng</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">40%</span>
+                            <span class="stat-label">Giảm chi phí sự cố & bảo hiểm</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual fade-in">
+                    <div class="visual-glow"></div>
+                    <div class="visual-card">
+                        <div class="visual-header">
+                            <span class="visual-status">PHÂN TÍCH THỜI GIAN THỰC</span>
+                            <div class="visual-indicator"></div>
+                        </div>
+                        <div class="hero-image">
+                            <img src="/static/images/hero-ship.jpg" alt="riskcast-hero">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Value Proposition Section -->
+    <section class="value-section">
+        <div class="container">
+            <header class="section-header">
+                <span class="section-badge">GIÁ TRỊ CỐT LÕI</span>
+                <h2 class="section-title">Tại sao doanh nghiệp chọn RISKCAST</h2>
+            </header>
+            <div class="value-grid">
+                <article class="value-card scroll-animate">
+                    <div class="value-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <path d="M24 4L6 14V22C6 32.5 13 42.5 24 44C35 42.5 42 32.5 42 22V14L24 4Z" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 24L22 30L32 20" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="value-title">Giảm thiểu rủi ro vận tải</h3>
+                    <p class="value-description">
+                        AI phân tích rủi ro tuyến đường, cảng, tàu và container để phát hiện sớm các sự cố tiềm ẩn.
+                    </p>
+                    <div class="value-metric">
+                        <span class="metric-number">↓ 40%</span>
+                        <span class="metric-text">Sự cố vận chuyển</span>
+                    </div>
+                </article>
+
+                <article class="value-card scroll-animate">
+                    <div class="value-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <circle cx="24" cy="24" r="18" stroke="#00ffc3" stroke-width="2.5"/>
+                            <path d="M24 12V24L32 28" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="value-title">Tối ưu chi phí bảo hiểm</h3>
+                    <p class="value-description">
+                        Tự động tính toán mức rủi ro theo tuyến, Incoterm và thời tiết → giảm phí bảo hiểm & tránh bồi thường.
+                    </p>
+                    <div class="value-metric">
+                        <span class="metric-number">↓ 25%</span>
+                        <span class="metric-text">Phí bảo hiểm trung bình</span>
+                    </div>
+                </article>
+
+                <article class="value-card scroll-animate">
+                    <div class="value-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <path d="M6 36L16 26L24 34L42 16" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M32 16H42V26" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="value-title">Dự báo độ trễ & ETA chính xác</h3>
+                    <p class="value-description">
+                        AI dự báo thời gian giao hàng, rủi ro delay và các điểm nghẽn cảng biển.
+                    </p>
+                    <div class="value-metric">
+                        <span class="metric-number">95%</span>
+                        <span class="metric-text">Độ chính xác ETA</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Overview Section -->
+    <section class="system-section">
+        <div class="container">
+            <header class="section-header">
+                <span class="section-badge">CÁCH THỨC HOẠT ĐỘNG</span>
+                <h2 class="section-title">RISKCAST hoạt động như thế nào</h2>
+                <p class="section-description">
+                    Ba bước đơn giản để có được báo cáo rủi ro logistics toàn diện và dự báo chính xác
+                </p>
+            </header>
+            <div class="system-flow">
+                <article class="flow-step scroll-animate">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                                <path d="M20 5V35M5 20H35" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
+                                <circle cx="20" cy="20" r="15" stroke="#00ffc3" stroke-width="2.5"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Nhập thông tin lô hàng</h3>
+                        <p class="step-description">
+                            Origin → Destination, phương thức vận chuyển, carrier, container, Incoterm, giá trị hàng hóa, ETA dự kiến.
+                        </p>
+                    </div>
+                </article>
+
+                <div class="flow-arrow" aria-hidden="true">
+                    <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
+                        <path d="M0 12H58M58 12L48 2M58 12L48 22" stroke="url(#arrow-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="arrow-gradient" x1="0" y1="12" x2="58" y2="12">
+                                <stop offset="0%" stop-color="#00ffc3" stop-opacity="0.2"/>
+                                <stop offset="100%" stop-color="#00ffc3"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+
+                <article class="flow-step scroll-animate">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                                <path d="M20 5L25 15H35L27 21L30 31L20 25L10 31L13 21L5 15H15L20 5Z" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">AI phân tích rủi ro đa tầng</h3>
+                        <p class="step-description">
+                            Phân tích 7 nhóm rủi ro: Tuyến đường, Cảng – tàu – hãng vận chuyển, Container, Thời tiết – khí hậu, Incoterm, Trễ lịch trình, Sự cố quốc tế.
+                        </p>
+                    </div>
+                </article>
+
+                <div class="flow-arrow" aria-hidden="true">
+                    <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
+                        <path d="M0 12H58M58 12L48 2M58 12L48 22" stroke="url(#arrow-gradient-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="arrow-gradient-2" x1="0" y1="12" x2="58" y2="12">
+                                <stop offset="0%" stop-color="#00ffc3" stop-opacity="0.2"/>
+                                <stop offset="100%" stop-color="#00ffc3"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+
+                <article class="flow-step scroll-animate">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                                <path d="M8 30H32C33.1 30 34 29.1 34 28V12C34 10.9 33.1 10 32 10H8C6.9 10 6 10.9 6 12V28C6 29.1 6.9 30 8 30Z" stroke="#00ffc3" stroke-width="2.5"/>
+                                <path d="M12 18H28M12 22H22" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3 class="step-title">Nhận báo cáo rủi ro tức thì</h3>
+                        <p class="step-description">
+                            Xuất: risk score, bản đồ rủi ro tuyến đường, cảnh báo nóng, đề xuất bảo hiểm tối ưu.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <header class="section-header">
+                <span class="section-badge">TÍNH NĂNG NỔI BẬT</span>
+                <h2 class="section-title">Nền tảng AI toàn diện cho quản trị rủi ro logistics</h2>
+            </header>
+            <div class="features-grid">
+                <article class="feature-card scroll-animate">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <path d="M16 4L6 10V14C6 20.5 10 26.5 16 28C22 26.5 26 20.5 26 14V10L16 4Z" stroke="#00ffc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Dự báo rủi ro tuyến đường</h3>
+                    <p class="feature-description">
+                        Phân tích rủi ro theo tuyến vận chuyển, cảng biển và điểm đến 
+                        với độ chính xác 95%, đưa ra cảnh báo sớm các sự cố tiềm ẩn.
+                    </p>
+                </article>
+
+                <article class="feature-card scroll-animate">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <rect x="4" y="8" width="24" height="20" rx="2" stroke="#00ffc3" stroke-width="2"/>
+                                <path d="M4 14H28M10 8V4M22 8V4" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Phân tích thời gian thực</h3>
+                    <p class="feature-description">
+                        Xử lý và phân tích dữ liệu tức thì, cập nhật risk score liên tục 
+                        khi có thông tin mới về thời tiết, tình trạng cảng hoặc sự cố vận chuyển.
+                    </p>
+                </article>
+
+                <article class="feature-card scroll-animate">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <path d="M4 24L12 16L18 22L28 12" stroke="#00ffc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M20 12H28V20" stroke="#00ffc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Dashboard tương tác</h3>
+                    <p class="feature-description">
+                        Giao diện trực quan với bản đồ rủi ro tuyến đường, bộ lọc thông minh 
+                        và khả năng drill-down sâu vào từng yếu tố rủi ro logistics.
+                    </p>
+                </article>
+
+                <article class="feature-card scroll-animate">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <circle cx="16" cy="16" r="12" stroke="#00ffc3" stroke-width="2"/>
+                                <path d="M16 10V16L20 20" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Cảnh báo tự động</h3>
+                    <p class="feature-description">
+                        Hệ thống thông báo thông minh qua email, SMS hoặc webhook 
+                        khi phát hiện rủi ro vận chuyển, delay hoặc sự cố tiềm ẩn.
+                    </p>
+                </article>
+
+                <article class="feature-card scroll-animate">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <path d="M4 8H28M4 16H28M4 24H28" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="10" cy="8" r="2" fill="#00ffc3"/>
+                                <circle cx="10" cy="16" r="2" fill="#00ffc3"/>
+                                <circle cx="10" cy="24" r="2" fill="#00ffc3"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Báo cáo chi tiết</h3>
+                    <p class="feature-description">
+                        Tạo báo cáo PDF chuyên nghiệp với risk score, bản đồ rủi ro, 
+                        phân tích sâu và đề xuất bảo hiểm tối ưu.
+                    </p>
+                </article>
+
+                <article class="feature-card scroll-animate">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                <rect x="4" y="4" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
+                                <rect x="18" y="4" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
+                                <rect x="4" y="18" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
+                                <rect x="18" y="18" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="feature-title">Tích hợp API với TMS/WMS</h3>
+                    <p class="feature-description">
+                        RESTful API dễ sử dụng, webhook support và SDK cho Python, 
+                        Node.js giúp tích hợp nhanh vào hệ thống TMS, WMS hiện có.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <header class="section-header">
+                <span class="section-badge">XEM DEMO</span>
+                <h2 class="section-title">Trải nghiệm RISKCAST trong 30 giây</h2>
+                <p class="section-description">
+                    Xem cách RISKCAST phân tích lô hàng và đưa ra dự báo rủi ro vận chuyển chính xác
+                </p>
+            </header>
+            <div class="demo-container scroll-animate">
+                <div class="demo-video-wrapper">
+                    <div class="demo-video-placeholder">
+                        <div class="play-button">
+                            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                                <circle cx="32" cy="32" r="30" stroke="#00ffc3" stroke-width="2"/>
+                                <path d="M26 20L42 32L26 44V20Z" fill="#00ffc3"/>
+                            </svg>
+                        </div>
+                        <div class="demo-overlay">
+                            <span class="demo-duration">0:30</span>
+                        </div>
+                    </div>
+                    <div class="demo-info">
+                        <h3 class="demo-title">Demo: Phân tích rủi ro vận chuyển lô hàng</h3>
+                        <p class="demo-description">
+                            Xem RISKCAST xử lý thông tin lô hàng, 
+                            phân tích 11 nhóm rủi ro và đưa ra kết quả trong 2.4 giây
+                        </p>
+                    </div>
+                </div>
+                <div class="demo-features">
+                    <div class="demo-feature-item">
+                        <div class="demo-check">✓</div>
+                        <span>Nhập thông tin lô hàng tức thì</span>
+                    </div>
+                    <div class="demo-feature-item">
+                        <div class="demo-check">✓</div>
+                        <span>AI phân tích rủi ro real-time</span>
+                    </div>
+                    <div class="demo-feature-item">
+                        <div class="demo-check">✓</div>
+                        <span>Báo cáo rủi ro chi tiết ngay lập tức</span>
+                    </div>
+                    <div class="demo-feature-item">
+                        <div class="demo-check">✓</div>
+                        <span>Đề xuất bảo hiểm tối ưu</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customers Section -->
+    <section class="customers-section" id="customers">
+        <div class="container">
+            <header class="section-header">
+                <span class="section-badge">KHÁCH HÀNG MỤC TIÊU</span>
+                <h2 class="section-title">Ai đang sử dụng RISKCAST</h2>
+            </header>
+            <div class="customers-grid">
+                <article class="customer-card scroll-animate">
+                    <div class="customer-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <path d="M8 40V14C8 12.9 8.9 12 10 12H38C39.1 12 40 12.9 40 14V40" stroke="#00ffc3" stroke-width="2.5"/>
+                            <path d="M16 20H32M16 26H32M16 32H24" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
+                            <rect x="4" y="40" width="40" height="4" rx="2" fill="#00ffc3" opacity="0.2"/>
+                        </svg>
+                    </div>
+                    <h3 class="customer-title">Doanh nghiệp xuất nhập khẩu</h3>
+                    <p class="customer-description">
+                        Đánh giá rủi ro vận chuyển & chọn tuyến tối ưu để bảo vệ hàng hóa và tối ưu chi phí logistics.
+                    </p>
+                    <div class="customer-use-case">
+                        <span class="use-case-label">Use case:</span>
+                        <span class="use-case-text">Đánh giá rủi ro vận chuyển & chọn tuyến tối ưu</span>
+                    </div>
+                </article>
+
+                <article class="customer-card scroll-animate">
+                    <div class="customer-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <circle cx="24" cy="24" r="18" stroke="#00ffc3" stroke-width="2.5"/>
+                            <path d="M24 14V24L30 30" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M12 12L8 8M36 12L40 8" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="customer-title">Freight Forwarders</h3>
+                    <p class="customer-description">
+                        Dự báo ETA, giảm claim & cải thiện reliability để nâng cao chất lượng dịch vụ và giữ chân khách hàng.
+                    </p>
+                    <div class="customer-use-case">
+                        <span class="use-case-label">Use case:</span>
+                        <span class="use-case-text">Dự báo ETA, giảm claim & cải thiện reliability</span>
+                    </div>
+                </article>
+
+                <article class="customer-card scroll-animate">
+                    <div class="customer-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <rect x="6" y="10" width="36" height="28" rx="3" stroke="#00ffc3" stroke-width="2.5"/>
+                            <path d="M6 18H42" stroke="#00ffc3" stroke-width="2.5"/>
+                            <circle cx="14" cy="26" r="2" fill="#00ffc3"/>
+                            <path d="M20 26H34" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="customer-title">Doanh nghiệp logistics 3PL/4PL</h3>
+                    <p class="customer-description">
+                        Risk monitoring, route optimization để tối ưu hiệu quả vận hành và giảm thiểu rủi ro trong chuỗi cung ứng.
+                    </p>
+                    <div class="customer-use-case">
+                        <span class="use-case-label">Use case:</span>
+                        <span class="use-case-text">Risk monitoring, route optimization</span>
+                    </div>
+                </article>
+
+                <article class="customer-card scroll-animate">
+                    <div class="customer-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <path d="M24 6L8 14V22C8 30.5 14 38.5 24 40C34 38.5 40 30.5 40 22V14L24 6Z" stroke="#00ffc3" stroke-width="2.5"/>
+                            <path d="M18 24L22 28L30 20" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="customer-title">Bảo hiểm hàng hóa</h3>
+                    <p class="customer-description">
+                        Pricing theo rủi ro từng tuyến/Incoterm để tối ưu phí bảo hiểm và quản lý rủi ro danh mục hiệu quả.
+                    </p>
+                    <div class="customer-use-case">
+                        <span class="use-case-label">Use case:</span>
+                        <span class="use-case-text">Pricing theo rủi ro từng tuyến/Incoterm</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="why-section">
+        <div class="container">
+            <div class="why-content">
+                <div class="why-text">
+                    <span class="section-badge">TẠI SAO RISKCAST</span>
+                    <h2 class="section-title">Nền tảng Logistics Risk Intelligence AI hàng đầu</h2>
+                    <div class="why-list">
+                        <article class="why-item scroll-animate">
+                            <div class="why-number">01</div>
+                            <div class="why-details">
+                                <h4 class="why-subtitle">AI huấn luyện trên dữ liệu giao vận quốc tế 10 năm</h4>
+                                <p class="why-text-description">
+                                    Mô hình AI được huấn luyện trên hàng triệu lô hàng quốc tế, 
+                                    tích hợp dữ liệu từ các hãng vận chuyển, cảng biển và bảo hiểm hàng hóa.
+                                </p>
+                            </div>
+                        </article>
+
+                        <article class="why-item scroll-animate">
+                            <div class="why-number">02</div>
+                            <div class="why-details">
+                                <h4 class="why-subtitle">Phân tích 11 nhóm rủi ro logistics</h4>
+                                <p class="why-text-description">
+                                    Tuyến đường, cảng biển, tàu, container, thời tiết, Incoterm, 
+                                    carrier, delay, sự cố quốc tế, giá trị hàng hóa và điều kiện vận hành.
+                                </p>
+                            </div>
+                        </article>
+
+                        <article class="why-item scroll-animate">
+                            <div class="why-number">03</div>
+                            <div class="why-details">
+                                <h4 class="why-subtitle">Bảo mật chuẩn doanh nghiệp</h4>
+                                <p class="why-text-description">
+                                    Tuân thủ ISO 27001, mã hóa AES-256, và kiểm toán bảo mật định kỳ. 
+                                    Dữ liệu được lưu trữ an toàn tại data center tier III tại Việt Nam.
+                                </p>
+                            </div>
+                        </article>
+
+                        <article class="why-item scroll-animate">
+                            <div class="why-number">04</div>
+                            <div class="why-details">
+                                <h4 class="why-subtitle">Tích hợp API với TMS/WMS</h4>
+                                <p class="why-text-description">
+                                    RESTful API dễ sử dụng, tích hợp nhanh chóng với hệ thống TMS, WMS 
+                                    và các nền tảng quản lý logistics hiện có.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="why-visual scroll-animate">
+                    <div class="why-stats-card">
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                    <path d="M16 4L6 10V14C6 20.5 10 26.5 16 28C22 26.5 26 20.5 26 14V10L16 4Z" stroke="#00ffc3" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-big-number">10 năm</span>
+                                <span class="stat-label-text">Dữ liệu giao vận</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                    <circle cx="16" cy="16" r="12" stroke="#00ffc3" stroke-width="2"/>
+                                    <path d="M16 10V16L20 20" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-big-number">2.4s</span>
+                                <span class="stat-label-text">Thời gian phản hồi</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                    <path d="M4 24L12 16L18 22L28 12" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-big-number">95%</span>
+                                <span class="stat-label-text">Độ chính xác</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                                    <path d="M16 4L20 12L28 14L22 20L24 28L16 24L8 28L10 20L4 14L12 12L16 4Z" stroke="#00ffc3" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="stat-data">
+                                <span class="stat-big-number">11</span>
+                                <span class="stat-label-text">Nhóm rủi ro</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-main">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <span class="logo-text">RISKCAST</span>
+                            <span class="logo-badge">AI</span>
+                        </div>
+                        <p class="footer-tagline">
+                            Nền tảng Logistics Risk Intelligence AI, 
+                            giúp doanh nghiệp giảm thiểu sự cố vận chuyển, tối ưu chi phí bảo hiểm hàng hóa và nâng độ tin cậy chuỗi cung ứng.
+                        </p>
+                        <div class="footer-social">
+                            <a href="#" class="social-link" aria-label="Facebook">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 16.84 5.44 20.87 10 21.8V15H8V12H10V9.5C10 7.57 11.57 6 13.5 6H16V9H14C13.45 9 13 9.45 13 10V12H16V15H13V21.95C18.05 21.45 22 17.19 22 12Z" fill="currentColor"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="social-link" aria-label="Twitter">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M22.46 6C21.69 6.35 20.86 6.58 20 6.69C20.88 6.16 21.56 5.32 21.88 4.31C21.05 4.81 20.13 5.16 19.16 5.36C18.37 4.5 17.26 4 16 4C13.65 4 11.73 5.92 11.73 8.29C11.73 8.63 11.77 8.96 11.84 9.27C8.28 9.09 5.11 7.38 3 4.79C2.63 5.42 2.42 6.16 2.42 6.94C2.42 8.43 3.17 9.75 4.33 10.5C3.62 10.5 2.96 10.3 2.38 10C2.38 10 2.38 10 2.38 10.03C2.38 12.11 3.86 13.85 5.82 14.24C5.46 14.34 5.08 14.39 4.69 14.39C4.42 14.39 4.15 14.36 3.89 14.31C4.43 16 6 17.26 7.89 17.29C6.43 18.45 4.58 19.13 2.56 19.13C2.22 19.13 1.88 19.11 1.54 19.07C3.44 20.29 5.7 21 8.12 21C16 21 20.33 14.46 20.33 8.79C20.33 8.6 20.33 8.42 20.32 8.23C21.16 7.63 21.88 6.87 22.46 6Z" fill="currentColor"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="social-link" aria-label="LinkedIn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M19 3H5C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3ZM9 17H6.48V9.99H9V17ZM7.74 8.91C6.91 8.91 6.24 8.24 6.24 7.41C6.24 6.58 6.91 5.91 7.74 5.91C8.57 5.91 9.24 6.58 9.24 7.41C9.24 8.24 8.57 8.91 7.74 8.91ZM18 17H15.48V13.17C15.48 11.61 14.19 11.44 13.77 11.44C13.35 11.44 11.82 11.71 11.82 13.17V17H9.3V9.99H11.82V11.09C12.3 10.12 13.63 9.75 14.82 9.75C16.28 9.75 18 10.66 18 13.17V17Z" fill="currentColor"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="footer-links">
+                        <div class="footer-column">
+                            <h4 class="footer-heading">Sản phẩm</h4>
+                            <ul class="footer-list">
+                                <li><a href="#features">Tính năng</a></li>
+                                <li><a href="#demo">Demo</a></li>
+                                <li><a href="#">Bảng giá</a></li>
+                                <li><a href="#">API Documentation</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h4 class="footer-heading">Giải pháp</h4>
+                            <ul class="footer-list">
+                                <li><a href="#">Xuất nhập khẩu</a></li>
+                                <li><a href="#">Freight Forwarders</a></li>
+                                <li><a href="#">Logistics 3PL/4PL</a></li>
+                                <li><a href="#">Bảo hiểm hàng hóa</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h4 class="footer-heading">Công ty</h4>
+                            <ul class="footer-list">
+                                <li><a href="#">Về chúng tôi</a></li>
+                                <li><a href="#">Đội ngũ</a></li>
+                                <li><a href="#">Tuyển dụng</a></li>
+                                <li><a href="#contact">Liên hệ</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h4 class="footer-heading">Hỗ trợ</h4>
+                            <ul class="footer-list">
+                                <li><a href="#">Trung tâm trợ giúp</a></li>
+                                <li><a href="#">Blog</a></li>
+                                <li><a href="#">Case Studies</a></li>
+                                <li><a href="#">Điều khoản dịch vụ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="footer-bottom-content">
+                        <p class="footer-copyright">
+                            © 2025 RISKCAST. Bảo lưu mọi quyền.
+                        </p>
+                        <div class="footer-legal">
+                            <a href="#">Chính sách bảo mật</a>
+                            <span class="separator">•</span>
+                            <a href="#">Điều khoản sử dụng</a>
+                            <span class="separator">•</span>
+                            <a href="#">Cookies</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/home.js"></script>
+</body>
+</html>

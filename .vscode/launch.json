@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: FastAPI",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app.main:app",
+                "--reload"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "python": "${workspaceFolder}/venv/Scripts/python.exe"
+        },
+        {
+            "name": "Open In Chrome",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://127.0.0.1:8000",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
+
+
