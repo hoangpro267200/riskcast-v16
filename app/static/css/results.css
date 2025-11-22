@@ -452,15 +452,19 @@ body {
 .chart-container.gauge-container {
     overflow: visible !important;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 260px;
-    min-height: 260px;
+    justify-content: flex-start;
+    min-height: auto;
+    height: auto;
+    padding: 16px;
+    gap: 8px;
 }
 
 .chart-container.gauge-container > div {
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
+    flex-shrink: 0;
 }
 
 .chart-title {
@@ -473,40 +477,61 @@ body {
 }
 
 .gauge-container {
-    min-height: 260px;
-    height: 260px;
+    min-height: auto;
+    height: auto;
+    max-height: none;
 }
 
 #risk_overview_overall,
 #risk_overview_reliability,
 #risk_overview_esg {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
 }
 
 /* GAUGE GRID LAYOUT */
 .gauge-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-    padding-top: 0 !important;
-    margin-top: -20px !important;
-    align-items: flex-start !important;
+    gap: 24px;
+    padding: 20px 0;
+    margin-top: 0 !important;
+    align-items: stretch !important;
+    width: 100%;
 }
 
-#risk_overview_overall .chart-container,
-#risk_overview_reliability .chart-container,
-#risk_overview_esg .chart-container {
-    margin-top: -30px !important;
+#risk_overview_overall,
+#risk_overview_reliability,
+#risk_overview_esg {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Ensure gauge chart fits properly */
+#risk_overview_overall #gaugeRisk,
+#risk_overview_reliability #gaugeReliability,
+#risk_overview_esg #gaugeEsg {
+    min-height: 200px;
+    max-height: 220px;
+    width: 100%;
+    overflow: visible;
 }
 
 /* GAUGE DESCRIPTION BOXES */
 .gauge-description {
-    margin-top: 12px;
-    font-size: 14px;
+    margin-top: 16px;
+    font-size: 13px;
     color: #a5ffdd;
     opacity: 0.85;
-    line-height: 1.4;
+    line-height: 1.5;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0 4px;
 }
 
 .desc-title {
@@ -568,15 +593,28 @@ body {
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    overflow: hidden !important;
+    overflow: visible !important;
     box-sizing: border-box;
+    min-height: 280px;
+    position: relative;
 }
 
 /* Đẩy gauge lên (vì Plotly mặc định add margin-top 40px) */
 .pp-gauge-box > div:first-child {
-    margin-top: -20px !important;
+    margin-top: -30px !important;
+    margin-bottom: -20px !important;
+    overflow: visible !important;
+    width: 100%;
+    height: auto;
+}
+
+.pp-gauge-box > div:first-child svg {
+    margin-top: -30px !important;
+    max-height: 220px !important;
+    width: 100% !important;
+    height: auto !important;
 }
 
 .gauge-label {
@@ -596,14 +634,23 @@ body {
 .pp-gauge-box svg {
     width: 100% !important;
     max-width: 380px !important;
+    max-height: 220px !important;
     height: auto !important;
     display: block;
-    margin: 0 auto;
+    margin: 0 auto -20px auto !important;
+    overflow: visible !important;
 }
 
 .priority-profile-section svg,
 .pp-gauge-box svg {
-    overflow: hidden !important;
+    overflow: visible !important;
+}
+
+/* Fix Plotly container */
+.pp-gauge-box .js-plotly-plot {
+    overflow: visible !important;
+    margin-top: -30px !important;
+    margin-bottom: -20px !important;
 }
 
 .pp-gauge-box,
@@ -616,6 +663,11 @@ body {
 
 svg {
     max-height: 260px !important;
+}
+
+/* Priority Profile specific SVG fixes */
+.priority-profile-section svg {
+    max-height: 220px !important;
 }
 
 /* LISTS */
@@ -1581,12 +1633,37 @@ svg {
         grid-template-columns: 1fr;
     }
     
+    /* Gauge grid responsive - 2 columns on tablet */
     .gauge-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
     }
     
     .api-dashboard-grid {
         grid-template-columns: 1fr;
+    }
+    
+    /* Priority Profile responsive */
+    .pp-gauge-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    
+    .pp-gauge-box {
+        min-height: 260px;
+    }
+    
+    /* Ensure gauge containers fit properly */
+    .chart-container.gauge-container {
+        min-height: auto;
+        padding: 12px;
+    }
+    
+    #risk_overview_overall #gaugeRisk,
+    #risk_overview_reliability #gaugeReliability,
+    #risk_overview_esg #gaugeEsg {
+        min-height: 180px;
+        max-height: 200px;
     }
 }
 
@@ -1625,13 +1702,55 @@ svg {
         width: 100%;
     }
     
+    /* Gauge grid mobile - single column */
+    .gauge-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        padding: 16px 0 !important;
+    }
+    
+    .chart-container.gauge-container {
+        padding: 12px;
+        min-height: auto;
+    }
+    
+    #risk_overview_overall,
+    #risk_overview_reliability,
+    #risk_overview_esg {
+        margin: 0 !important;
+    }
+    
+    #risk_overview_overall #gaugeRisk,
+    #risk_overview_reliability #gaugeReliability,
+    #risk_overview_esg #gaugeEsg {
+        min-height: 160px;
+        max-height: 180px;
+    }
+    
+    .gauge-description {
+        margin-top: 12px;
+        font-size: 12px;
+    }
+    
+    /* Priority Profile mobile */
     .pp-gauge-row {
-        flex-direction: column;
+        grid-template-columns: 1fr !important;
+        gap: 20px;
     }
 
     .pp-gauge-box {
         max-width: 100% !important;
-        height: 250px !important;
+        min-height: 240px !important;
+        padding: 15px;
+    }
+    
+    .pp-gauge-box svg {
+        max-height: 200px !important;
+    }
+    
+    .priority-profile-section {
+        padding: 20px;
+        margin: 20px auto;
     }
     
     .ai-adviser-box {

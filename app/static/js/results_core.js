@@ -1038,10 +1038,21 @@ window.ResultsCore = {
         
         console.log("[RISKCAST] Rendering priority gauges:", w);
 
-        // Render 3 gauges
-        this.renderGauge("gaugeSpeed", w.speed);
-        this.renderGauge("gaugeCost", w.cost);
-        this.renderGauge("gaugeRiskTolerance", w.risk);
+        // Render 3 gauges with slight delay to ensure DOM is ready
+        setTimeout(() => {
+            this.renderGauge("gaugeSpeed", w.speed);
+            this.renderGauge("gaugeCost", w.cost);
+            this.renderGauge("gaugeRiskTolerance", w.risk);
+            
+            // Add resize handler for Priority Profile gauges
+            window.addEventListener('resize', () => {
+                if (document.getElementById("gaugeSpeed")) {
+                    Plotly.Plots.resize("gaugeSpeed");
+                    Plotly.Plots.resize("gaugeCost");
+                    Plotly.Plots.resize("gaugeRiskTolerance");
+                }
+            });
+        }, 100);
     },
 
     // ===============================
@@ -1051,13 +1062,37 @@ window.ResultsCore = {
         let el = document.getElementById(gaugeId);
         if (!el) return;
 
-        setTimeout(() => {
+        // Fix multiple times to ensure it works after Plotly renders
+        const fixOffset = () => {
             const svg = el.querySelector("svg");
+            const plotlyDiv = el.querySelector(".js-plotly-plot");
+            
             if (svg) {
-                svg.style.marginTop = "-60px";   // QUAN TRỌNG – ĐẨY GAUGE LÊN TRÊN
+                svg.style.marginTop = "-40px";
                 svg.style.display = "block";
+                svg.style.maxHeight = "220px";
+                svg.style.width = "100%";
+                svg.style.height = "auto";
             }
-        }, 300);
+            
+            if (plotlyDiv) {
+                plotlyDiv.style.marginTop = "-40px";
+                plotlyDiv.style.overflow = "visible";
+            }
+            
+            // Fix parent container
+            const parentBox = el.closest(".pp-gauge-box");
+            if (parentBox) {
+                parentBox.style.overflow = "visible";
+                parentBox.style.minHeight = "auto";
+            }
+        };
+
+        // Fix immediately and after delays
+        fixOffset();
+        setTimeout(fixOffset, 100);
+        setTimeout(fixOffset, 300);
+        setTimeout(fixOffset, 500);
     },
 
     // ===============================
@@ -1072,12 +1107,32 @@ window.ResultsCore = {
             return;
         }
 
+        // Clear previous content
+        el.innerHTML = '';
+
+        // Check if this is a Priority Profile gauge
+        const isPriorityGauge = targetId === "gaugeSpeed" || targetId === "gaugeCost" || targetId === "gaugeRiskTolerance";
+        
+        // Adjust layout based on gauge type
+        const layout = {
+            paper_bgcolor: "rgba(0,0,0,0)",
+            plot_bgcolor: "rgba(0,0,0,0)",
+            autosize: true,
+            margin: isPriorityGauge 
+                ? { t: 10, b: 10, l: 10, r: 10 }  // Smaller margins for Priority Profile
+                : { t: 20, b: 0, l: 20, r: 20 }
+        };
+
         Plotly.newPlot(targetId, [{
             type: "indicator",
             mode: "gauge+number",
             value: value,
             gauge: {
-                axis: { range: [0, 100], tickcolor: "#00ffa7" },
+                axis: { 
+                    range: [0, 100], 
+                    tickcolor: "#00ffa7",
+                    tickfont: { size: 10 }
+                },
                 bar: { color: color },
                 bgcolor: "rgba(0,0,0,0)",
                 borderwidth: 2,
@@ -1085,17 +1140,25 @@ window.ResultsCore = {
                 steps: [
                     { range: [0, 50], color: "rgba(0,255,180,0.15)" },
                     { range: [50, 100], color: "rgba(0,255,180,0.25)" }
-                ]
+                ],
+                threshold: {
+                    line: { color: "#00ffa7", width: 2 },
+                    thickness: 0.75,
+                    value: value
+                }
             },
-            number: { font: { color: "#00ffa7", size: 28 } }
-        }], {
-            paper_bgcolor: "rgba(0,0,0,0)",
-            plot_bgcolor: "rgba(0,0,0,0)",
-            margin: { t: 20, b: 0 }
+            number: { 
+                font: { color: "#00ffa7", size: isPriorityGauge ? 24 : 28 },
+                suffix: "%"
+            }
+        }], layout, {
+            responsive: true,
+            displayModeBar: false,
+            staticPlot: false
         });
 
         // Fix offset cho Priority Profile gauges
-        if (targetId === "gaugeSpeed" || targetId === "gaugeCost" || targetId === "gaugeRiskTolerance") {
+        if (isPriorityGauge) {
             this.fixGaugeOffset(targetId);
         }
     },
@@ -2508,8 +2571,12 @@ function initAIAdviser() {
         .then(response => response.json())
         .then(data => {
             console.log("AI API Health:", data);
-            if (data.status !== "healthy") {
+            if (data.status === "error") {
                 console.warn("AI API not fully configured:", data);
+            } else if (data.status === "ok") {
+                console.log("AI API is ready and configured:", data);
+            } else {
+                console.warn("AI API status unknown:", data);
             }
         })
         .catch(error => {

@@ -23,35 +23,74 @@ from app.risk_engine import (
 from app.memory import memory_system
 from app.utils import sanitize_input, validate_shipment_data, build_ai_prompt
 
-load_dotenv()
+# Load environment variables from .env file
+# Try loading from project root first, then current directory
+from pathlib import Path
+project_root = Path(__file__).parent.parent
+env_path = project_root / ".env"
+env_1_path = project_root / ".env_1"
+
+# Try to load .env file
+loaded = False
+if env_path.exists():
+    try:
+        loaded = load_dotenv(dotenv_path=env_path, override=True)
+        if loaded:
+            print(f"[DEBUG] Loaded .env from: {env_path}")
+    except Exception as e:
+        print(f"[WARNING] Could not load .env: {e}")
+
+# Fallback to .env_1 if .env failed
+if not loaded and env_1_path.exists():
+    try:
+        loaded = load_dotenv(dotenv_path=env_1_path, override=True)
+        if loaded:
+            print(f"[DEBUG] Loaded .env_1 from: {env_1_path}")
+    except Exception as e:
+        print(f"[WARNING] Could not load .env_1: {e}")
+
+# Final fallback to current directory
+if not loaded:
+    try:
+        load_dotenv(override=True)
+        print(f"[DEBUG] Tried loading .env from current directory")
+    except Exception as e:
+        print(f"[WARNING] Could not load .env from current directory: {e}")
 
 router = APIRouter()
 
 # Get API key from environment
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
-# Initialize client only if API key exists
-if ANTHROPIC_API_KEY:
+# Check if API key is configured (not placeholder)
+if ANTHROPIC_API_KEY and ANTHROPIC_API_KEY != "your_anthropic_api_key_here":
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
+    print(f"[INFO] Anthropic client initialized (API key: {ANTHROPIC_API_KEY[:15]}...)")
 else:
     client = None
+    print("[WARNING] ANTHROPIC_API_KEY not configured. AI features will not work.")
+    print("[WARNING] Please set ANTHROPIC_API_KEY in .env file")
 
 
 # ==================== PROMPT TEMPLATES ====================
 
-BASE_PROMPT = """You are RISKCAST Enterprise AI — a Logistics Risk Intelligence System.
+BASE_PROMPT = """You are RISKCAST Enterprise AI — a Logistics Risk Intelligence System specializing in supply chain risk analysis.
 
-Your tasks:
-1. Identify main risk drivers
-2. Quantify risk impact
-3. Provide route recommendations
-4. Generate insurance guidance
-5. Give ESG advisory and carbon insights
-6. Predict delay probability
-7. Explain reasoning in structured bullets
-8. Write in expert tone (KPMG / Deloitte / BCG)
+CRITICAL INSTRUCTIONS:
+1. **FOCUS ON THE USER'S QUESTION**: Read the user's question carefully and answer it directly and specifically. Do not provide generic information that doesn't address the question.
+2. **BE CONCISE**: Provide clear, actionable answers without unnecessary background unless directly relevant to the question.
+3. **STRUCTURE YOUR RESPONSE**: Use structured format (JSON when appropriate, or clear sections) to make information easy to scan.
+4. **PRIORITIZE RELEVANCE**: Only include information that directly relates to the user's question. Skip general knowledge unless it's essential context.
 
-Format your response in structured JSON when possible, or use clear bullet points."""
+Your expertise areas:
+- Logistics risk analysis and quantification
+- Route optimization and recommendations
+- Insurance guidance and risk mitigation
+- ESG advisory and carbon footprint analysis
+- Delay prediction and supply chain disruptions
+- Risk driver identification and impact assessment
+
+Response style: Expert consulting tone (KPMG / Deloitte / BCG style) - professional, data-driven, actionable."""
 
 ANALYZE_PROMPT = """Analyze this shipment and provide:
 
@@ -162,13 +201,16 @@ Format as comparative analysis."""
 
 # ==================== HELPER FUNCTIONS ====================
 
-async def _call_claude(prompt: str, stream: bool = False) -> str:
-    """Call Claude API"""
+async def _call_claude(prompt: str, stream: bool = False, user_question: str = None) -> str:
+    """Call Claude API with question-focused system prompt"""
     if not client:
         raise HTTPException(
             status_code=500,
             detail="ANTHROPIC_API_KEY not configured"
         )
+    
+    # Build system instruction to focus on the question
+    system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information that directly addresses what was asked. Use structured formats for clarity. Be concise - avoid unnecessary background unless directly relevant."""
     
     try:
         from anthropic import APIError
@@ -177,6 +219,7 @@ async def _call_claude(prompt: str, stream: bool = False) -> str:
             response = client.messages.stream(
                 model="claude-3-haiku-20240307",
                 max_tokens=4096,
+                system=system_instruction,
                 messages=[{"role": "user", "content": prompt}]
             )
             return response
@@ -184,6 +227,7 @@ async def _call_claude(prompt: str, stream: bool = False) -> str:
             response = client.messages.create(
                 model="claude-3-haiku-20240307",
                 max_tokens=4096,
+                system=system_instruction,
                 messages=[{"role": "user", "content": prompt}]
             )
             return response.content[0].text
@@ -199,20 +243,113 @@ async def _call_claude(prompt: str, stream: bool = False) -> str:
         )
 
 
-async def _stream_response(response_stream) -> AsyncGenerator[str, None]:
-    """Stream Claude response"""
+async def _stream_response(stream_manager) -> AsyncGenerator[str, None]:
+    """Stream Claude response using MessageStreamManager"""
+    import traceback
+    import asyncio
+    from queue import Queue, Empty
     try:
         from anthropic import APIError
-        for event in response_stream:
-            if event.type == "content_block_delta":
-                if hasattr(event.delta, 'text'):
-                    yield f"data: {json.dumps({'text': event.delta.text})}\n\n"
-            elif event.type == "content_block_stop":
-                yield "data: [DONE]\n\n"
+        
+        if not stream_manager:
+            yield f"data: {json.dumps({'error': 'No response stream available'})}\n\n"
+            return
+        
+        # MessageStreamManager uses synchronous context manager (with, not async with)
+        # Use a queue to bridge sync iterator to async generator for real-time streaming
+        queue = Queue()
+        stream_state = {'done': False, 'error': None}
+        
+        def process_stream_sync():
+            """Process stream synchronously and put chunks in queue"""
+            try:
+                from anthropic import APIError
+                with stream_manager as stream:
+                    # stream.text_stream is a synchronous iterator
+                    for text_chunk in stream.text_stream:
+                        if text_chunk:
+                            queue.put(('chunk', text_chunk))
+                    queue.put(('done', None))
+                    stream_state['done'] = True
+            except APIError as api_error:
+                # Handle Anthropic API errors specifically
+                error_detail = str(api_error)
+                if hasattr(api_error, 'status_code') and api_error.status_code == 401:
+                    error_detail = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env file. Get a new key from https://console.anthropic.com/"
+                elif "401" in error_detail or "authentication_error" in error_detail or "invalid x-api-key" in error_detail.lower():
+                    error_detail = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env file. Get a new key from https://console.anthropic.com/"
+                stream_state['error'] = error_detail
+                queue.put(('error', error_detail))
+                stream_state['done'] = True
+            except Exception as e:
+                stream_state['error'] = str(e)
+                queue.put(('error', str(e)))
+                stream_state['done'] = True
+        
+        # Start stream processing in executor
+        loop = asyncio.get_event_loop()
+        executor_task = loop.run_in_executor(None, process_stream_sync)
+        
+        # Yield chunks as they arrive
+        try:
+            while not stream_state['done'] or not queue.empty():
+                try:
+                    # Try to get item from queue (non-blocking)
+                    item_type, item_data = queue.get_nowait()
+                    
+                    if item_type == 'chunk':
+                        yield f"data: {json.dumps({'text': item_data})}\n\n"
+                    elif item_type == 'done':
+                        yield "data: [DONE]\n\n"
+                        break
+                    elif item_type == 'error':
+                        # Parse error to provide better message
+                        error_data = item_data
+                        if "401" in error_data or "authentication_error" in error_data or "invalid x-api-key" in error_data.lower():
+                            error_data = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env file. Get a new key from https://console.anthropic.com/"
+                        raise Exception(error_data)
+                        
+                except Empty:
+                    # Queue is empty, wait a bit and check again
+                    await asyncio.sleep(0.05)
+                    # Check if executor is done and queue is still empty
+                    if executor_task.done() and queue.empty():
+                        if stream_state['error']:
+                            error_msg = stream_state['error']
+                            # Improve error message for authentication errors
+                            if "401" in error_msg or "authentication_error" in error_msg or "invalid x-api-key" in error_msg.lower():
+                                error_msg = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env file. Get a new key from https://console.anthropic.com/"
+                            raise Exception(error_msg)
+                        yield "data: [DONE]\n\n"
+                        break
+                    
+        except Exception as stream_error:
+            error_msg = str(stream_error)
+            # Improve error message for authentication errors
+            if "401" in error_msg or "authentication_error" in error_msg or "invalid x-api-key" in error_msg.lower() or "Invalid API key" in error_msg:
+                error_msg = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env file. Get a new key from https://console.anthropic.com/"
+            else:
+                error_msg = f'Stream processing error: {error_msg}'
+            print(f"[ERROR] Error in stream processing: {error_msg}")
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            yield f"data: {json.dumps({'error': error_msg})}\n\n"
+                
     except APIError as e:
-        yield f"data: {json.dumps({'error': f'Anthropic API error: {str(e)}'})}\n\n"
+        error_msg = f'Anthropic API error: {str(e)}'
+        print(f"[ERROR] APIError in stream: {error_msg}")
+        yield f"data: {json.dumps({'error': error_msg})}\n\n"
     except Exception as e:
-        yield f"data: {json.dumps({'error': str(e)})}\n\n"
+        error_msg = f'Stream error: {str(e)}'
+        print(f"[ERROR] Exception in stream: {error_msg}")
+        print(f"[ERROR] Traceback: {traceback.format_exc()}")
+        yield f"data: {json.dumps({'error': error_msg})}\n\n"
+
+
+# ==================== REQUEST MODELS ====================
+
+class StreamRequest(BaseModel):
+    prompt: str
+    context: Optional[Dict] = None
 
 
 # ==================== API ENDPOINTS ====================
@@ -229,7 +366,7 @@ async def health():
 
 
 @router.post("/stream")
-async def stream(payload: dict):
+async def stream(request: StreamRequest):
     """
     Streaming AI response endpoint (real-time)
     
@@ -240,44 +377,142 @@ async def stream(payload: dict):
     Output:
         Streaming text response
     """
-    prompt = payload.get("prompt", "")
-    context = payload.get("context", {})
-    
-    if not prompt:
-        raise HTTPException(status_code=400, detail="Prompt is required")
-    
-    # Build full prompt
-    full_prompt = BASE_PROMPT + "\n\n" + prompt
-    if context:
-        full_prompt += f"\n\nContext: {json.dumps(context, indent=2)}"
-    
-    if not client:
-        raise HTTPException(
-            status_code=500,
-            detail="ANTHROPIC_API_KEY not configured"
-        )
+    import traceback
     
     try:
-        response_stream = client.messages.stream(
-            model="claude-3-haiku-20240307",
-            max_tokens=4096,
-            messages=[{"role": "user", "content": full_prompt}]
+        if not request.prompt:
+            raise HTTPException(status_code=400, detail="Prompt is required")
+        
+        # Check API key
+        if not client:
+            raise HTTPException(
+                status_code=500,
+                detail="ANTHROPIC_API_KEY not configured. Please set ANTHROPIC_API_KEY in your .env file."
+            )
+        
+        # Verify API key is valid (not placeholder)
+        if not ANTHROPIC_API_KEY or ANTHROPIC_API_KEY == "your_anthropic_api_key_here":
+            raise HTTPException(
+                status_code=500,
+                detail="ANTHROPIC_API_KEY is not set or is still a placeholder. Please set a valid API key in .env file."
+            )
+        
+        # Extract and emphasize the user's question
+        user_question = request.prompt.strip()
+        
+        # Build focused prompt that emphasizes the question
+        focused_prompt = f"""USER QUESTION (ANSWER THIS DIRECTLY):
+{user_question}
+
+INSTRUCTIONS:
+- Answer the question above directly and specifically
+- Focus only on information relevant to answering this question
+- If the question asks about specific data, use that data in your answer
+- If the question is about analysis, provide focused analysis on what was asked
+- Be concise but thorough in addressing the question
+- Use structured format (JSON, bullets, or clear sections) for readability
+
+"""
+        
+        # Add context if provided
+        if request.context:
+            focused_prompt += f"RELEVANT CONTEXT DATA:\n{json.dumps(request.context, indent=2)}\n\n"
+        
+        # Add base instructions
+        focused_prompt += BASE_PROMPT
+        
+        full_prompt = focused_prompt
+        
+        try:
+            # Verify client is initialized with valid API key
+            if not client or not hasattr(client, 'api_key') or not client.api_key:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Anthropic client not properly initialized. Please check ANTHROPIC_API_KEY in .env file."
+                )
+            
+            # Create system instruction to emphasize question-focused behavior
+            system_instruction = """You are RISKCAST Enterprise AI - a Logistics Risk Intelligence System.
+
+CRITICAL: Your primary goal is to answer the user's question directly and specifically.
+
+Response Guidelines:
+1. **Answer the question first** - Address what was asked before providing additional context
+2. **Be specific** - Use concrete data, numbers, and examples when available
+3. **Stay relevant** - Only include information that directly relates to the question
+4. **Structure clearly** - Use JSON, bullets, or clear sections for easy scanning
+5. **Be concise** - Avoid unnecessary background unless essential for understanding
+
+If the question asks about specific data points, analysis, or recommendations, focus your entire response on that. Do not provide generic information that doesn't address the specific question."""
+            
+            # Create stream manager (returns MessageStreamManager, not directly iterable)
+            stream_manager = client.messages.stream(
+                model="claude-3-haiku-20240307",
+                max_tokens=4096,
+                system=system_instruction,
+                messages=[{"role": "user", "content": full_prompt}]
+            )
+        except Exception as stream_error:
+            from anthropic import APIError
+            error_msg = str(stream_error)
+            status_code = 500
+            
+            # Handle authentication errors specifically
+            if isinstance(stream_error, APIError):
+                if hasattr(stream_error, 'status_code'):
+                    status_code = stream_error.status_code
+                    if status_code == 401:
+                        error_msg = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env file. Get a new key from https://console.anthropic.com/"
+                    else:
+                        error_msg = f"Anthropic API error (status {status_code}): {error_msg}"
+                else:
+                    error_msg = f"Anthropic API error: {error_msg}"
+            elif "401" in error_msg or "authentication_error" in error_msg or "invalid x-api-key" in error_msg.lower():
+                status_code = 401
+                error_msg = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env file. Get a new key from https://console.anthropic.com/"
+            else:
+                error_msg = f"Failed to create stream: {error_msg}"
+            
+            # Log full error for debugging
+            print(f"[ERROR] Stream creation failed: {error_msg}")
+            print(f"[ERROR] Traceback: {traceback.format_exc()}")
+            
+            raise HTTPException(
+                status_code=status_code,
+                detail=error_msg
+            )
+        
+        # Return streaming response
+        # Pass stream_manager to _stream_response which will handle it with async context manager
+        return StreamingResponse(
+            _stream_response(stream_manager),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"
+            }
         )
         
-        return StreamingResponse(
-            _stream_response(response_stream),
-            media_type="text/event-stream"
-        )
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
+        # Catch any other unexpected errors
+        error_msg = f"Unexpected error: {str(e)}"
+        print(f"[ERROR] Unexpected error in /stream: {error_msg}")
+        print(f"[ERROR] Traceback: {traceback.format_exc()}")
+        
         from anthropic import APIError
         if isinstance(e, APIError):
             raise HTTPException(
                 status_code=e.status_code if hasattr(e, 'status_code') else 500,
                 detail=f"Anthropic API error: {str(e)}"
             )
+        
         raise HTTPException(
             status_code=500,
-            detail=f"Streaming error: {str(e)}"
+            detail=error_msg
         )
 
 
@@ -547,13 +782,13 @@ class PromptData(BaseModel):
 @router.post("/adviser")
 async def ai_adviser(data: PromptData):
     """
-    AI Adviser endpoint - Simple prompt/response
+    AI Adviser endpoint - Simple prompt/response with question focus
     
     Input:
         prompt: User prompt
     
     Output:
-        AI response
+        AI response focused on the question
     """
     try:
         from anthropic import APIError
@@ -563,10 +798,19 @@ async def ai_adviser(data: PromptData):
                 detail="ANTHROPIC_API_KEY not configured"
             )
         
+        # Build focused prompt
+        user_question = data.prompt.strip()
+        focused_prompt = f"""QUESTION: {user_question}
+
+Please answer this question directly and specifically. Focus on providing relevant information that directly addresses what was asked."""
+        
+        system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information. Be concise and structured. Do not provide generic information that doesn't address the specific question."""
+        
         response = client.messages.create(
             model="claude-3-haiku-20240307",
-            max_tokens=300,
-            messages=[{"role": "user", "content": data.prompt}]
+            max_tokens=4096,
+            system=system_instruction,
+            messages=[{"role": "user", "content": focused_prompt}]
         )
         
         reply = response.content[0].text

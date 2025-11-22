@@ -352,7 +352,253 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Investor content continues... -->
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                                    Vấn Đề → Giải Pháp → Tại Sao Bây Giờ
+                                </h2>
+                            </div>
+                            <div class="ps-grid">
+                                <div class="ps-card">
+                                    <div class="ps-icon">
+                                        <div class="icon-card medium">
+                                            <svg class="neon-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M9 9L15 15M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ps-title">Vấn Đề</div>
+                                    <div class="ps-text">
+                                        Các nhà xuất khẩu SME đưa ra quyết định logistics dựa trên dữ liệu phân mảnh (báo giá chi phí, thời gian giao hàng) 
+                                        mà không hiểu <strong>phơi nhiễm rủi ro thực sự</strong>. Kết quả: 15-25% lô hàng gặp 
+                                        trễ, hư hại hoặc chi phí bất ngờ.
+                                    </div>
+                                </div>
+                                <div class="ps-card">
+                                    <div class="ps-icon">
+                                        <div class="icon-card medium">
+                                            <svg class="neon-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                                <path d="M12 2L3 7V12C3 16.5 6 20.16 12 21C18 20.16 21 16.5 21 12V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                                <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ps-title">Giải Pháp</div>
+                                    <div class="ps-text">
+                                        <strong>RISKCAST</strong>: Lớp thông minh rủi ro được hỗ trợ bởi AI kết hợp Fuzzy-AHP, TOPSIS, 
+                                        và mô phỏng Monte Carlo. Một đầu vào (tuyến đường, hàng hóa, incoterm) → điểm rủi ro toàn diện + 
+                                        phân phối rủi ro đuôi + phương án tối ưu.
+                                    </div>
+                                </div>
+                                <div class="ps-card">
+                                    <div class="ps-icon">
+                                        <div class="icon-card medium">
+                                            <svg class="neon-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                                <path d="M3 21L12 3L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M7 17L12 11L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="ps-title">Tại Sao Bây Giờ</div>
+                                    <div class="ps-text">
+                                        Biến động hậu đại dịch + áp lực tuân thủ ESG + số hóa tài chính thương mại. 
+                                        Các nhà bảo hiểm logistics, ngân hàng và forwarder cần <strong>mô hình rủi ro có thể giải thích</strong> 
+                                        để bảo lãnh SME thị trường mới nổi.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L15 9L22 10L17 15L18 22L12 18L6 22L7 15L2 10L9 9L12 2Z" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg></div>
+                                    Tóm Tắt Tác Động Kinh Tế
+                                </h2>
+                            </div>
+                            <div class="grid-2">
+                                <div class="chart-container">
+                                    <div id="savingsChart" style="height: 300px;"></div>
+                                </div>
+                                <div>
+                                    <h3 style="color: var(--accent-green); margin-bottom: 16px;">Phân Tích Tác Động Chi Phí</h3>
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Chỉ Số</th>
+                                                <th>Cơ Sở</th>
+                                                <th>Tối Ưu</th>
+                                                <th>Cải Thiện</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="economicsTable">
+                                        </tbody>
+                                    </table>
+                                    <div class="alert-box green" style="margin-top: 16px;">
+                                        <strong>Lợi Ích Ròng:</strong> <span id="netBenefit">$1.850</span> tiết kiệm mỗi lô hàng thông qua định tuyến tối ưu + giảm phơi nhiễm rủi ro.
+                                        Đối với nhà xuất khẩu thị trường trung bình (1.200 lô hàng/năm) → <strong>tác động hàng năm $2.2M</strong>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 21L12 3L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 17L12 11L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                                    ARR / Tiềm Năng Doanh Thu
+                                </h2>
+                            </div>
+                            <div class="grid-3">
+                                <div class="kpi-card">
+                                    <div class="kpi-label">Khách Hàng Mục Tiêu</div>
+                                    <div class="kpi-value" style="font-size: 24px;">Nhà Xuất Khẩu SME</div>
+                                    <div class="kpi-subtitle">Doanh thu hàng năm $5M-50M</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">Mô Hình Giá</div>
+                                    <div class="kpi-value" style="font-size: 24px;">$499/tháng</div>
+                                    <div class="kpi-subtitle">Phân tích không giới hạn + API</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-label">ARR tại 500 Khách Hàng</div>
+                                    <div class="kpi-value" style="font-size: 24px;" id="arrTarget">$3M</div>
+                                    <div class="kpi-subtitle">Mục tiêu Năm 3</div>
+                                </div>
+                            </div>
+                            <h3 style="color: var(--accent-green); margin: 24px 0 12px;">Chiến Lược Go-to-Market:</h3>
+                            <ul class="insight-list">
+                                <li><strong>Giai Đoạn 1 (Năm 1):</strong> SaaS B2B trực tiếp cho nhà xuất khẩu dệt may/điện tử Việt Nam (50 khách hàng, $300K ARR)</li>
+                                <li><strong>Giai Đoạn 2 (Năm 2):</strong> API white-label cho forwarder và 3PL (150 khách hàng, $900K ARR)</li>
+                                <li><strong>Giai Đoạn 3 (Năm 3):</strong> Tích hợp bảo hiểm + mở rộng khu vực sang Thái Lan, Indonesia (500 khách hàng, $3M ARR)</li>
+                                <li><strong>Hạng Doanh Nghiệp:</strong> Mô hình rủi ro tùy chỉnh cho tập đoàn lớn ($2K-5K/tháng) → 20-30% hỗn hợp doanh thu</li>
+                            </ul>
+                            <div class="chart-container" style="margin-top: 24px;">
+                                <div id="arrChart" style="height: 300px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="10" stroke="currentColor" stroke-width="2" rx="1"/><path d="M7 8L10 4H14L17 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="18" r="2" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="18" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
+                                    Kiến Trúc Engine-as-a-Service
+                                </h2>
+                            </div>
+                            <div class="grid-2">
+                                <div>
+                                    <h3 style="color: var(--accent-green); margin-bottom: 12px;">Điểm Tích Hợp:</h3>
+                                    <ul class="insight-list">
+                                        <li><strong>Hệ Thống TMS/ERP:</strong> Nhúng điểm rủi ro vào quy trình logistics hiện có</li>
+                                        <li><strong>Nền Tảng Bảo Hiểm:</strong> Tính toán phí bảo hiểm động dựa trên rủi ro thời gian thực</li>
+                                        <li><strong>Tài Chính Thương Mại:</strong> Hạn mức tín dụng điều chỉnh rủi ro cho LC/collections</li>
+                                        <li><strong>Thị Trường Vận Chuyển:</strong> Huy hiệu rủi ro cho lựa chọn hãng vận chuyển/tuyến đường</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 style="color: var(--accent-green); margin-bottom: 12px;">Công Nghệ Stack:</h3>
+                                    <ul class="insight-list">
+                                        <li><strong>Core Engine:</strong> Python (NumPy, SciPy) + C++ cho Monte Carlo</li>
+                                        <li><strong>Lớp API:</strong> FastAPI + Redis caching cho phản hồi dưới giây</li>
+                                        <li><strong>Pipeline Dữ Liệu:</strong> Nguồn cấp thời gian thực từ hãng vận chuyển, hải quan, API thời tiết</li>
+                                        <li><strong>ML Ops:</strong> Huấn luyện lại mô hình liên tục trên kết quả lô hàng mới</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="api-dashboard" style="margin-top: 20px;">
+                                <h3 style="color: var(--accent-green); margin-bottom: 20px;">Ví Dụ API:</h3>
+                                
+                                <!-- REQUEST DASHBOARD -->
+                                <div class="api-dashboard-card request-card">
+                                    <div class="api-card-header">
+                                        <span class="api-method-badge post">POST</span>
+                                        <span class="api-endpoint">/api/v1/analyze</span>
+                                    </div>
+                                    <div class="api-dashboard-grid">
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">Route</div>
+                                            <div class="api-field-value">VN-SGN → US-LAX</div>
+                                        </div>
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">Cargo Value</div>
+                                            <div class="api-field-value number">$100,000</div>
+                                        </div>
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">Cargo Type</div>
+                                            <div class="api-field-value chip">electronics</div>
+                                        </div>
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">Incoterm</div>
+                                            <div class="api-field-value chip">CIF</div>
+                                        </div>
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">Priority</div>
+                                            <div class="api-field-value chip">balanced</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- RESPONSE DASHBOARD -->
+                                <div class="api-dashboard-card response-card">
+                                    <div class="api-card-header">
+                                        <span class="api-response-label">RESPONSE</span>
+                                        <span class="api-time-badge">&lt; 800ms</span>
+                                    </div>
+                                    <div class="api-dashboard-grid">
+                                        <div class="api-field-item highlight">
+                                            <div class="api-field-label">Risk Score</div>
+                                            <div class="api-field-value large number">76</div>
+                                        </div>
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">Risk Level</div>
+                                            <div class="api-field-value chip medium">medium</div>
+                                        </div>
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">Expected Loss</div>
+                                            <div class="api-field-value number">$12,500</div>
+                                        </div>
+                                        <div class="api-field-item">
+                                            <div class="api-field-label">VaR 95%</div>
+                                            <div class="api-field-value number">$28,000</div>
+                                        </div>
+                                        <div class="api-field-item full-width">
+                                            <div class="api-field-label">Recommendations</div>
+                                            <div class="api-field-value array">[...]</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" stroke="currentColor" stroke-width="2" rx="1"/><path d="M7 9H17M7 12H17M7 15H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                                    Câu Chuyện Một Trang Cho Nhà Đầu Tư
+                                </h2>
+                            </div>
+                            <div class="grid-2">
+                                <div>
+                                    <h3 style="color: var(--accent-green); margin-bottom: 16px;">Câu Chuyện:</h3>
+                                    <ul class="insight-list" style="font-size: 15px;">
+                                        <li><strong>$2.7T</strong> chi tiêu logistics toàn cầu — nhưng SME vẫn ra quyết định trong bóng tối</li>
+                                        <li>Chúng tôi xây dựng <strong>"Bloomberg Terminal cho Rủi Ro Logistics"</strong> — định lượng những gì trước đây chỉ là cảm tính</li>
+                                        <li>Engine của chúng tôi xử lý <strong>7 chiều rủi ro</strong> thời gian thực: trễ, hư hại, chi phí, ESG, khí hậu, chính trị, vận hành</li>
+                                        <li>Khách hàng tiết kiệm <strong>$1.850 mỗi lô hàng</strong> thông qua định tuyến tối ưu + giảm chi phí bảo hiểm</li>
+                                        <li>Lộ trình đến <strong>$10M ARR</strong>: Bắt đầu với SME Việt Nam → mở rộng sang ASEAN → white-label cho nhà bảo hiểm/ngân hàng</li>
+                                    </ul>
+                                </div>
+                                <div class="chart-container">
+                                    <div id="pitchChart" style="height: 350px;"></div>
+                                </div>
+                            </div>
+                            <div class="alert-box green" style="margin-top: 20px;">
+                                <strong><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> Yêu Cầu:</strong> Vòng seed $1.5M để xây dựng đội ngũ bán hàng, mở rộng tích hợp API, 
+                                và đạt 200 khách hàng vào cuối Năm 2. Mục tiêu tăng trưởng 40% YoY với lộ trình có lợi nhuận trong Năm 3.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -743,6 +989,334 @@
             color: #e2e8f0;
             border-radius: 18px 18px 18px 4px;
         }
+        
+        /* AI Response Formatting Styles */
+        /* AI Result Card */
+        .message-bubble .ai-result-card {
+            margin-bottom: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 217, 255, 0.1));
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.2);
+        }
+        .message-bubble .ai-result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .message-bubble .ai-result-header strong {
+            color: #00ff88;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .message-bubble .result-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00ffa7;
+            line-height: 1.2;
+        }
+        
+        /* AI Reasoning Card */
+        .message-bubble .ai-reasoning-card {
+            margin-top: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 200, 0, 0.05));
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            border-radius: 12px;
+        }
+        .message-bubble .ai-reasoning-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .message-bubble .ai-reasoning-header strong {
+            color: #ffaa00;
+            font-size: 14px;
+        }
+        .message-bubble .reasoning-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .message-bubble .reasoning-list li {
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            background: rgba(255, 170, 0, 0.08);
+            border-left: 3px solid rgba(255, 170, 0, 0.5);
+            border-radius: 6px;
+            color: #e2e8f0;
+            line-height: 1.7;
+            transition: all 0.2s ease;
+        }
+        .message-bubble .reasoning-list li:hover {
+            background: rgba(255, 170, 0, 0.12);
+            transform: translateX(4px);
+        }
+        .message-bubble .reasoning-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* AI Field Cards */
+        .message-bubble .ai-field-card {
+            margin-top: 16px;
+            padding: 14px;
+            background: rgba(15, 20, 25, 0.6);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .message-bubble .ai-field-card:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        .message-bubble .ai-field-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        .message-bubble .ai-field-header strong {
+            color: #9effe0;
+            font-size: 14px;
+            flex: 1;
+        }
+        .message-bubble .ai-icon-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 217, 255, 0.2));
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            border-radius: 8px;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .message-bubble .ai-badge-count {
+            padding: 4px 10px;
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .message-bubble .ai-field-content {
+            color: #e2e8f0;
+            line-height: 1.6;
+            padding: 8px 0;
+        }
+        
+        /* Field Lists */
+        .message-bubble .field-list {
+            margin-top: 8px;
+            padding: 0;
+            list-style: none;
+        }
+        .message-bubble .field-item {
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            background: rgba(0, 255, 180, 0.06);
+            border-left: 2px solid rgba(0, 255, 180, 0.4);
+            border-radius: 6px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .message-bubble .field-item:last-child {
+            margin-bottom: 0;
+        }
+        .message-bubble .item-number {
+            color: #00ffa7;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        /* Object Container */
+        .message-bubble .object-container {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(0, 255, 180, 0.05);
+            border-left: 3px solid rgba(0, 255, 180, 0.4);
+            border-radius: 8px;
+        }
+        .message-bubble .object-container.nested {
+            margin-left: 12px;
+            background: rgba(0, 255, 180, 0.03);
+        }
+        .message-bubble .object-field-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+        .message-bubble .object-field-item:last-child {
+            margin-bottom: 0;
+        }
+        .message-bubble .object-field-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .message-bubble .object-field-label strong {
+            color: #00ffa7;
+            font-size: 13px;
+            flex: 1;
+        }
+        .message-bubble .mini-icon {
+            font-size: 14px;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 136, 0.15);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .message-bubble .mini-badge {
+            padding: 2px 8px;
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .message-bubble .object-field-value {
+            color: #e2e8f0;
+            padding-left: 28px;
+            line-height: 1.6;
+        }
+        .message-bubble .nested-list {
+            margin-top: 8px;
+            padding-left: 0;
+            list-style: none;
+        }
+        .message-bubble .nested-item {
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            color: #cbd5e1;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.6;
+        }
+        .message-bubble .item-bullet {
+            color: #00ffa7;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .message-bubble .object-empty,
+        .message-bubble .object-nested-too-deep,
+        .message-bubble .object-error {
+            padding: 8px;
+            color: #9fb3c8;
+            font-style: italic;
+        }
+        .message-bubble .ai-error {
+            color: #ff6b6b;
+            padding: 8px;
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 3px solid #ff6b6b;
+            border-radius: 4px;
+        }
+        .message-bubble .ai-error a {
+            color: #ffd93d;
+            text-decoration: underline;
+        }
+        .message-bubble code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ffa7;
+        }
+        .message-bubble pre {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+        .message-bubble pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+        }
+        
+        /* Text Content Styling */
+        .message-bubble .ai-text-content {
+            line-height: 1.8;
+            color: #e2e8f0;
+        }
+        .message-bubble .ai-text-header {
+            color: #00ff88;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 16px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+        }
+        .message-bubble .ai-text-subheader {
+            color: #00d9ff;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 14px 0 10px 0;
+        }
+        .message-bubble .ai-text-list {
+            margin: 12px 0;
+            padding-left: 24px;
+            list-style: none;
+        }
+        .message-bubble .ai-text-list li {
+            padding: 6px 0;
+            color: #cbd5e1;
+            position: relative;
+            line-height: 1.7;
+        }
+        .message-bubble .ai-text-list li:before {
+            content: "▸ ";
+            color: #00ffa7;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+        .message-bubble .ai-bold {
+            color: #9effe0;
+            font-weight: 600;
+        }
+        .message-bubble .ai-italic {
+            color: #00d9ff;
+            font-style: italic;
+        }
+        .message-bubble .ai-code-block {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        .message-bubble .ai-inline-code {
+            background: rgba(0, 255, 136, 0.15);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ffa7;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
         .message.user .message-bubble {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: #ffffff;
@@ -1030,8 +1604,408 @@
         }
 
         // ========================================
+        // FORMAT AI RESPONSE (Parse JSON and format nicely)
+        // ========================================
+        function formatAIResponse(text) {
+            if (!text) return '';
+            
+            // Try to parse as JSON
+            try {
+                // First, try to parse the entire text as JSON
+                try {
+                    const parsed = JSON.parse(text);
+                    return formatParsedJSON(parsed);
+                } catch (e) {
+                    // Not a complete JSON, try to find JSON objects in the text
+                    const jsonMatches = text.match(/\{[\s\S]*?\}/g);
+                    if (jsonMatches && jsonMatches.length > 0) {
+                        // Try to parse the largest JSON match (most likely to be complete)
+                        const sortedMatches = jsonMatches.sort((a, b) => b.length - a.length);
+                        for (const jsonStr of sortedMatches) {
+                            try {
+                                const parsed = JSON.parse(jsonStr);
+                                if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+                                    return formatParsedJSON(parsed);
+                                }
+                            } catch (e) {
+                                // Not valid JSON, skip
+                                continue;
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+                // Fall through to text formatting
+            }
+            
+            // Format as markdown-like text, but also try to format any [object Object] references
+            let formattedText = formatTextResponse(text);
+            
+            // Replace [object Object] with a note
+            formattedText = formattedText.replace(/\[object Object\]/g, '<em style="color: #ffaa00;">[Dữ liệu đối tượng - cần định dạng]</em>');
+            
+            return formattedText;
+        }
+        
+        function formatParsedJSON(parsed) {
+            try {
+                let html = '';
+                
+                // Format result if exists
+                if (parsed.result !== undefined) {
+                    html += `<div class="ai-result-card">
+                        <div class="ai-result-header">
+                            <span class="ai-icon-badge">✓</span>
+                            <strong>Kết quả</strong>
+                        </div>
+                        <div class="result-value">${escapeHtml(String(parsed.result))}</div>
+                    </div>`;
+                }
+                
+                // Format reasoning if exists
+                if (parsed.reasoning && Array.isArray(parsed.reasoning)) {
+                    html += `<div class="ai-reasoning-card">
+                        <div class="ai-reasoning-header">
+                            <span class="ai-icon-badge">💡</span>
+                            <strong>Giải thích</strong>
+                        </div>
+                        <ul class="reasoning-list">`;
+                    parsed.reasoning.forEach((item) => {
+                        html += `<li>${escapeHtml(String(item))}</li>`;
+                    });
+                    html += '</ul></div>';
+                }
+                
+                // Format other fields
+                for (const [key, value] of Object.entries(parsed)) {
+                    if (key !== 'result' && key !== 'reasoning') {
+                        html += formatField(key, value);
+                    }
+                }
+                
+                return html || formatTextResponse(JSON.stringify(parsed, null, 2));
+            } catch (e) {
+                console.error('Error formatting parsed JSON:', e);
+                return formatTextResponse(JSON.stringify(parsed, null, 2));
+            }
+        }
+        
+        function formatTextResponse(text) {
+            if (!text) return '';
+            
+            // Escape HTML first
+            let html = escapeHtml(text);
+            
+            // Format headers (## Header)
+            html = html.replace(/^##\s+(.+)$/gm, '<h3 class="ai-text-header">$1</h3>');
+            html = html.replace(/^###\s+(.+)$/gm, '<h4 class="ai-text-subheader">$1</h4>');
+            
+            // Format code blocks
+            html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="ai-code-block"><code>$2</code></pre>');
+            
+            // Format inline code
+            html = html.replace(/`([^`]+)`/g, '<code class="ai-inline-code">$1</code>');
+            
+            // Format bold
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="ai-bold">$1</strong>');
+            
+            // Format italic
+            html = html.replace(/\*([^*]+)\*/g, '<em class="ai-italic">$1</em>');
+            
+            // Format lists - improved
+            const lines = html.split('\n');
+            let formattedLines = [];
+            let inList = false;
+            let listItems = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const listMatch = line.match(/^\s*[-*+]\s+(.+)$/);
+                const numMatch = line.match(/^\s*\d+\.\s+(.+)$/);
+                
+                if (listMatch || numMatch) {
+                    if (!inList) {
+                        inList = true;
+                        listItems = [];
+                    }
+                    listItems.push(`<li>${listMatch ? listMatch[1] : numMatch[1]}</li>`);
+                } else {
+                    if (inList && listItems.length > 0) {
+                        formattedLines.push(`<ul class="ai-text-list">${listItems.join('')}</ul>`);
+                        listItems = [];
+                        inList = false;
+                    }
+                    formattedLines.push(line);
+                }
+            }
+            
+            if (inList && listItems.length > 0) {
+                formattedLines.push(`<ul class="ai-text-list">${listItems.join('')}</ul>`);
+            }
+            
+            html = formattedLines.join('\n');
+            
+            // Format line breaks
+            html = html.replace(/\n/g, '<br>');
+            
+            // Wrap in container for better styling
+            return `<div class="ai-text-content">${html}</div>`;
+        }
+        
+        function formatField(key, value) {
+            try {
+                let html = '';
+                const fieldName = formatFieldName(key);
+                const icon = getFieldIcon(key);
+                
+                // Handle null/undefined
+                if (value === null || value === undefined) {
+                    return `<div class="ai-field-card empty">
+                        <div class="ai-field-header">
+                            <span class="ai-icon-badge">${icon}</span>
+                            <strong>${escapeHtml(fieldName)}</strong>
+                        </div>
+                        <div class="ai-field-content"><em>Không có dữ liệu</em></div>
+                    </div>`;
+                }
+                
+                // Handle arrays
+                if (Array.isArray(value)) {
+                    html += `<div class="ai-field-card list-field">
+                        <div class="ai-field-header">
+                            <span class="ai-icon-badge">${icon}</span>
+                            <strong>${escapeHtml(fieldName)}</strong>
+                            <span class="ai-badge-count">${value.length} mục</span>
+                        </div>
+                        <ul class="field-list">`;
+                    value.forEach((item, index) => {
+                        if (typeof item === 'object' && item !== null) {
+                            html += `<li class="field-item"><span class="item-number">${index + 1}.</span>${formatObject(item, true, 0)}</li>`;
+                        } else {
+                            html += `<li class="field-item"><span class="item-number">${index + 1}.</span>${escapeHtml(String(item))}</li>`;
+                        }
+                    });
+                    html += '</ul></div>';
+                    return html;
+                }
+                
+                // Handle objects
+                if (typeof value === 'object') {
+                    html += `<div class="ai-field-card object-field">
+                        <div class="ai-field-header">
+                            <span class="ai-icon-badge">${icon}</span>
+                            <strong>${escapeHtml(fieldName)}</strong>
+                        </div>`;
+                    html += formatObject(value, false, 0);
+                    html += '</div>';
+                    return html;
+                }
+                
+                // Handle primitive values
+                html += `<div class="ai-field-card simple-field">
+                    <div class="ai-field-header">
+                        <span class="ai-icon-badge">${icon}</span>
+                        <strong>${escapeHtml(fieldName)}</strong>
+                    </div>
+                    <div class="ai-field-content">${escapeHtml(String(value))}</div>
+                </div>`;
+                return html;
+            } catch (e) {
+                console.error('Error formatting field:', key, e);
+                return `<div class="ai-field-card error">
+                    <div class="ai-field-header">
+                        <span class="ai-icon-badge">⚠</span>
+                        <strong>${escapeHtml(String(key))}</strong>
+                    </div>
+                    <div class="ai-field-content"><em>Lỗi khi format</em></div>
+                </div>`;
+            }
+        }
+        
+        function getFieldIcon(key) {
+            const iconMap = {
+                'main_risk_drivers': '⚠️',
+                'risk_impact_quantification': '📊',
+                'route_recommendations': '🗺️',
+                'insurance_guidance': '🛡️',
+                'esg_advisory': '🌱',
+                'delay_probability_prediction': '⏱️',
+                'risk_drivers': '⚠️',
+                'impact': '💥',
+                'recommendations': '💡',
+                'coverage': '📋',
+                'limits': '📏',
+                'opportunities': '✨',
+                'probability': '📈',
+                'mitigation': '🔧',
+                'summary': '📝',
+                'analysis': '🔍',
+                'conclusion': '✅'
+            };
+            return iconMap[key] || '📌';
+        }
+        
+        function formatObject(obj, isListItem = false, depth = 0) {
+            // Prevent infinite recursion
+            if (depth > 5) {
+                return '<div class="object-nested-too-deep"><em>[Nested quá sâu]</em></div>';
+            }
+            
+            if (!obj || typeof obj !== 'object') {
+                return escapeHtml(String(obj));
+            }
+            
+            // Handle arrays
+            if (Array.isArray(obj)) {
+                let html = '<ul class="nested-list">';
+                obj.forEach((item, index) => {
+                    if (typeof item === 'object' && item !== null) {
+                        html += `<li class="nested-item"><span class="item-bullet">${index + 1}.</span>${formatObject(item, true, depth + 1)}</li>`;
+                    } else {
+                        html += `<li class="nested-item"><span class="item-bullet">${index + 1}.</span>${escapeHtml(String(item))}</li>`;
+                    }
+                });
+                html += '</ul>';
+                return html;
+            }
+            
+            let html = '';
+            
+            // Check if it's a simple key-value object
+            const keys = Object.keys(obj);
+            if (keys.length === 0) {
+                return '<div class="object-empty"><em>Không có dữ liệu</em></div>';
+            }
+            
+            // Format as structured list
+            html += `<div class="object-container ${isListItem ? 'nested' : ''}">`;
+            
+            try {
+                for (const [k, v] of Object.entries(obj)) {
+                    const displayKey = formatFieldName(k);
+                    const icon = getFieldIcon(k);
+                    
+                    if (v === null || v === undefined) {
+                        html += `<div class="object-field-item">
+                            <div class="object-field-label">
+                                <span class="mini-icon">${icon}</span>
+                                <strong>${escapeHtml(displayKey)}</strong>
+                            </div>
+                            <div class="object-field-value"><em>Không có dữ liệu</em></div>
+                        </div>`;
+                    } else if (Array.isArray(v)) {
+                        html += `<div class="object-field-item">
+                            <div class="object-field-label">
+                                <span class="mini-icon">${icon}</span>
+                                <strong>${escapeHtml(displayKey)}</strong>
+                                <span class="mini-badge">${v.length}</span>
+                            </div>
+                            <ul class="nested-list">`;
+                        v.forEach((item, idx) => {
+                            if (typeof item === 'object' && item !== null) {
+                                html += `<li class="nested-item"><span class="item-bullet">${idx + 1}.</span>${formatObject(item, true, depth + 1)}</li>`;
+                            } else {
+                                html += `<li class="nested-item"><span class="item-bullet">${idx + 1}.</span>${escapeHtml(String(item))}</li>`;
+                            }
+                        });
+                        html += '</ul></div>';
+                    } else if (typeof v === 'object') {
+                        html += `<div class="object-field-item nested-object">
+                            <div class="object-field-label">
+                                <span class="mini-icon">${icon}</span>
+                                <strong>${escapeHtml(displayKey)}</strong>
+                            </div>`;
+                        html += formatObject(v, true, depth + 1);
+                        html += '</div>';
+                    } else {
+                        html += `<div class="object-field-item">
+                            <div class="object-field-label">
+                                <span class="mini-icon">${icon}</span>
+                                <strong>${escapeHtml(displayKey)}</strong>
+                            </div>
+                            <div class="object-field-value">${escapeHtml(String(v))}</div>
+                        </div>`;
+                    }
+                }
+            } catch (e) {
+                console.error('Error formatting object:', e);
+                html += '<div class="object-error"><em>Lỗi khi format dữ liệu</em></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function formatFieldName(key) {
+            // Convert snake_case or camelCase to readable format
+            const nameMap = {
+                'main_risk_drivers': 'Các Yếu Tố Rủi Ro Chính',
+                'risk_impact_quantification': 'Định Lượng Tác Động Rủi Ro',
+                'route_recommendations': 'Khuyến Nghị Tuyến Đường',
+                'insurance_guidance': 'Hướng Dẫn Bảo Hiểm',
+                'esg_advisory': 'Tư Vấn ESG',
+                'delay_probability_prediction': 'Dự Đoán Xác Suất Trễ',
+                'risk_drivers': 'Yếu Tố Rủi Ro',
+                'impact': 'Tác Động',
+                'recommendations': 'Khuyến Nghị',
+                'coverage': 'Phạm Vi Bảo Hiểm',
+                'limits': 'Giới Hạn',
+                'opportunities': 'Cơ Hội',
+                'probability': 'Xác Suất',
+                'mitigation': 'Giảm Thiểu'
+            };
+            
+            if (nameMap[key]) {
+                return nameMap[key];
+            }
+            
+            // Convert snake_case to Title Case
+            return key
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ========================================
         // SEND MESSAGE FUNCTION (Real API)
         // ========================================
+        // Get context from current page data
+        function getCurrentContext() {
+            const context = {};
+            
+            // Try to get risk data from window object
+            if (window.riskData && typeof window.riskData === 'object') {
+                context.shipment_data = window.riskData;
+            }
+            
+            // Try to get current risk metrics from page
+            const overallRisk = document.getElementById('overall-risk-index')?.textContent;
+            const expectedLoss = document.getElementById('expected-loss')?.textContent;
+            const reliability = document.getElementById('reliability-score')?.textContent;
+            
+            if (overallRisk && overallRisk !== '--') {
+                context.current_metrics = {
+                    overall_risk: overallRisk,
+                    expected_loss: expectedLoss || 'N/A',
+                    reliability: reliability || 'N/A'
+                };
+            }
+            
+            // Try to get route information
+            const routeChip = document.getElementById('routeChip')?.textContent;
+            if (routeChip && routeChip !== 'Đang tải dữ liệu…') {
+                context.route = routeChip;
+            }
+            
+            return context;
+        }
+        
         async function sendMessage() {
             const messageText = chatInput.value.trim();
             
@@ -1042,15 +2016,32 @@
             sendButton.disabled = true;
             showTypingIndicator();
             
+            // Get context from current page
+            const context = getCurrentContext();
+            
             try {
                 const response = await fetch('/api/ai/stream', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: messageText, context: {} })
+                    body: JSON.stringify({ 
+                        prompt: messageText, 
+                        context: context 
+                    })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    // Try to get error details from response
+                    let errorDetail = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.detail) {
+                            errorDetail = errorData.detail;
+                        }
+                    } catch (e) {
+                        // If response is not JSON, use status text
+                        errorDetail = response.statusText || errorDetail;
+                    }
+                    throw new Error(errorDetail);
                 }
 
                 hideTypingIndicator();
@@ -1062,7 +2053,7 @@
                 aiAvatar.textContent = '🤖';
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'message-bubble';
-                aiBubble.textContent = '';
+                aiBubble.innerHTML = '';
                 aiMessageDiv.appendChild(aiAvatar);
                 aiMessageDiv.appendChild(aiBubble);
                 chatMessages.appendChild(aiMessageDiv);
@@ -1090,21 +2081,30 @@
                                 const parsed = JSON.parse(data);
                                 if (parsed.text) {
                                     fullText += parsed.text;
-                                    aiBubble.textContent = fullText;
+                                    // Format and display the text
+                                    aiBubble.innerHTML = formatAIResponse(fullText);
                                     scrollToBottom();
                                 } else if (parsed.error) {
-                                    throw new Error(parsed.error);
+                                    // Show user-friendly error message
+                                    const errorMsg = parsed.error;
+                                    if (errorMsg.includes('Invalid API key') || errorMsg.includes('authentication_error') || errorMsg.includes('401')) {
+                                        aiBubble.innerHTML = '<div class="ai-error">❌ Lỗi xác thực: API key không hợp lệ. Vui lòng kiểm tra file .env và cập nhật ANTHROPIC_API_KEY. Lấy key mới tại: <a href="https://console.anthropic.com/" target="_blank">https://console.anthropic.com/</a></div>';
+                                    } else {
+                                        aiBubble.innerHTML = `<div class="ai-error">❌ Lỗi: ${escapeHtml(errorMsg)}</div>`;
+                                    }
+                                    scrollToBottom();
+                                    break; // Stop processing on error
                                 }
                             } catch (e) {
                                 if (data !== '[DONE]') {
                                     fullText += data;
-                                    aiBubble.textContent = fullText;
+                                    aiBubble.innerHTML = formatAIResponse(fullText);
                                     scrollToBottom();
                                 }
                             }
                         } else {
                             fullText += line;
-                            aiBubble.textContent = fullText;
+                            aiBubble.innerHTML = formatAIResponse(fullText);
                             scrollToBottom();
                         }
                     }
@@ -1113,7 +2113,21 @@
             } catch (error) {
                 console.error('Error sending message:', error);
                 hideTypingIndicator();
-                addMessage('Xin lỗi, đã xảy ra lỗi khi kết nối với AI. Vui lòng thử lại sau.', 'ai');
+                
+                // Try to get error details from response
+                let errorMessage = 'Xin lỗi, đã xảy ra lỗi khi kết nối với AI. Vui lòng thử lại sau.';
+                
+                if (error.message) {
+                    if (error.message.includes('500')) {
+                        errorMessage = 'Lỗi server: Vui lòng kiểm tra cấu hình ANTHROPIC_API_KEY trong file .env';
+                    } else if (error.message.includes('ANTHROPIC_API_KEY')) {
+                        errorMessage = 'Lỗi: ANTHROPIC_API_KEY chưa được cấu hình. Vui lòng kiểm tra file .env';
+                    } else {
+                        errorMessage = `Lỗi: ${error.message}`;
+                    }
+                }
+                
+                addMessage(errorMessage, 'ai');
             } finally {
                 sendButton.disabled = false;
             }
@@ -1129,7 +2143,13 @@
             
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            bubble.textContent = text;
+            
+            // Format AI messages, keep user messages as plain text
+            if (sender === 'ai') {
+                bubble.innerHTML = formatAIResponse(text);
+            } else {
+                bubble.textContent = text;
+            }
             
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(bubble);
