@@ -210,7 +210,9 @@ async def _call_claude(prompt: str, stream: bool = False, user_question: str = N
         )
     
     # Build system instruction to focus on the question
-    system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information that directly addresses what was asked. Use structured formats for clarity. Be concise - avoid unnecessary background unless directly relevant."""
+    system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information that directly addresses what was asked. Use structured formats for clarity. Be concise - avoid unnecessary background unless directly relevant.
+
+IMPORTANT: Always respond in Vietnamese (Tiếng Việt). All your responses must be in Vietnamese language."""
     
     try:
         from anthropic import APIError
@@ -442,6 +444,8 @@ Response Guidelines:
 3. **Stay relevant** - Only include information that directly relates to the question
 4. **Structure clearly** - Use JSON, bullets, or clear sections for easy scanning
 5. **Be concise** - Avoid unnecessary background unless essential for understanding
+
+IMPORTANT: Always respond in Vietnamese (Tiếng Việt). All your responses must be in Vietnamese language.
 
 If the question asks about specific data points, analysis, or recommendations, focus your entire response on that. Do not provide generic information that doesn't address the specific question."""
             
@@ -804,7 +808,9 @@ async def ai_adviser(data: PromptData):
 
 Please answer this question directly and specifically. Focus on providing relevant information that directly addresses what was asked."""
         
-        system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information. Be concise and structured. Do not provide generic information that doesn't address the specific question."""
+        system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information. Be concise and structured. Do not provide generic information that doesn't address the specific question.
+
+IMPORTANT: Always respond in Vietnamese (Tiếng Việt). All your responses must be in Vietnamese language."""
         
         response = client.messages.create(
             model="claude-3-haiku-20240307",
