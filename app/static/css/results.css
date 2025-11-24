@@ -1823,3 +1823,431 @@ svg {
     width: 100%;
 }
 
+/* ==================== NEW KPI CARDS ==================== */
+.kpi-card.climate-card {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* ==================== SECTION 2: ADVANCED PARAMETERS ==================== */
+.param-card {
+    background: rgba(0, 255, 136, 0.05);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.param-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
+    border-color: rgba(0, 255, 136, 0.4);
+}
+
+.param-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.param-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+
+.param-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent-green);
+    margin-bottom: 12px;
+}
+
+.param-progress {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.param-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #fbbf24 50%, #ef4444 100%);
+    transition: width 0.6s ease;
+    border-radius: 4px;
+}
+
+.param-description {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    min-height: 40px;
+}
+
+.weather-card .param-value { color: #60a5fa; }
+.port-card .param-value { color: #f59e0b; }
+.container-card .param-value { color: #10b981; }
+
+/* ==================== SECTION 3: CLIMATE v14.5 ==================== */
+.climate-section .card {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.climate-badge {
+    background: linear-gradient(135deg, #3b82f6, #10b981);
+    color: white;
+    border: none;
+}
+
+.climate-hero {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 16px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.climate-hero-value {
+    font-size: 72px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #3b82f6, #10b981);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 12px;
+}
+
+.climate-hero-label {
+    font-size: 24px;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.climate-hero-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.climate-metric {
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.metric-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #3b82f6;
+    margin-bottom: 12px;
+}
+
+.metric-bar {
+    height: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.metric-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #3b82f6, #ef4444);
+    transition: width 0.6s ease;
+    border-radius: 3px;
+}
+
+.metric-status {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* ==================== ENHANCED BUYER/SELLER ==================== */
+.partner-card {
+    background: rgba(0, 255, 136, 0.05);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.partner-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
+}
+
+.partner-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.partner-icon {
+    font-size: 48px;
+}
+
+.partner-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.partner-name {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.partner-score {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.score-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+}
+
+.score-value {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--accent-green);
+    line-height: 1;
+}
+
+.partner-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.partner-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.partner-metric .metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.partner-metric .metric-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #fbbf24, #ef4444);
+    transition: width 0.6s ease;
+    border-radius: 4px;
+}
+
+.formula-card {
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+}
+
+.formula-box {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    margin-bottom: 16px;
+}
+
+.formula-box code {
+    color: #00ff88;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.formula-notes {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.formula-notes li {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid #3b82f6;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* ==================== ENHANCED PRIORITY PROFILE ==================== */
+.priority-description {
+    background: rgba(59, 130, 246, 0.05);
+    border-left: 4px solid #3b82f6;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    border-radius: 8px;
+}
+
+.priority-description p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.priority-gauges-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.priority-gauge-box {
+    text-align: center;
+}
+
+.gauge-label {
+    margin-top: 16px;
+}
+
+.gauge-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.gauge-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.priority-explanation-card {
+    background: rgba(0, 255, 136, 0.05);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.priority-explanation-card.speed-card {
+    border-color: rgba(59, 130, 246, 0.4);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.priority-explanation-card.cost-card {
+    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.05);
+}
+
+.priority-explanation-card.risk-card {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.exp-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.exp-weight {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--accent-green);
+    margin-bottom: 12px;
+}
+
+.speed-card .exp-weight { color: #3b82f6; }
+.cost-card .exp-weight { color: #fbbf24; }
+.risk-card .exp-weight { color: #ef4444; }
+
+.exp-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.priority-recommendation {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(59, 130, 246, 0.1));
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 32px;
+}
+
+.priority-recommendation p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+    .priority-gauges-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .priority-gauges-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+    
+    .climate-hero-value {
+        font-size: 48px;
+    }
+}
+

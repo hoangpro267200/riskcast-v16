@@ -8,6 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
    
+    <!-- Smart Input Styles -->
+    <link rel="stylesheet" href="/static/css/smart_input_styles.css">
+    <!-- Note: File is named smart_input_styles.css but can be renamed to smart_input.css if preferred -->
+   
     <style>
         :root {
             --bg-primary: #0a0a0b;
@@ -845,6 +849,18 @@
                         <span class="status-indicator"></span>
                         <span class="status-text" data-i18n="status_ready">System Ready</span>
                     </div>
+                    <button id="demo_btn" class="btn btn-demo" style="margin-left: 16px; padding: 8px 16px; background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(59, 130, 246, 0.2)); border: 1px solid rgba(0, 255, 136, 0.4); color: #00ff88; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+                        <span data-i18n="demo_btn">Demo Case: Điện tử 50 tấn HCM→LA</span>
+                    </button>
+                </div>
+            </div>
+            <div class="header-progress" style="margin-top: 12px; padding: 0 60px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 12px; color: var(--text-secondary);" data-i18n="progress_label">Form Completion:</span>
+                    <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                        <div id="header_progress_bar" style="height: 100%; background: linear-gradient(90deg, #00ff88, #3b82f6); width: 0%; transition: width 0.5s ease; border-radius: 3px;"></div>
+                    </div>
+                    <span id="header_progress_text" style="font-size: 12px; font-weight: 600; color: #00ff88; min-width: 45px; text-align: right;">0%</span>
                 </div>
             </div>
         </header>
@@ -876,12 +892,15 @@
                     </div>
                    
                     <div class="form-grid">
-                        <!-- TRADE ROUTE (POL → POD) -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_route">Tuyến Đường Vận Chuyển</label>
+                        <!-- 1️⃣ TUYẾN ĐƯỜNG (CHỌN ĐẦU TIÊN) -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label" data-i18n="label_route">
+                                🌏 Tuyến Đường Vận Chuyển
+                                <span class="required-indicator">*</span>
+                            </label>
                             <div class="custom-dropdown" id="route_dropdown">
                                 <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
-                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Select route</span>
+                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn tuyến đường</span>
                                     <span class="dropdown-arrow">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                             <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
@@ -889,43 +908,117 @@
                                     </span>
                                 </div>
                                 <div class="dropdown-menu" role="listbox">
-                                    <div class="dropdown-option" data-value="vn_us" role="option" data-i18n="opt_vn_us">Vietnam → United States</div>
-                                    <div class="dropdown-option" data-value="vn_eu" role="option" data-i18n="opt_vn_eu">Vietnam → Europe</div>
-                                    <div class="dropdown-option" data-value="vn_cn" role="option" data-i18n="opt_vn_cn">Vietnam → China</div>
-                                    <div class="dropdown-option" data-value="vn_sg" role="option" data-i18n="opt_vn_sg">Vietnam → Singapore</div>
-                                    <div class="dropdown-option" data-value="domestic" role="option" data-i18n="opt_domestic">Domestic</div>
+                                    <div class="dropdown-option" data-value="vn_cn" role="option">🇻🇳 Việt Nam → 🇨🇳 Trung Quốc</div>
+                                    <div class="dropdown-option" data-value="vn_us" role="option">🇻🇳 Việt Nam → 🇺🇸 Mỹ (LA/NY)</div>
+                                    <div class="dropdown-option" data-value="vn_kr" role="option">🇻🇳 Việt Nam → 🇰🇷 Hàn Quốc</div>
+                                    <div class="dropdown-option" data-value="vn_jp" role="option">🇻🇳 Việt Nam → 🇯🇵 Nhật Bản</div>
+                                    <div class="dropdown-option" data-value="vn_eu" role="option">🇻🇳 Việt Nam → 🇪🇺 EU (Hà Lan/Đức)</div>
+                                    <div class="dropdown-option" data-value="vn_hk" role="option">🇻🇳 Việt Nam → 🇭🇰 Hồng Kông</div>
+                                    <div class="dropdown-option" data-value="vn_in" role="option">🇻🇳 Việt Nam → 🇮🇳 Ấn Độ</div>
+                                    <div class="dropdown-option" data-value="vn_th" role="option">🇻🇳 Việt Nam → 🇹🇭 Thái Lan</div>
+                                    <div class="dropdown-option" data-value="vn_tw" role="option">🇻🇳 Việt Nam → 🇹🇼 Đài Loan</div>
+                                    <div class="dropdown-option" data-value="domestic" role="option">🇻🇳 Nội Địa Việt Nam</div>
                                 </div>
                             </div>
                             <span class="error-message" id="route_error"></span>
                         </div>
- 
-                        <!-- TRANSPORT MODE DROPDOWN (UPDATED 11 OPTIONS) -->
+
+                        <!-- 2️⃣ PHƯƠNG THỨC VẬN CHUYỂN (TỰ ĐỘNG GỢI Ý) -->
                         <div class="form-group">
-                            <label class="form-label" data-i18n="label_transport_mode">Phương Thức Vận Tải</label>
+                            <label class="form-label" data-i18n="label_transport_mode">
+                                🚢 Phương Thức Vận Tải
+                                <span class="badge-recommended" id="transport_recommended_badge" style="display:none;">Được đề xuất</span>
+                            </label>
                             <div class="custom-dropdown" id="transport_mode_dropdown">
                                 <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
-                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Select transport mode</span>
+                                    <span class="dropdown-value placeholder">Chọn tuyến đường trước</span>
                                     <span class="dropdown-arrow">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                             <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
                                         </svg>
                                     </span>
                                 </div>
-                                <div class="dropdown-menu" role="listbox">
-                                    <div class="dropdown-option" data-value="ocean_fcl" role="option" data-i18n="opt_tm_ocean_fcl">Ocean Freight — FCL</div>
-                                    <div class="dropdown-option" data-value="ocean_lcl" role="option" data-i18n="opt_tm_ocean_lcl">Ocean Freight — LCL</div>
-                                    <div class="dropdown-option" data-value="air_freight" role="option" data-i18n="opt_tm_air">Air Freight</div>
-                                    <div class="dropdown-option" data-value="rail_freight" role="option" data-i18n="opt_tm_rail">Rail Freight</div>
-                                    <div class="dropdown-option" data-value="road_truck" role="option" data-i18n="opt_tm_road">Road — Truck</div>
-                                    <div class="dropdown-option" data-value="multimodal" role="option" data-i18n="opt_tm_multimodal">Multimodal Transport</div>
-                                    <div class="dropdown-option" data-value="courier_express" role="option" data-i18n="opt_tm_courier">Courier / Express</div>
-                                    <div class="dropdown-option" data-value="inland_waterway" role="option" data-i18n="opt_tm_inland">Inland Waterway</div>
-                                    <div class="dropdown-option" data-value="pipeline" role="option" data-i18n="opt_tm_pipeline">Pipeline</div>
-                                    <div class="dropdown-option" data-value="cross_border_road" role="option" data-i18n="opt_tm_cross">Cross-border Road</div>
-                                    <div class="dropdown-option" data-value="last_mile" role="option" data-i18n="opt_tm_lastmile">Last-mile Delivery</div>
+                                <div class="dropdown-menu" role="listbox" id="transport_mode_menu">
+                                    <!-- Options sẽ được populate dynamically -->
                                 </div>
                             </div>
                             <span class="error-message" id="transport_mode_error"></span>
+                            <span class="field-hint" id="transport_mode_hint"></span>
+                        </div>
+
+                        <!-- 3️⃣ CẢNG BỐC (POL) - TỰ ĐỘNG GỢI Ý -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                🚢 Cảng Bốc Hàng (POL)
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <div class="custom-dropdown" id="pol_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button">
+                                    <span class="dropdown-value placeholder">Chọn phương thức trước</span>
+                                    <span class="dropdown-arrow">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dropdown-menu" role="listbox" id="pol_menu">
+                                    <!-- Options dynamically populated -->
+                                </div>
+                            </div>
+                            <input type="hidden" name="pol" id="pol_input">
+                            <span class="error-message" id="pol_error"></span>
+                        </div>
+
+                        <!-- 4️⃣ CẢNG DỠ (POD) - TỰ ĐỘNG GỢI Ý -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                🏁 Cảng Dỡ Hàng (POD)
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <div class="custom-dropdown" id="pod_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button">
+                                    <span class="dropdown-value placeholder">Chọn phương thức trước</span>
+                                    <span class="dropdown-arrow">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dropdown-menu" role="listbox" id="pod_menu">
+                                    <!-- Options dynamically populated -->
+                                </div>
+                            </div>
+                            <input type="hidden" name="pod" id="pod_input">
+                            <span class="error-message" id="pod_error"></span>
+                        </div>
+
+                        <!-- 5️⃣ KHOẢNG CÁCH (AUTO-FILLED) -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                📏 Khoảng Cách Vận Chuyển
+                                <span class="auto-badge">Tự động</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="distance" name="distance" class="form-input" 
+                                       placeholder="Sẽ tự động điền" readonly 
+                                       style="background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.3);">
+                                <span class="input-suffix">km</span>
+                            </div>
+                        </div>
+
+                        <!-- 6️⃣ THỜI GIAN VẬN CHUYỂN (AUTO-CALCULATED) -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                ⏱️ Thời Gian Vận Chuyển Dự Kiến
+                                <span class="auto-badge">Tự động</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="transit_time_display" class="form-input" 
+                                       placeholder="Sẽ tự động tính" readonly
+                                       style="background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.3);">
+                                <span class="input-suffix">ngày</span>
+                            </div>
+                            <input type="hidden" name="transit_time" id="transit_time">
                         </div>
 
                         <!-- CARGO TYPE DROPDOWN (12 OPTIONS) -->
@@ -1093,7 +1186,27 @@
                             <span class="error-message" id="packages_error"></span>
                         </div>
  
-                        <!-- 2. ETD – Ngày khởi hành -->
+                        <!-- 2. Giá trị hàng hóa -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_cargo_value">Giá Trị Hàng Hóa</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input
+                                    type="number"
+                                    id="cargo_value"
+                                    name="cargo_value"
+                                    class="form-input with-prefix"
+                                    placeholder="0.00"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                />
+                                <span class="input-suffix">USD</span>
+                            </div>
+                            <span class="error-message" id="cargo_value_error"></span>
+                        </div>
+ 
+                        <!-- 3. ETD – Ngày khởi hành -->
                         <div class="form-group">
                             <label class="form-label" data-i18n="label_etd">ETD – Ngày Khởi Hành</label>
                             <div class="input-wrapper">
@@ -1114,7 +1227,7 @@
                             <span class="error-message" id="etd_error"></span>
                         </div>
  
-                        <!-- 3. ETA – Ngày đến -->
+                        <!-- 4. ETA – Ngày đến -->
                         <div class="form-group">
                             <label class="form-label" data-i18n="label_eta">ETA – Ngày Đến</label>
                             <div class="input-wrapper">
@@ -1134,26 +1247,6 @@
                             </div>
                             <span class="error-message" id="eta_error"></span>
                         </div>
- 
-                        <!-- 4. Giá trị hàng hóa -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_cargo_value">Giá Trị Hàng Hóa</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">$</span>
-                                <input
-                                    type="number"
-                                    id="cargo_value"
-                                    name="cargo_value"
-                                    class="form-input with-prefix"
-                                    placeholder="0.00"
-                                    min="0"
-                                    step="0.01"
-                                    required
-                                />
-                                <span class="input-suffix">USD</span>
-                            </div>
-                            <span class="error-message" id="cargo_value_error"></span>
-                        </div>
 
                         <!-- 5. Thời gian vận chuyển (ngày) -->
                         <div class="form-group">
@@ -1166,6 +1259,7 @@
                                     class="form-input"
                                     data-i18n-placeholder="placeholder_auto"
                                     placeholder="Auto-calculated"
+                                    readonly
                                 />
                                 <span class="input-suffix" data-i18n="suffix_days">days</span>
                             </div>
@@ -1174,10 +1268,821 @@
                     </div>
                 </section>
 
-                <!-- MỤC 03 — MÔ-ĐUN THUẬT TOÁN (RISK ENGINE MODULES) -->
-                <section id="algorithm-modules" class="form-section">
+                <!-- SECTION 03: THÔNG TIN NGƯỜI BÁN (SELLER INFORMATION) -->
+                <section id="seller-info" class="form-section">
                     <div class="section-header">
                         <div class="section-number">03</div>
+                        <div class="section-title">
+                            <h2 data-i18n="section4_title">Thông Tin Người Bán</h2>
+                            <p data-i18n="section4_subtitle">Seller Information</p>
+                        </div>
+                    </div>
+                   
+                    <div class="form-grid">
+                        <!-- 1. Tên công ty -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_name">Tên Công Ty</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="seller_name"
+                                    name="seller_name"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_seller_name"
+                                    placeholder="Nhập tên công ty"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M3 6C3 4.89543 3.89543 4 5 4H15C16.1046 4 17 4.89543 17 6V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M7 8H13M7 12H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="seller_name_error"></span>
+                        </div>
+
+                        <!-- 2. Quốc gia -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_country">Quốc Gia</label>
+                            <div class="custom-dropdown" id="seller_country_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn quốc gia</span>
+                                    <span class="dropdown-arrow">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dropdown-menu" role="listbox">
+                                    <div class="dropdown-option" data-value="vn" role="option" data-i18n="opt_country_vn">Việt Nam</div>
+                                    <div class="dropdown-option" data-value="us" role="option" data-i18n="opt_country_us">United States</div>
+                                    <div class="dropdown-option" data-value="cn" role="option" data-i18n="opt_country_cn">China</div>
+                                    <div class="dropdown-option" data-value="sg" role="option" data-i18n="opt_country_sg">Singapore</div>
+                                    <div class="dropdown-option" data-value="jp" role="option" data-i18n="opt_country_jp">Japan</div>
+                                    <div class="dropdown-option" data-value="kr" role="option" data-i18n="opt_country_kr">South Korea</div>
+                                    <div class="dropdown-option" data-value="th" role="option" data-i18n="opt_country_th">Thailand</div>
+                                    <div class="dropdown-option" data-value="my" role="option" data-i18n="opt_country_my">Malaysia</div>
+                                    <div class="dropdown-option" data-value="id" role="option" data-i18n="opt_country_id">Indonesia</div>
+                                    <div class="dropdown-option" data-value="ph" role="option" data-i18n="opt_country_ph">Philippines</div>
+                                    <div class="dropdown-option" data-value="gb" role="option" data-i18n="opt_country_gb">United Kingdom</div>
+                                    <div class="dropdown-option" data-value="de" role="option" data-i18n="opt_country_de">Germany</div>
+                                    <div class="dropdown-option" data-value="fr" role="option" data-i18n="opt_country_fr">France</div>
+                                    <div class="dropdown-option" data-value="au" role="option" data-i18n="opt_country_au">Australia</div>
+                                    <div class="dropdown-option" data-value="other" role="option" data-i18n="opt_country_other">Other</div>
+                                </div>
+                            </div>
+                            <span class="error-message" id="seller_country_error"></span>
+                        </div>
+
+                        <!-- 3. Email -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_email">Email</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="email"
+                                    id="seller_email"
+                                    name="seller_email"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_seller_email"
+                                    placeholder="email@example.com"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M3 5C3 3.89543 3.89543 3 5 3H15C16.1046 3 17 3.89543 17 5V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M3 6L10 11L17 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="seller_email_error"></span>
+                        </div>
+
+                        <!-- 4. Số điện thoại -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_phone">Số Điện Thoại</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="tel"
+                                    id="seller_phone"
+                                    name="seller_phone"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_seller_phone"
+                                    placeholder="+84 123 456 789"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M4 3C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3H4Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 5H12M8 9H12M8 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="seller_phone_error"></span>
+                        </div>
+
+                        <!-- 5. Địa chỉ -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_address">Địa Chỉ</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="seller_address"
+                                    name="seller_address"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_seller_address"
+                                    placeholder="Nhập địa chỉ"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M10 10.5C11.3807 10.5 12.5 9.38071 12.5 8C12.5 6.61929 11.3807 5.5 10 5.5C8.61929 5.5 7.5 6.61929 7.5 8C7.5 9.38071 8.61929 10.5 10 10.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M10 18C13 14.5 16 11.5 16 8C16 4.68629 13.3137 2 10 2C6.68629 2 4 4.68629 4 8C4 11.5 7 14.5 10 18Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="seller_address_error"></span>
+                        </div>
+
+                        <!-- 6. Người phụ trách -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_pic">Người Phụ Trách</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="seller_pic"
+                                    name="seller_pic"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_seller_pic"
+                                    placeholder="Nhập tên người phụ trách"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M5 17C5 13.6863 7.68629 11 10 11C12.3137 11 15 13.6863 15 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="seller_pic_error"></span>
+                        </div>
+
+                        <!-- 7. Quy Mô Công Ty -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_size">
+                                Quy Mô Công Ty
+                            </label>
+                            <div class="custom-dropdown" id="seller_size_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button">
+                                    <span class="dropdown-value placeholder">Select size</span>
+                                    <span class="dropdown-arrow">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dropdown-menu" role="listbox">
+                                    <div class="dropdown-option" data-value="SME" role="option">SME (Small/Medium)</div>
+                                    <div class="dropdown-option selected" data-value="Medium" role="option">Medium Enterprise</div>
+                                    <div class="dropdown-option" data-value="Large" role="option">Large Corporation</div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="seller_size" id="seller_size_input" value="Medium">
+                        </div>
+
+                        <!-- 8. ESG Score -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_esg">
+                                ESG Score (0-100)
+                            </label>
+                            <input
+                                type="number"
+                                id="seller_esg"
+                                name="seller_esg"
+                                class="form-input"
+                                placeholder="50"
+                                min="0"
+                                max="100"
+                                step="1"
+                            />
+                            <span class="field-hint">Higher = better ESG performance</span>
+                        </div>
+
+                        <!-- 9. Reliability Score -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_seller_reliability">
+                                Reliability Score (0-100)
+                                <span class="score-display" id="seller_reliability_display">50/100</span>
+                            </label>
+                            <input
+                                type="range"
+                                id="seller_reliability"
+                                name="seller_reliability"
+                                class="range-slider"
+                                min="0"
+                                max="100"
+                                step="5"
+                                value="50"
+                            />
+                            <div class="slider-labels">
+                                <span>0 (Unreliable)</span>
+                                <span>100 (Excellent)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 04: THÔNG TIN NGƯỜI MUA (BUYER INFORMATION) -->
+                <section id="buyer-info" class="form-section">
+                    <div class="section-header">
+                        <div class="section-number">04</div>
+                        <div class="section-title">
+                            <h2 data-i18n="section5_title">Thông Tin Người Mua</h2>
+                            <p data-i18n="section5_subtitle">Buyer Information</p>
+                        </div>
+                    </div>
+                   
+                    <div class="form-grid">
+                        <!-- 1. Tên công ty -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_name">Tên Công Ty</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="buyer_name"
+                                    name="buyer_name"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_buyer_name"
+                                    placeholder="Nhập tên công ty"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M3 6C3 4.89543 3.89543 4 5 4H15C16.1046 4 17 4.89543 17 6V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M7 8H13M7 12H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="buyer_name_error"></span>
+                        </div>
+
+                        <!-- 2. Quốc gia -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_country">Quốc Gia</label>
+                            <div class="custom-dropdown" id="buyer_country_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn quốc gia</span>
+                                    <span class="dropdown-arrow">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dropdown-menu" role="listbox">
+                                    <div class="dropdown-option" data-value="vn" role="option" data-i18n="opt_country_vn">Việt Nam</div>
+                                    <div class="dropdown-option" data-value="us" role="option" data-i18n="opt_country_us">United States</div>
+                                    <div class="dropdown-option" data-value="cn" role="option" data-i18n="opt_country_cn">China</div>
+                                    <div class="dropdown-option" data-value="sg" role="option" data-i18n="opt_country_sg">Singapore</div>
+                                    <div class="dropdown-option" data-value="jp" role="option" data-i18n="opt_country_jp">Japan</div>
+                                    <div class="dropdown-option" data-value="kr" role="option" data-i18n="opt_country_kr">South Korea</div>
+                                    <div class="dropdown-option" data-value="th" role="option" data-i18n="opt_country_th">Thailand</div>
+                                    <div class="dropdown-option" data-value="my" role="option" data-i18n="opt_country_my">Malaysia</div>
+                                    <div class="dropdown-option" data-value="id" role="option" data-i18n="opt_country_id">Indonesia</div>
+                                    <div class="dropdown-option" data-value="ph" role="option" data-i18n="opt_country_ph">Philippines</div>
+                                    <div class="dropdown-option" data-value="gb" role="option" data-i18n="opt_country_gb">United Kingdom</div>
+                                    <div class="dropdown-option" data-value="de" role="option" data-i18n="opt_country_de">Germany</div>
+                                    <div class="dropdown-option" data-value="fr" role="option" data-i18n="opt_country_fr">France</div>
+                                    <div class="dropdown-option" data-value="au" role="option" data-i18n="opt_country_au">Australia</div>
+                                    <div class="dropdown-option" data-value="other" role="option" data-i18n="opt_country_other">Other</div>
+                                </div>
+                            </div>
+                            <span class="error-message" id="buyer_country_error"></span>
+                        </div>
+
+                        <!-- 3. Email -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_email">Email</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="email"
+                                    id="buyer_email"
+                                    name="buyer_email"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_buyer_email"
+                                    placeholder="email@example.com"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M3 5C3 3.89543 3.89543 3 5 3H15C16.1046 3 17 3.89543 17 5V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M3 6L10 11L17 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="buyer_email_error"></span>
+                        </div>
+
+                        <!-- 4. Số điện thoại -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_phone">Số Điện Thoại</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="tel"
+                                    id="buyer_phone"
+                                    name="buyer_phone"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_buyer_phone"
+                                    placeholder="+84 123 456 789"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M4 3C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3H4Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 5H12M8 9H12M8 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="buyer_phone_error"></span>
+                        </div>
+
+                        <!-- 5. Địa chỉ -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_address">Địa Chỉ</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="buyer_address"
+                                    name="buyer_address"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_buyer_address"
+                                    placeholder="Nhập địa chỉ"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <path d="M10 10.5C11.3807 10.5 12.5 9.38071 12.5 8C12.5 6.61929 11.3807 5.5 10 5.5C8.61929 5.5 7.5 6.61929 7.5 8C7.5 9.38071 8.61929 10.5 10 10.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M10 18C13 14.5 16 11.5 16 8C16 4.68629 13.3137 2 10 2C6.68629 2 4 4.68629 4 8C4 11.5 7 14.5 10 18Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="buyer_address_error"></span>
+                        </div>
+
+                        <!-- 6. Người phụ trách -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_pic">Người Phụ Trách</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="buyer_pic"
+                                    name="buyer_pic"
+                                    class="form-input"
+                                    data-i18n-placeholder="placeholder_buyer_pic"
+                                    placeholder="Nhập tên người phụ trách"
+                                />
+                                <span class="input-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                        <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M5 17C5 13.6863 7.68629 11 10 11C12.3137 11 15 13.6863 15 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="error-message" id="buyer_pic_error"></span>
+                        </div>
+
+                        <!-- 7. Quy Mô Công Ty -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_size">
+                                Quy Mô Công Ty
+                            </label>
+                            <div class="custom-dropdown" id="buyer_size_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button">
+                                    <span class="dropdown-value placeholder">Select size</span>
+                                    <span class="dropdown-arrow">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dropdown-menu" role="listbox">
+                                    <div class="dropdown-option" data-value="SME" role="option">SME (Small/Medium)</div>
+                                    <div class="dropdown-option selected" data-value="Medium" role="option">Medium Enterprise</div>
+                                    <div class="dropdown-option" data-value="Large" role="option">Large Corporation</div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="buyer_size" id="buyer_size_input" value="Medium">
+                        </div>
+
+                        <!-- 8. ESG Score -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_esg">
+                                ESG Score (0-100)
+                            </label>
+                            <input
+                                type="number"
+                                id="buyer_esg"
+                                name="buyer_esg"
+                                class="form-input"
+                                placeholder="50"
+                                min="0"
+                                max="100"
+                                step="1"
+                            />
+                            <span class="field-hint">Higher = better ESG performance</span>
+                        </div>
+
+                        <!-- 9. Reliability Score -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_buyer_reliability">
+                                Reliability Score (0-100)
+                                <span class="score-display" id="buyer_reliability_display">50/100</span>
+                            </label>
+                            <input
+                                type="range"
+                                id="buyer_reliability"
+                                name="buyer_reliability"
+                                class="range-slider"
+                                min="0"
+                                max="100"
+                                step="5"
+                                value="50"
+                            />
+                            <div class="slider-labels">
+                                <span>0 (Unreliable)</span>
+                                <span>100 (Excellent)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 05: ADVANCED RISK PARAMETERS -->
+                <section id="advanced-params" class="form-section">
+                    <div class="section-header">
+                        <div class="section-number">05</div>
+                        <div class="section-title">
+                            <h2 data-i18n="section6_title">Thông Số Rủi Ro Nâng Cao</h2>
+                            <p data-i18n="section6_subtitle">Advanced Risk Parameters</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <!-- ROW 1: Distance & Route Type -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_distance">
+                                Khoảng Cách Vận Chuyển
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="number"
+                                    id="distance"
+                                    name="distance"
+                                    class="form-input"
+                                    placeholder="5000"
+                                    min="100"
+                                    max="50000"
+                                    step="100"
+                                    value="5000"
+                                    required
+                                />
+                                <span class="input-suffix">km</span>
+                            </div>
+                            <span class="error-message" id="distance_error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_route_type">
+                                Loại Tuyến Đường
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <div class="custom-dropdown" id="route_type_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button">
+                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Select route type</span>
+                                    <span class="dropdown-arrow">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                </span>
+                            </div>
+                                <div class="dropdown-menu" role="listbox">
+                                    <div class="dropdown-option" data-value="direct" role="option" data-i18n="opt_rt_direct">Direct - Trực tiếp</div>
+                                    <div class="dropdown-option selected" data-value="standard" role="option" data-i18n="opt_rt_standard">Standard - Tiêu chuẩn</div>
+                                    <div class="dropdown-option" data-value="complex" role="option" data-i18n="opt_rt_complex">Complex - Phức tạp</div>
+                                    <div class="dropdown-option" data-value="hazardous" role="option" data-i18n="opt_rt_hazardous">Hazardous - Nguy hiểm</div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="route_type" id="route_type_input" value="standard">
+                            <span class="error-message" id="route_type_error"></span>
+                        </div>
+
+                        <!-- ROW 2: Carrier Rating & Weather Risk -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_carrier_rating">
+                                Đánh Giá Nhà Vận Chuyển
+                                <span class="rating-display" id="carrier_rating_display">3.0 ⭐</span>
+                            </label>
+                            <input
+                                type="range"
+                                id="carrier_rating"
+                                name="carrier_rating"
+                                class="range-slider"
+                                min="1"
+                                max="5"
+                                step="0.5"
+                                value="3.0"
+                            />
+                            <div class="slider-labels">
+                                <span>1.0 ⭐</span>
+                                <span>5.0 ⭐⭐⭐⭐⭐</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_weather_risk">
+                                Rủi Ro Thời Tiết
+                                <span class="score-display" id="weather_risk_display">5.0/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                id="weather_risk"
+                                name="weather_risk"
+                                class="range-slider risk-gradient"
+                                min="1"
+                                max="10"
+                                step="0.5"
+                                value="5.0"
+                            />
+                            <div class="slider-labels">
+                                <span>1.0 (Tốt)</span>
+                                <span>10.0 (Rất xấu)</span>
+                            </div>
+                        </div>
+
+                        <!-- ROW 3: Port Risk & Priority Level -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_port_risk">
+                                Rủi Ro Cảng
+                                <span class="score-display" id="port_risk_display">4.0/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                id="port_risk"
+                                name="port_risk"
+                                class="range-slider risk-gradient"
+                                min="1"
+                                max="10"
+                                step="0.5"
+                                value="4.0"
+                            />
+                            <div class="slider-labels">
+                                <span>1.0 (An toàn)</span>
+                                <span>10.0 (Nguy hiểm)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_priority_level">
+                                Mức Độ Ưu Tiên
+                                <span class="score-display" id="priority_level_display">5/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                id="priority_level"
+                                name="priority_level"
+                                class="range-slider"
+                                min="1"
+                                max="10"
+                                step="1"
+                                value="5"
+                            />
+                            <div class="slider-labels">
+                                <span>1 (Thấp)</span>
+                                <span>10 (Cao nhất)</span>
+                            </div>
+                        </div>
+
+                        <!-- ROW 4: Container Match & Shipment Value -->
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_container_match">
+                                Độ Phù Hợp Container
+                                <span class="score-display" id="container_match_display">8.0/10</span>
+                            </label>
+                            <input
+                                type="range"
+                                id="container_match"
+                                name="container_match"
+                                class="range-slider"
+                                min="1"
+                                max="10"
+                                step="0.5"
+                                value="8.0"
+                            />
+                            <div class="slider-labels">
+                                <span>1.0 (Kém)</span>
+                                <span>10.0 (Hoàn hảo)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="label_shipment_value">
+                                Tổng Giá Trị Lô Hàng
+                                <span class="help-icon" title="Khác với Cargo Value - dùng để tính USD loss">ⓘ</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input
+                                    type="number"
+                                    id="shipment_value"
+                                    name="shipment_value"
+                                    class="form-input with-prefix"
+                                    placeholder="100000"
+                                    min="0"
+                                    step="1000"
+                                />
+                                <span class="input-suffix">USD</span>
+                            </div>
+                            <span class="error-message" id="shipment_value_error"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 06: CLIMATE & ESG DATA (Collapsible) -->
+                <section id="climate-esg" class="form-section collapsible">
+                    <div class="section-header" onclick="toggleSection('climate-esg')">
+                        <div class="section-number">06</div>
+                        <div class="section-title">
+                            <h2 data-i18n="section7_title">Dữ Liệu Khí Hậu & ESG</h2>
+                            <p data-i18n="section7_subtitle">Climate & ESG Parameters (Optional - Auto-filled if empty)</p>
+                        </div>
+                        <button type="button" class="collapse-toggle" aria-label="Toggle section">
+                            <svg class="collapse-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="section-content collapsed" style="display: none;">
+                        <div class="info-banner">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M10 6V10M10 13V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <p>Các trường này có thể để trống. Hệ thống sẽ tự động lấy dữ liệu từ API khí hậu (NOAA/NASA) nếu không nhập.</p>
+                        </div>
+
+                        <div class="form-grid">
+                            <!-- Climate Variables -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_enso_index">
+                                    ENSO Index (El Niño/La Niña)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="enso_index"
+                                    name="ENSO_index"
+                                    class="form-input"
+                                    placeholder="0.0 (neutral)"
+                                    min="-2.0"
+                                    max="2.0"
+                                    step="0.1"
+                                />
+                                <span class="field-hint">-2.0 (La Niña) to +2.0 (El Niño)</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_typhoon_freq">
+                                    Tần Suất Bão Theo Mùa
+                                </label>
+                                <input
+                                    type="number"
+                                    id="typhoon_frequency"
+                                    name="typhoon_frequency"
+                                    class="form-input"
+                                    placeholder="0.5"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                />
+                                <span class="field-hint">0.0 (low) to 1.0 (high season)</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_sst_anomaly">
+                                    Sea Surface Temp Anomaly
+                                </label>
+                                <input
+                                    type="number"
+                                    id="sst_anomaly"
+                                    name="sst_anomaly"
+                                    class="form-input"
+                                    placeholder="0.0"
+                                    min="-3"
+                                    max="3"
+                                    step="0.1"
+                                />
+                                <span class="field-hint">Deviation from average (°C)</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_port_climate_stress">
+                                    Port Climate Stress Score
+                                    <span class="score-display" id="port_climate_stress_display">5.0/10</span>
+                                </label>
+                                <input
+                                    type="range"
+                                    id="port_climate_stress"
+                                    name="port_climate_stress"
+                                    class="range-slider"
+                                    min="1"
+                                    max="10"
+                                    step="0.5"
+                                    value="5.0"
+                                />
+                                <div class="slider-labels">
+                                    <span>1.0 (Low)</span>
+                                    <span>10.0 (Critical)</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_climate_volatility">
+                                    Climate Volatility Index
+                                    <span class="score-display" id="climate_volatility_index_display">5.0/10</span>
+                                </label>
+                                <input
+                                    type="range"
+                                    id="climate_volatility_index"
+                                    name="climate_volatility_index"
+                                    class="range-slider"
+                                    min="1"
+                                    max="10"
+                                    step="0.5"
+                                    value="5.0"
+                                />
+                                <div class="slider-labels">
+                                    <span>1.0 (Stable)</span>
+                                    <span>10.0 (Volatile)</span>
+                                </div>
+                            </div>
+
+                            <!-- ESG Scores -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_esg_score">
+                                    ESG Score (Company)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="esg_score"
+                                    name="ESG_score"
+                                    class="form-input"
+                                    placeholder="50"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                />
+                                <span class="field-hint">0 (Poor) to 100 (Excellent)</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_climate_resilience">
+                                    Climate Resilience Score
+                                    <span class="score-display" id="climate_resilience_display">5.0/10</span>
+                                </label>
+                                <input
+                                    type="range"
+                                    id="climate_resilience"
+                                    name="climate_resilience_score"
+                                    class="range-slider"
+                                    min="1"
+                                    max="10"
+                                    step="0.5"
+                                    value="5.0"
+                                />
+                                <div class="slider-labels">
+                                    <span>1.0 (Weak)</span>
+                                    <span>10.0 (Strong)</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_green_packaging">
+                                    Green Packaging Score
+                                    <span class="score-display" id="green_packaging_display">5.0/10</span>
+                                </label>
+                                <input
+                                    type="range"
+                                    id="green_packaging"
+                                    name="green_packaging_score"
+                                    class="range-slider"
+                                    min="1"
+                                    max="10"
+                                    step="0.5"
+                                    value="5.0"
+                                />
+                                <div class="slider-labels">
+                                    <span>1.0 (Standard)</span>
+                                    <span>10.0 (Eco-friendly)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 07: MÔ-ĐUN THUẬT TOÁN (RISK ENGINE MODULES) -->
+                <section id="algorithm-modules" class="form-section">
+                    <div class="section-header">
+                        <div class="section-number">07</div>
                         <div class="section-title">
                             <h2 data-i18n="section3_title">Mô-Đun Thuật Toán</h2>
                             <p data-i18n="section3_subtitle">Risk Engine Modules</p>
@@ -1263,318 +2168,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- SECTION 04: THÔNG TIN NGƯỜI BÁN (SELLER INFORMATION) -->
-                <section id="seller-info" class="form-section">
-                    <div class="section-header">
-                        <div class="section-number">04</div>
-                        <div class="section-title">
-                            <h2 data-i18n="section4_title">Thông Tin Người Bán</h2>
-                            <p data-i18n="section4_subtitle">Seller Information</p>
-                        </div>
-                    </div>
-                   
-                    <div class="form-grid">
-                        <!-- 1. Tên công ty -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_seller_name">Tên Công Ty</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="text"
-                                    id="seller_name"
-                                    name="seller_name"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_seller_name"
-                                    placeholder="Nhập tên công ty"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M3 6C3 4.89543 3.89543 4 5 4H15C16.1046 4 17 4.89543 17 6V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M7 8H13M7 12H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="seller_name_error"></span>
-                        </div>
-
-                        <!-- 2. Quốc gia -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_seller_country">Quốc Gia</label>
-                            <div class="custom-dropdown" id="seller_country_dropdown">
-                                <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
-                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn quốc gia</span>
-                                    <span class="dropdown-arrow">
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div class="dropdown-menu" role="listbox">
-                                    <div class="dropdown-option" data-value="vn" role="option" data-i18n="opt_country_vn">Việt Nam</div>
-                                    <div class="dropdown-option" data-value="us" role="option" data-i18n="opt_country_us">United States</div>
-                                    <div class="dropdown-option" data-value="cn" role="option" data-i18n="opt_country_cn">China</div>
-                                    <div class="dropdown-option" data-value="sg" role="option" data-i18n="opt_country_sg">Singapore</div>
-                                    <div class="dropdown-option" data-value="jp" role="option" data-i18n="opt_country_jp">Japan</div>
-                                    <div class="dropdown-option" data-value="kr" role="option" data-i18n="opt_country_kr">South Korea</div>
-                                    <div class="dropdown-option" data-value="th" role="option" data-i18n="opt_country_th">Thailand</div>
-                                    <div class="dropdown-option" data-value="my" role="option" data-i18n="opt_country_my">Malaysia</div>
-                                    <div class="dropdown-option" data-value="id" role="option" data-i18n="opt_country_id">Indonesia</div>
-                                    <div class="dropdown-option" data-value="ph" role="option" data-i18n="opt_country_ph">Philippines</div>
-                                    <div class="dropdown-option" data-value="gb" role="option" data-i18n="opt_country_gb">United Kingdom</div>
-                                    <div class="dropdown-option" data-value="de" role="option" data-i18n="opt_country_de">Germany</div>
-                                    <div class="dropdown-option" data-value="fr" role="option" data-i18n="opt_country_fr">France</div>
-                                    <div class="dropdown-option" data-value="au" role="option" data-i18n="opt_country_au">Australia</div>
-                                    <div class="dropdown-option" data-value="other" role="option" data-i18n="opt_country_other">Other</div>
-                                </div>
-                            </div>
-                            <span class="error-message" id="seller_country_error"></span>
-                        </div>
-
-                        <!-- 3. Số điện thoại -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_seller_phone">Số Điện Thoại</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="tel"
-                                    id="seller_phone"
-                                    name="seller_phone"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_seller_phone"
-                                    placeholder="+84 123 456 789"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M4 3C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3H4Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M8 5H12M8 9H12M8 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="seller_phone_error"></span>
-                        </div>
-
-                        <!-- 4. Địa chỉ -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_seller_address">Địa Chỉ</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="text"
-                                    id="seller_address"
-                                    name="seller_address"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_seller_address"
-                                    placeholder="Nhập địa chỉ"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M10 10.5C11.3807 10.5 12.5 9.38071 12.5 8C12.5 6.61929 11.3807 5.5 10 5.5C8.61929 5.5 7.5 6.61929 7.5 8C7.5 9.38071 8.61929 10.5 10 10.5Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M10 18C13 14.5 16 11.5 16 8C16 4.68629 13.3137 2 10 2C6.68629 2 4 4.68629 4 8C4 11.5 7 14.5 10 18Z" stroke="currentColor" stroke-width="1.5"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="seller_address_error"></span>
-                        </div>
-
-                        <!-- 5. Email -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_seller_email">Email</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="email"
-                                    id="seller_email"
-                                    name="seller_email"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_seller_email"
-                                    placeholder="email@example.com"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M3 5C3 3.89543 3.89543 3 5 3H15C16.1046 3 17 3.89543 17 5V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M3 6L10 11L17 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="seller_email_error"></span>
-                        </div>
-
-                        <!-- 6. Người phụ trách -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_seller_pic">Người Phụ Trách</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="text"
-                                    id="seller_pic"
-                                    name="seller_pic"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_seller_pic"
-                                    placeholder="Nhập tên người phụ trách"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M5 17C5 13.6863 7.68629 11 10 11C12.3137 11 15 13.6863 15 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="seller_pic_error"></span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- SECTION 05: THÔNG TIN NGƯỜI MUA (BUYER INFORMATION) -->
-                <section id="buyer-info" class="form-section">
-                    <div class="section-header">
-                        <div class="section-number">05</div>
-                        <div class="section-title">
-                            <h2 data-i18n="section5_title">Thông Tin Người Mua</h2>
-                            <p data-i18n="section5_subtitle">Buyer Information</p>
-                        </div>
-                    </div>
-                   
-                    <div class="form-grid">
-                        <!-- 1. Tên công ty -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_buyer_name">Tên Công Ty</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="text"
-                                    id="buyer_name"
-                                    name="buyer_name"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_buyer_name"
-                                    placeholder="Nhập tên công ty"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M3 6C3 4.89543 3.89543 4 5 4H15C16.1046 4 17 4.89543 17 6V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M7 8H13M7 12H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="buyer_name_error"></span>
-                        </div>
-
-                        <!-- 2. Quốc gia -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_buyer_country">Quốc Gia</label>
-                            <div class="custom-dropdown" id="buyer_country_dropdown">
-                                <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
-                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn quốc gia</span>
-                                    <span class="dropdown-arrow">
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div class="dropdown-menu" role="listbox">
-                                    <div class="dropdown-option" data-value="vn" role="option" data-i18n="opt_country_vn">Việt Nam</div>
-                                    <div class="dropdown-option" data-value="us" role="option" data-i18n="opt_country_us">United States</div>
-                                    <div class="dropdown-option" data-value="cn" role="option" data-i18n="opt_country_cn">China</div>
-                                    <div class="dropdown-option" data-value="sg" role="option" data-i18n="opt_country_sg">Singapore</div>
-                                    <div class="dropdown-option" data-value="jp" role="option" data-i18n="opt_country_jp">Japan</div>
-                                    <div class="dropdown-option" data-value="kr" role="option" data-i18n="opt_country_kr">South Korea</div>
-                                    <div class="dropdown-option" data-value="th" role="option" data-i18n="opt_country_th">Thailand</div>
-                                    <div class="dropdown-option" data-value="my" role="option" data-i18n="opt_country_my">Malaysia</div>
-                                    <div class="dropdown-option" data-value="id" role="option" data-i18n="opt_country_id">Indonesia</div>
-                                    <div class="dropdown-option" data-value="ph" role="option" data-i18n="opt_country_ph">Philippines</div>
-                                    <div class="dropdown-option" data-value="gb" role="option" data-i18n="opt_country_gb">United Kingdom</div>
-                                    <div class="dropdown-option" data-value="de" role="option" data-i18n="opt_country_de">Germany</div>
-                                    <div class="dropdown-option" data-value="fr" role="option" data-i18n="opt_country_fr">France</div>
-                                    <div class="dropdown-option" data-value="au" role="option" data-i18n="opt_country_au">Australia</div>
-                                    <div class="dropdown-option" data-value="other" role="option" data-i18n="opt_country_other">Other</div>
-                                </div>
-                            </div>
-                            <span class="error-message" id="buyer_country_error"></span>
-                        </div>
-
-                        <!-- 3. Số điện thoại -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_buyer_phone">Số Điện Thoại</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="tel"
-                                    id="buyer_phone"
-                                    name="buyer_phone"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_buyer_phone"
-                                    placeholder="+84 123 456 789"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M4 3C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3H4Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M8 5H12M8 9H12M8 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="buyer_phone_error"></span>
-                        </div>
-
-                        <!-- 4. Địa chỉ -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_buyer_address">Địa Chỉ</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="text"
-                                    id="buyer_address"
-                                    name="buyer_address"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_buyer_address"
-                                    placeholder="Nhập địa chỉ"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M10 10.5C11.3807 10.5 12.5 9.38071 12.5 8C12.5 6.61929 11.3807 5.5 10 5.5C8.61929 5.5 7.5 6.61929 7.5 8C7.5 9.38071 8.61929 10.5 10 10.5Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M10 18C13 14.5 16 11.5 16 8C16 4.68629 13.3137 2 10 2C6.68629 2 4 4.68629 4 8C4 11.5 7 14.5 10 18Z" stroke="currentColor" stroke-width="1.5"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="buyer_address_error"></span>
-                        </div>
-
-                        <!-- 5. Email -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_buyer_email">Email</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="email"
-                                    id="buyer_email"
-                                    name="buyer_email"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_buyer_email"
-                                    placeholder="email@example.com"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <path d="M3 5C3 3.89543 3.89543 3 5 3H15C16.1046 3 17 3.89543 17 5V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5Z" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M3 6L10 11L17 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="buyer_email_error"></span>
-                        </div>
-
-                        <!-- 6. Người phụ trách -->
-                        <div class="form-group">
-                            <label class="form-label" data-i18n="label_buyer_pic">Người Phụ Trách</label>
-                            <div class="input-wrapper">
-                                <input
-                                    type="text"
-                                    id="buyer_pic"
-                                    name="buyer_pic"
-                                    class="form-input"
-                                    data-i18n-placeholder="placeholder_buyer_pic"
-                                    placeholder="Nhập tên người phụ trách"
-                                />
-                                <span class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
-                                        <path d="M5 17C5 13.6863 7.68629 11 10 11C12.3137 11 15 13.6863 15 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="error-message" id="buyer_pic_error"></span>
-                        </div>
-                    </div>
-                </section>
  
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="resetForm()">
@@ -1598,6 +2191,8 @@
                 brand_title: "RISKCAST v12",
                 brand_subtitle: "Enterprise Risk Assessment Platform",
                 status_ready: "System Ready",
+                demo_btn: "Demo Case: Điện tử 50 tấn HCM→LA",
+                progress_label: "Form Completion:",
                 loading_text: "Initializing Risk Engine...",
                
                 section1_title: "Shipping Information",
@@ -1610,6 +2205,10 @@
                 section4_subtitle: "Thông Tin Người Bán",
                 section5_title: "Buyer Information",
                 section5_subtitle: "Thông Tin Người Mua",
+                section6_title: "Advanced Risk Parameters",
+                section6_subtitle: "Detailed risk factors for accurate analysis",
+                section7_title: "Climate & ESG Data",
+                section7_subtitle: "Optional climate risk parameters (auto-filled if empty)",
                
                 label_transport_mode: "Transport Mode",
                 label_cargo_type: "Cargo Type",
@@ -1630,6 +2229,9 @@
                 label_seller_email: "Email",
                 label_seller_phone: "Phone Number",
                 label_seller_pic: "Person in Charge",
+                label_seller_size: "Company Size",
+                label_seller_esg: "ESG Score",
+                label_seller_reliability: "Reliability Score",
                
                 label_buyer_name: "Company Name",
                 label_buyer_address: "Address",
@@ -1637,6 +2239,27 @@
                 label_buyer_email: "Email",
                 label_buyer_phone: "Phone Number",
                 label_buyer_pic: "Person in Charge",
+                label_buyer_size: "Company Size",
+                label_buyer_esg: "ESG Score",
+                label_buyer_reliability: "Reliability Score",
+               
+                label_distance: "Transport Distance",
+                label_route_type: "Route Type",
+                label_carrier_rating: "Carrier Rating",
+                label_weather_risk: "Weather Risk Score",
+                label_port_risk: "Port Risk Score",
+                label_priority_level: "Priority Level",
+                label_container_match: "Container Match Quality",
+                label_shipment_value: "Total Shipment Value",
+               
+                label_enso_index: "ENSO Index (El Niño/La Niña)",
+                label_typhoon_freq: "Seasonal Typhoon Frequency",
+                label_sst_anomaly: "Sea Surface Temperature Anomaly",
+                label_port_climate_stress: "Port Climate Stress Score",
+                label_climate_volatility: "Climate Volatility Index",
+                label_esg_score: "ESG Score",
+                label_climate_resilience: "Climate Resilience Score",
+                label_green_packaging: "Green Packaging Score",
                
                 placeholder_select: "Select option",
                 placeholder_seller_name: "Enter company name",
@@ -1744,6 +2367,11 @@
                 opt_country_au: "Australia",
                 opt_country_other: "Other",
                
+                opt_rt_direct: "Direct - Shortest route",
+                opt_rt_standard: "Standard - Normal route",
+                opt_rt_complex: "Complex - Multiple legs",
+                opt_rt_hazardous: "Hazardous - High-risk areas",
+               
                 module_fuzzy_title: "Fuzzy AHP",
                 module_fuzzy_desc: "Multi-criteria decision analysis",
                 module_arima_title: "ARIMA Forecasting",
@@ -1779,6 +2407,10 @@
                 section4_subtitle: "Seller Information",
                 section5_title: "Thông Tin Người Mua",
                 section5_subtitle: "Buyer Information",
+                section6_title: "Thông Số Rủi Ro Nâng Cao",
+                section6_subtitle: "Các yếu tố rủi ro chi tiết cho phân tích chính xác",
+                section7_title: "Dữ Liệu Khí Hậu & ESG",
+                section7_subtitle: "Thông số rủi ro khí hậu tùy chọn (tự động điền nếu để trống)",
                
                 label_transport_mode: "Phương Thức Vận Chuyển",
                 label_cargo_type: "Loại Hàng Hóa",
@@ -1799,6 +2431,9 @@
                 label_seller_email: "Email",
                 label_seller_phone: "Số Điện Thoại",
                 label_seller_pic: "Người Phụ Trách",
+                label_seller_size: "Quy Mô Công Ty",
+                label_seller_esg: "Điểm ESG",
+                label_seller_reliability: "Điểm Độ Tin Cậy",
                
                 label_buyer_name: "Tên Công Ty",
                 label_buyer_address: "Địa Chỉ",
@@ -1806,6 +2441,27 @@
                 label_buyer_email: "Email",
                 label_buyer_phone: "Số Điện Thoại",
                 label_buyer_pic: "Người Phụ Trách",
+                label_buyer_size: "Quy Mô Công Ty",
+                label_buyer_esg: "Điểm ESG",
+                label_buyer_reliability: "Điểm Độ Tin Cậy",
+               
+                label_distance: "Khoảng Cách Vận Chuyển",
+                label_route_type: "Loại Tuyến Đường",
+                label_carrier_rating: "Đánh Giá Nhà Vận Chuyển",
+                label_weather_risk: "Rủi Ro Thời Tiết",
+                label_port_risk: "Rủi Ro Cảng",
+                label_priority_level: "Mức Độ Ưu Tiên",
+                label_container_match: "Độ Phù Hợp Container",
+                label_shipment_value: "Tổng Giá Trị Lô Hàng",
+               
+                label_enso_index: "Chỉ Số ENSO (El Niño/La Niña)",
+                label_typhoon_freq: "Tần Suất Bão Theo Mùa",
+                label_sst_anomaly: "Nhiệt Độ Bề Mặt Biển Bất Thường",
+                label_port_climate_stress: "Điểm Áp Lực Khí Hậu Cảng",
+                label_climate_volatility: "Chỉ Số Biến Động Khí Hậu",
+                label_esg_score: "Điểm ESG",
+                label_climate_resilience: "Điểm Khả Năng Chống Chịu Khí Hậu",
+                label_green_packaging: "Điểm Đóng Gói Xanh",
                
                 placeholder_select: "Chọn tùy chọn",
                 placeholder_seller_name: "Nhập tên công ty",
@@ -1913,6 +2569,11 @@
                 opt_country_au: "Úc",
                 opt_country_other: "Khác",
                
+                opt_rt_direct: "Trực Tiếp - Tuyến ngắn nhất",
+                opt_rt_standard: "Tiêu Chuẩn - Tuyến thông thường",
+                opt_rt_complex: "Phức Tạp - Nhiều chặng",
+                opt_rt_hazardous: "Nguy Hiểm - Khu vực rủi ro cao",
+               
                 module_fuzzy_title: "Fuzzy AHP",
                 module_fuzzy_desc: "Phân tích quyết định đa tiêu chí",
                 module_arima_title: "Dự Báo ARIMA",
@@ -1930,7 +2591,9 @@
                 error_date_invalid: "Ngày đến phải sau ngày khởi hành",
                
                 confirm_reset: "Bạn có chắc chắn muốn đặt lại tất cả các trường?",
-                alert_success: "Phân tích rủi ro hoàn tất thành công!"
+                alert_success: "Phân tích rủi ro hoàn tất thành công!",
+                demo_btn: "Demo Case: Điện tử 50 tấn HCM→LA",
+                progress_label: "Tiến Độ Hoàn Thành:"
             }
         };
  
@@ -1943,6 +2606,45 @@
             initializeDateInputs();
             setupEventListeners();
             setupRealtimeValidation();
+            
+            // Initialize new features
+            // Delay slider initialization to ensure all elements are rendered (especially for collapsed sections)
+            setTimeout(() => {
+                initializeSliderDisplays();
+            }, 200);
+            initializeNewDropdowns();
+            setupCollapsibleSection();
+            setupAutoCalculation();
+            
+            // ==================== TÍNH NĂNG THÔNG MINH ====================
+            // TÍNH NĂNG 1: Progress Sidebar + Header Percentage
+            initializeProgressTracking();
+            
+            // TÍNH NĂNG 2: Smart Defaults & Auto-Fill
+            initializeSmartDefaults();
+            
+            // TÍNH NĂNG 3: Conditional Visibility
+            initializeConditionalVisibility();
+            
+            // TÍNH NĂNG 4: Auto Calculation nâng cao
+            initializeAdvancedAutoCalc();
+            
+            // TÍNH NĂNG 5: Quick Demo Mode
+            initializeDemoMode();
+            
+            // TÍNH NĂNG 6: Collapsible thông minh
+            initializeSmartCollapsible();
+            
+            // TÍNH NĂNG 7: Realtime Validation + Tick xanh
+            initializeRealtimeValidation();
+            
+            // TÍNH NĂNG 8: Loading Sequence (đã tích hợp vào runAnalysis)
+            
+            // TÍNH NĂNG 9: Mobile Perfect
+            initializeMobileOptimization();
+            
+            // TÍNH NĂNG 10: Gọi tất cả khi change
+            setupGlobalChangeListeners();
             
             // Event listener cho form submit được gắn trong input.js
         });
@@ -2452,7 +3154,7 @@
             // ===== ENSURE HIDDEN INPUTS ARE POPULATED =====
             // Double-check hidden inputs are populated from dropdowns (in case selectOption didn't fire)
             try {
-                const dropdownFields = ['transport_mode', 'cargo_type', 'route', 'incoterm', 'container', 'packaging', 'priority', 'seller_country', 'buyer_country'];
+                const dropdownFields = ['transport_mode', 'cargo_type', 'route', 'incoterm', 'container', 'packaging', 'priority', 'seller_country', 'buyer_country', 'route_type', 'seller_size', 'buyer_size'];
                 dropdownFields.forEach(field => {
                     const hiddenInput = document.getElementById(field + '_input');
                     if (hiddenInput && !hiddenInput.value) {
@@ -2469,7 +3171,12 @@
             // ===== KẾT THÚC VERIFY HIDDEN INPUTS =====
 
             const loader = document.getElementById('loadingOverlay');
-            if (loader) loader.classList.add('active');
+            const loaderText = loader?.querySelector('.loader-text');
+            
+            // TÍNH NĂNG 8: Loading Sequence siêu chuyên nghiệp
+            if (loader) {
+                loader.classList.add('active');
+            }
 
             // Gom dữ liệu theo Shipment model - READ FROM HIDDEN INPUTS
             const payload = {
@@ -2492,14 +3199,37 @@
                 use_mc: document.getElementById('use_mc').checked,
                 use_var: document.getElementById('use_var').checked,
 
-                // seller/buyer gửi theo dạng object đúng schema Shipment
+                // Advanced Risk Parameters (Section 06)
+                distance: parseFloat(document.getElementById('distance')?.value) || 5000,
+                route_type: document.getElementById('route_type_input')?.value || 'standard',
+                carrier_rating: parseFloat(document.getElementById('carrier_rating')?.value) || 3.0,
+                weather_risk: parseFloat(document.getElementById('weather_risk')?.value) || 5.0,
+                port_risk: parseFloat(document.getElementById('port_risk')?.value) || 4.0,
+                container_match: parseFloat(document.getElementById('container_match')?.value) || 8.0,
+                shipment_value: parseFloat(document.getElementById('shipment_value')?.value) || 
+                               (parseFloat(document.getElementById('cargo_value')?.value) * 1.1) || 100000,
+
+                // Climate & ESG Data (Section 07 - Optional)
+                ENSO_index: parseFloat(document.getElementById('enso_index')?.value) || 0.0,
+                typhoon_frequency: parseFloat(document.getElementById('typhoon_frequency')?.value) || 0.5,
+                sst_anomaly: parseFloat(document.getElementById('sst_anomaly')?.value) || 0.0,
+                port_climate_stress: parseFloat(document.getElementById('port_climate_stress')?.value) || 5.0,
+                climate_volatility_index: parseFloat(document.getElementById('climate_volatility_index')?.value) || 5.0,
+                ESG_score: parseFloat(document.getElementById('esg_score')?.value) || 50.0,
+                climate_resilience: parseFloat(document.getElementById('climate_resilience')?.value) || 5.0,
+                green_packaging: parseFloat(document.getElementById('green_packaging')?.value) || 5.0,
+
+                // seller/buyer gửi theo dạng object đúng schema Shipment (Enhanced)
                 seller: {
                     name: document.getElementById('seller_name').value,
                     address: document.getElementById('seller_address').value,
                     country: document.getElementById('seller_country_input').value,
                     email: document.getElementById('seller_email').value,
                     phone: document.getElementById('seller_phone').value,
-                    pic: document.getElementById('seller_pic').value
+                    pic: document.getElementById('seller_pic').value,
+                    size: document.getElementById('seller_size_input')?.value || 'Medium',
+                    esg: parseFloat(document.getElementById('seller_esg')?.value) || 50,
+                    reliability: parseFloat(document.getElementById('seller_reliability')?.value) || 50
                 },
                 buyer: {
                     name: document.getElementById('buyer_name').value,
@@ -2507,7 +3237,10 @@
                     country: document.getElementById('buyer_country_input').value,
                     email: document.getElementById('buyer_email').value,
                     phone: document.getElementById('buyer_phone').value,
-                    pic: document.getElementById('buyer_pic').value
+                    pic: document.getElementById('buyer_pic').value,
+                    size: document.getElementById('buyer_size_input')?.value || 'Medium',
+                    esg: parseFloat(document.getElementById('buyer_esg')?.value) || 50,
+                    reliability: parseFloat(document.getElementById('buyer_reliability')?.value) || 50
                 },
 
                 // priority profile cho engine
@@ -2521,6 +3254,22 @@
             };
 
             try {
+                // TÍNH NĂNG 8: Loading Sequence siêu chuyên nghiệp
+                const loadingSteps = [
+                    { text: 'Khởi tạo Fuzzy AHP...', delay: 800 },
+                    { text: 'Chạy Monte Carlo 10.000 lần...', delay: 1200 },
+                    { text: 'Tính VaR 99.5% & CVaR...', delay: 1000 },
+                    { text: 'Đang tạo báo cáo PDF...', delay: 600 },
+                    { text: 'Hoàn thành! Đang chuyển kết quả...', delay: 400 }
+                ];
+                
+                for (const step of loadingSteps) {
+                    if (loaderText) {
+                        loaderText.textContent = step.text;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, step.delay));
+                }
+                
                 console.log('✓ Sending request to /api/run_risk');
                 console.log('PAYLOAD:', JSON.stringify(payload, null, 2));
                 
@@ -2573,14 +3322,773 @@
             }
         }
 
+        // ==================== SLIDER REAL-TIME UPDATE ====================
+        function initializeSliderDisplays() {
+            const sliderConfigs = [
+                { id: 'carrier_rating', display: 'carrier_rating_display', format: (v) => `${parseFloat(v).toFixed(1)} ⭐` },
+                { id: 'weather_risk', display: 'weather_risk_display', format: (v) => `${parseFloat(v).toFixed(1)}/10` },
+                { id: 'port_risk', display: 'port_risk_display', format: (v) => `${parseFloat(v).toFixed(1)}/10` },
+                { id: 'priority_level', display: 'priority_level_display', format: (v) => `${parseInt(v)}/10` },
+                { id: 'container_match', display: 'container_match_display', format: (v) => `${parseFloat(v).toFixed(1)}/10` },
+                { id: 'seller_reliability', display: 'seller_reliability_display', format: (v) => `${parseInt(v)}/100` },
+                { id: 'buyer_reliability', display: 'buyer_reliability_display', format: (v) => `${parseInt(v)}/100` },
+                { id: 'port_climate_stress', display: 'port_climate_stress_display', format: (v) => `${parseFloat(v).toFixed(1)}/10` },
+                { id: 'climate_volatility_index', display: 'climate_volatility_index_display', format: (v) => `${parseFloat(v).toFixed(1)}/10` },
+                { id: 'climate_resilience', display: 'climate_resilience_display', format: (v) => `${parseFloat(v).toFixed(1)}/10` },
+                { id: 'green_packaging', display: 'green_packaging_display', format: (v) => `${parseFloat(v).toFixed(1)}/10` }
+            ];
+
+            sliderConfigs.forEach(config => {
+                const slider = document.getElementById(config.id);
+                const display = document.getElementById(config.display);
+                
+                if (slider && display) {
+                    // Set initial value
+                    display.textContent = config.format(slider.value);
+                    
+                    // Update on input AND change
+                    slider.addEventListener('input', function() {
+                        display.textContent = config.format(this.value);
+                    });
+                    slider.addEventListener('change', function() {
+                        display.textContent = config.format(this.value);
+                    });
+                } else {
+                    // Only warn if element should exist (not critical for optional/collapsed sections)
+                    // Check if parent section is collapsed or hidden
+                    const sliderElement = slider || document.getElementById(config.id);
+                    const displayElement = display || document.getElementById(config.display);
+                    
+                    if (sliderElement) {
+                        const section = sliderElement.closest('.form-section, .section-content');
+                        const isHidden = section && (section.classList.contains('collapsed') || 
+                                                     window.getComputedStyle(section).display === 'none');
+                        if (!isHidden && !displayElement) {
+                            console.warn(`⚠ Display element ${config.display} not found for slider ${config.id}`);
+                        }
+                    } else if (displayElement) {
+                        const section = displayElement.closest('.form-section, .section-content');
+                        const isHidden = section && (section.classList.contains('collapsed') || 
+                                                     window.getComputedStyle(section).display === 'none');
+                        if (!isHidden) {
+                            console.warn(`⚠ Slider ${config.id} not found for display ${config.display}`);
+                        }
+                    }
+                    // Don't warn if both are missing (section might be collapsed or not rendered yet)
+                }
+            });
+        }
+
+
+        // ==================== NEW DROPDOWNS INITIALIZATION ====================
+        function initializeNewDropdowns() {
+            const newDropdowns = ['route_type_dropdown', 'seller_size_dropdown', 'buyer_size_dropdown'];
+            
+            newDropdowns.forEach(dropdownId => {
+                const dropdown = document.getElementById(dropdownId);
+                if (!dropdown) return;
+
+                const trigger = dropdown.querySelector('.dropdown-trigger');
+                const options = dropdown.querySelectorAll('.dropdown-option');
+                const valueSpan = dropdown.querySelector('.dropdown-value');
+                const hiddenInput = document.getElementById(dropdownId.replace('_dropdown', '_input'));
+
+                // Initialize state
+                if (!dropdownState[dropdownId]) {
+                    dropdownState[dropdownId] = {
+                        isOpen: false,
+                        selectedValue: null,
+                        selectedText: null,
+                        focusedIndex: -1
+                    };
+                }
+
+                // Check if there's a pre-selected option
+                const preSelected = dropdown.querySelector('.dropdown-option.selected');
+                if (preSelected) {
+                    const value = preSelected.getAttribute('data-value');
+                    const text = preSelected.textContent;
+                    valueSpan.textContent = text;
+                    valueSpan.classList.remove('placeholder');
+                    dropdownState[dropdownId].selectedValue = value;
+                    dropdownState[dropdownId].selectedText = text;
+                    if (hiddenInput) hiddenInput.value = value;
+                }
+
+                // Bind events
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleDropdown(dropdownId);
+                });
+
+                options.forEach((option, index) => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const value = option.getAttribute('data-value');
+                        const text = option.textContent;
+                        
+                        // Update UI
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        valueSpan.textContent = text;
+                        valueSpan.classList.remove('placeholder');
+                        
+                        // Update state
+                        dropdownState[dropdownId].selectedValue = value;
+                        dropdownState[dropdownId].selectedText = text;
+                        
+                        // Update hidden input
+                        if (hiddenInput) hiddenInput.value = value;
+                        
+                        closeDropdown(dropdownId);
+                    });
+                });
+            });
+        }
+
+        // ==================== COLLAPSIBLE SECTION ====================
+        function setupCollapsibleSection() {
+            const section = document.getElementById('climate-esg');
+            if (!section) return;
+
+            const header = section.querySelector('.section-header');
+            const content = section.querySelector('.section-content');
+            
+            if (!header || !content) return;
+
+            header.addEventListener('click', () => {
+                section.classList.toggle('expanded');
+                content.classList.toggle('collapsed');
+            });
+        }
+
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) {
+                console.warn('⚠️ Section not found:', sectionId);
+                return;
+            }
+            
+            const content = section.querySelector('.section-content');
+            if (!content) {
+                console.warn('⚠️ Section content not found for:', sectionId);
+                return;
+            }
+            
+            // Toggle display
+            const isHidden = content.style.display === 'none' || 
+                           window.getComputedStyle(content).display === 'none';
+            
+            if (isHidden) {
+                content.style.display = '';
+                content.classList.remove('collapsed');
+                section.classList.add('expanded');
+            } else {
+                content.style.display = 'none';
+                content.classList.add('collapsed');
+                section.classList.remove('expanded');
+            }
+            
+            // Update icon rotation
+            const icon = section.querySelector('.collapse-icon');
+            if (icon) {
+                if (isHidden) {
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+            
+            console.log(`✓ Section ${sectionId} toggled:`, isHidden ? 'expanded' : 'collapsed');
+        }
+        
+        // Make it global
+        window.toggleSection = toggleSection;
+
+        // ==================== AUTO CALCULATION ====================
+        function setupAutoCalculation() {
+            const cargoValueInput = document.getElementById('cargo_value');
+            const shipmentValueInput = document.getElementById('shipment_value');
+            
+            if (cargoValueInput && shipmentValueInput) {
+                cargoValueInput.addEventListener('change', function() {
+                    if (!shipmentValueInput.value) {
+                        // Auto-fill as 110% of cargo value if empty
+                        shipmentValueInput.value = Math.round(this.value * 1.1);
+                    }
+                });
+            }
+        }
+
+        // ==================== VALIDATION ====================
+        function validateAdvancedFields() {
+            let isValid = true;
+
+            // Distance validation
+            const distance = document.getElementById('distance');
+            if (distance) {
+                const val = parseFloat(distance.value);
+                if (val < 100 || val > 50000) {
+                    showError('distance', 'Khoảng cách phải từ 100-50,000 km');
+                    isValid = false;
+                } else {
+                    clearError('distance');
+                }
+            }
+
+            // Route type validation
+            const routeType = document.getElementById('route_type_input');
+            if (!routeType?.value) {
+                showError('route_type', 'Vui lòng chọn loại tuyến đường');
+                isValid = false;
+            } else {
+                clearError('route_type');
+            }
+
+            return isValid;
+        }
+
+        // Integrate with existing validateForm
+        const originalValidateForm = window.validateForm;
+        window.validateForm = function() {
+            const originalValid = originalValidateForm ? originalValidateForm() : true;
+            const advancedValid = validateAdvancedFields();
+            return originalValid && advancedValid;
+        };
+
+        // ==================== ENHANCED FORM DATA COLLECTION ====================
+        // This will be called from runAnalysis to collect all form data
+        function collectEnhancedFormData() {
+            const baseData = {
+                // Existing fields will be collected by existing code
+            };
+
+            // Add new advanced parameters
+            const advancedData = {
+                distance: parseFloat(document.getElementById('distance')?.value) || 5000,
+                route_type: document.getElementById('route_type_input')?.value || 'standard',
+                carrier_rating: parseFloat(document.getElementById('carrier_rating')?.value) || 3.0,
+                weather_risk: parseFloat(document.getElementById('weather_risk')?.value) || 5.0,
+                port_risk: parseFloat(document.getElementById('port_risk')?.value) || 4.0,
+                priority: parseInt(document.getElementById('priority_level')?.value) || 5,
+                container_match: parseFloat(document.getElementById('container_match')?.value) || 8.0,
+                shipment_value: parseFloat(document.getElementById('shipment_value')?.value) || 
+                               (parseFloat(document.getElementById('cargo_value')?.value) * 1.1) || 100000
+            };
+
+            // Add climate data (optional)
+            const climateData = {
+                ENSO_index: parseFloat(document.getElementById('enso_index')?.value) || 0.0,
+                typhoon_frequency: parseFloat(document.getElementById('typhoon_frequency')?.value) || 0.5,
+                sst_anomaly: parseFloat(document.getElementById('sst_anomaly')?.value) || 0.0,
+                port_climate_stress: parseFloat(document.getElementById('port_climate_stress')?.value) || 5.0,
+                climate_volatility_index: parseFloat(document.getElementById('climate_volatility_index')?.value) || 5.0,
+                ESG_score: parseFloat(document.getElementById('esg_score')?.value) || 50.0,
+                climate_resilience_score: parseFloat(document.getElementById('climate_resilience')?.value) || 5.0,
+                green_packaging_score: parseFloat(document.getElementById('green_packaging')?.value) || 5.0
+            };
+
+            // Enhance seller/buyer data
+            const sellerData = {
+                name: document.getElementById('seller_name')?.value || '',
+                country: document.getElementById('seller_country_input')?.value || '',
+                address: document.getElementById('seller_address')?.value || '',
+                email: document.getElementById('seller_email')?.value || '',
+                phone: document.getElementById('seller_phone')?.value || '',
+                pic: document.getElementById('seller_pic')?.value || '',
+                size: document.getElementById('seller_size_input')?.value || 'Medium',
+                esg: parseFloat(document.getElementById('seller_esg')?.value) || 50,
+                reliability: parseFloat(document.getElementById('seller_reliability')?.value) || 50
+            };
+
+            const buyerData = {
+                name: document.getElementById('buyer_name')?.value || '',
+                country: document.getElementById('buyer_country_input')?.value || '',
+                address: document.getElementById('buyer_address')?.value || '',
+                email: document.getElementById('buyer_email')?.value || '',
+                phone: document.getElementById('buyer_phone')?.value || '',
+                pic: document.getElementById('buyer_pic')?.value || '',
+                size: document.getElementById('buyer_size_input')?.value || 'Medium',
+                esg: parseFloat(document.getElementById('buyer_esg')?.value) || 50,
+                reliability: parseFloat(document.getElementById('buyer_reliability')?.value) || 50
+            };
+
+            return {
+                ...baseData,
+                ...advancedData,
+                ...climateData,
+                seller: sellerData,
+                buyer: buyerData
+            };
+        }
+
+        // ==================== TÍNH NĂNG 1: PROGRESS SIDEBAR + HEADER PERCENTAGE ====================
+        function initializeProgressTracking() {
+            function calculateSectionProgress(sectionId) {
+                const section = document.getElementById(sectionId);
+                if (!section) return 0;
+                
+                const allFields = section.querySelectorAll('input:not([type="hidden"]), select, .custom-dropdown, textarea');
+                const filledFields = Array.from(allFields).filter(field => {
+                    if (field.tagName === 'INPUT' && field.type !== 'checkbox') {
+                        return field.value && field.value.trim() !== '';
+                    }
+                    if (field.classList.contains('custom-dropdown')) {
+                        const hiddenInput = document.getElementById(field.id.replace('_dropdown', '_input'));
+                        return hiddenInput && hiddenInput.value;
+                    }
+                    if (field.tagName === 'SELECT') {
+                        return field.value;
+                    }
+                    return false;
+                });
+                
+                return allFields.length > 0 ? (filledFields.length / allFields.length) * 100 : 0;
+            }
+            
+            window.updateProgress = function() {
+                const sections = [
+                    'shipping-info',
+                    'cargo-details',
+                    'seller-info',
+                    'buyer-info',
+                    'advanced-params',
+                    'climate-esg',
+                    'algorithm-modules'
+                ];
+                
+                let totalProgress = 0;
+                sections.forEach((sectionId, index) => {
+                    const progress = calculateSectionProgress(sectionId);
+                    totalProgress += progress;
+                    
+                    // Update section number color if >70%
+                    const sectionNumber = document.querySelector(`#${sectionId} .section-number`);
+                    if (sectionNumber && progress >= 70) {
+                        sectionNumber.style.background = '#00ff88';
+                        sectionNumber.style.color = '#000';
+                        sectionNumber.style.fontWeight = '900';
+                    } else if (sectionNumber) {
+                        sectionNumber.style.background = '';
+                        sectionNumber.style.color = '';
+                        sectionNumber.style.fontWeight = '';
+                    }
+                });
+                
+                const overallProgress = totalProgress / sections.length;
+                const progressBar = document.getElementById('header_progress_bar');
+                const progressText = document.getElementById('header_progress_text');
+                
+                if (progressBar) {
+                    progressBar.style.width = overallProgress + '%';
+                }
+                if (progressText) {
+                    progressText.textContent = Math.round(overallProgress) + '%';
+                }
+            };
+            
+            // Update on any change
+            updateProgress();
+        }
+
+        // ==================== TÍNH NĂNG 2: SMART DEFAULTS & AUTO-FILL ====================
+        function initializeSmartDefaults() {
+            function autoSelect(dropdownId, value) {
+                const dropdown = document.getElementById(dropdownId + '_dropdown');
+                if (!dropdown) return;
+                
+                const option = dropdown.querySelector(`[data-value="${value}"]`);
+                if (option) {
+                    const index = Array.from(dropdown.querySelectorAll('.dropdown-option')).indexOf(option);
+                    selectOption(dropdownId + '_dropdown', value, index);
+                }
+            }
+            
+            function setSlider(id, value) {
+                const slider = document.getElementById(id);
+                if (slider) {
+                    slider.value = value;
+                    slider.dispatchEvent(new Event('input', { bubbles: true }));
+                    slider.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+            
+            function setValue(id, value) {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = value;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+            
+            window.applySmartDefaults = function() {
+                const mode = getDropdownValue('transport_mode');
+                const cargo = getDropdownValue('cargo_type');
+                const route = getDropdownValue('route');
+                
+                if (mode === 'ocean_fcl') {
+                    autoSelect('container', '40ft_highcube');
+                    autoSelect('incoterm', 'fob');
+                    autoSelect('packaging', 'excellent');
+                    autoSelect('priority', 'standard');
+                }
+                if (mode === 'air_freight') {
+                    autoSelect('container', 'palletized');
+                    autoSelect('incoterm', 'cip');
+                    autoSelect('priority', 'express');
+                }
+                if (cargo === 'electronics' || cargo === 'fragile' || cargo === 'pharma') {
+                    setSlider('container_match', 9.5);
+                    autoSelect('packaging', 'excellent');
+                }
+                if (route === 'vn_us') {
+                    setValue('distance', 15200);
+                    setSlider('weather_risk', 6.8);
+                }
+                if (route === 'domestic') {
+                    setValue('distance', 1200);
+                    setSlider('weather_risk', 3.5);
+                }
+            };
+        }
+
+        // ==================== TÍNH NĂNG 3: CONDITIONAL VISIBILITY ====================
+        function initializeConditionalVisibility() {
+            window.toggleContainerField = function() {
+                const mode = getDropdownValue('transport_mode');
+                const containerGroup = document.querySelector('#container_dropdown')?.closest('.form-group');
+                if (!containerGroup) return;
+                
+                if (['air_freight', 'courier_express', 'last_mile'].includes(mode)) {
+                    containerGroup.style.display = 'none';
+                } else {
+                    containerGroup.style.display = 'block';
+                }
+            };
+        }
+
+        // ==================== TÍNH NĂNG 4: AUTO CALCULATION NÂNG CAO ====================
+        function initializeAdvancedAutoCalc() {
+            window.smartAutoCalc = function() {
+                const cargo = parseFloat(document.getElementById('cargo_value')?.value) || 0;
+                const shipment = document.getElementById('shipment_value');
+                if (cargo > 0 && shipment && !shipment.value) {
+                    shipment.value = Math.round(cargo * 1.15);
+                    shipment.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            };
+        }
+
+        // ==================== TÍNH NĂNG 5: QUICK DEMO MODE ====================
+        function initializeDemoMode() {
+            const demoBtn = document.getElementById('demo_btn');
+            if (!demoBtn) return;
+            
+            demoBtn.addEventListener('click', function() {
+                if (!confirm('Bạn có muốn điền form mẫu Demo Case: Điện tử 50 tấn HCM→LA?')) return;
+                
+                // Transport & Route
+                setTimeout(() => selectOption('transport_mode_dropdown', 'ocean_fcl', 0), 100);
+                setTimeout(() => selectOption('route_dropdown', 'vn_us', 0), 200);
+                setTimeout(() => selectOption('cargo_type_dropdown', 'electronics', 1), 300);
+                setTimeout(() => selectOption('incoterm_dropdown', 'fob', 3), 400);
+                setTimeout(() => selectOption('container_dropdown', '40ft_highcube', 2), 500);
+                setTimeout(() => selectOption('packaging_dropdown', 'excellent', 3), 600);
+                setTimeout(() => selectOption('priority_dropdown', 'standard', 1), 700);
+                
+                // Cargo Details
+                setTimeout(() => {
+                    document.getElementById('packages').value = 50;
+                    document.getElementById('cargo_value').value = 2500000;
+                    document.getElementById('shipment_value').value = 2875000;
+                    
+                    const today = new Date();
+                    const etd = new Date(today);
+                    etd.setDate(etd.getDate() + 7);
+                    const eta = new Date(etd);
+                    eta.setDate(eta.getDate() + 25);
+                    
+                    document.getElementById('etd').value = etd.toISOString().split('T')[0];
+                    document.getElementById('eta').value = eta.toISOString().split('T')[0];
+                    calculateTransitTime();
+                }, 800);
+                
+                // Advanced Parameters
+                setTimeout(() => {
+                    document.getElementById('distance').value = 15200;
+                    selectOption('route_type_dropdown', 'standard', 1);
+                    document.getElementById('carrier_rating').value = 4.8;
+                    document.getElementById('carrier_rating').dispatchEvent(new Event('input'));
+                    document.getElementById('weather_risk').value = 6.2;
+                    document.getElementById('weather_risk').dispatchEvent(new Event('input'));
+                    document.getElementById('port_risk').value = 5.5;
+                    document.getElementById('port_risk').dispatchEvent(new Event('input'));
+                    document.getElementById('container_match').value = 9.5;
+                    document.getElementById('container_match').dispatchEvent(new Event('input'));
+                    document.getElementById('priority_level').value = 6;
+                    document.getElementById('priority_level').dispatchEvent(new Event('input'));
+                }, 900);
+                
+                // Seller Info
+                setTimeout(() => {
+                    document.getElementById('seller_name').value = 'Vietnam Electronics Manufacturing Co., Ltd.';
+                    selectOption('seller_country_dropdown', 'vn', 0);
+                    document.getElementById('seller_email').value = 'sales@vnem.vn';
+                    document.getElementById('seller_phone').value = '+84 28 1234 5678';
+                    document.getElementById('seller_address').value = '123 Industrial Zone, Ho Chi Minh City, Vietnam';
+                    document.getElementById('seller_pic').value = 'Nguyen Van A';
+                    selectOption('seller_size_dropdown', 'Large', 2);
+                    document.getElementById('seller_esg').value = 82;
+                    document.getElementById('seller_reliability').value = 94;
+                    document.getElementById('seller_reliability').dispatchEvent(new Event('input'));
+                }, 1000);
+                
+                // Buyer Info
+                setTimeout(() => {
+                    document.getElementById('buyer_name').value = 'American Tech Distributors Inc.';
+                    selectOption('buyer_country_dropdown', 'us', 1);
+                    document.getElementById('buyer_email').value = 'procurement@atdi.com';
+                    document.getElementById('buyer_phone').value = '+1 213 555 0123';
+                    document.getElementById('buyer_address').value = '456 Commerce Blvd, Los Angeles, CA 90001, USA';
+                    document.getElementById('buyer_pic').value = 'John Smith';
+                    selectOption('buyer_size_dropdown', 'Large', 2);
+                    document.getElementById('buyer_esg').value = 88;
+                    document.getElementById('buyer_reliability').value = 96;
+                    document.getElementById('buyer_reliability').dispatchEvent(new Event('input'));
+                }, 1100);
+                
+                // Climate & ESG
+                setTimeout(() => {
+                    document.getElementById('enso_index').value = 0.5;
+                    document.getElementById('typhoon_frequency').value = 0.7;
+                    document.getElementById('sst_anomaly').value = 0.3;
+                    document.getElementById('port_climate_stress').value = 6.0;
+                    document.getElementById('port_climate_stress').dispatchEvent(new Event('input'));
+                    document.getElementById('climate_volatility_index').value = 5.5;
+                    document.getElementById('climate_volatility_index').dispatchEvent(new Event('input'));
+                    document.getElementById('esg_score').value = 75;
+                    document.getElementById('climate_resilience').value = 7.0;
+                    document.getElementById('climate_resilience').dispatchEvent(new Event('input'));
+                    document.getElementById('green_packaging').value = 8.5;
+                    document.getElementById('green_packaging').dispatchEvent(new Event('input'));
+                }, 1200);
+                
+                setTimeout(() => {
+                    alert('✓ Demo Case đã được điền thành công!');
+                    if (typeof updateProgress === 'function') updateProgress();
+                }, 1500);
+            });
+        }
+
+        // ==================== TÍNH NĂNG 6: COLLAPSIBLE THÔNG MINH ====================
+        function initializeSmartCollapsible() {
+            // Section 06 & 07 mặc định thu gọn
+            const climateSection = document.getElementById('climate-esg');
+            const algorithmSection = document.getElementById('algorithm-modules');
+            
+            if (climateSection) {
+                const content = climateSection.querySelector('.section-content');
+                if (content) {
+                    content.classList.add('collapsed');
+                }
+            }
+            
+            // Hover header → glow + mũi tên xoay mượt
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.style.transition = 'all 0.3s ease';
+                header.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.3)';
+                    const icon = this.querySelector('.collapse-icon');
+                    if (icon) {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+                header.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                    const icon = this.querySelector('.collapse-icon');
+                    if (icon) {
+                        icon.style.transform = '';
+                    }
+                });
+            });
+        }
+
+        // ==================== TÍNH NĂNG 7: REALTIME VALIDATION + TICK XANH ====================
+        function initializeRealtimeValidation() {
+            function addValidationTick(field) {
+                const label = field.closest('.form-group')?.querySelector('.form-label');
+                if (!label) return;
+                
+                let tick = label.querySelector('.validation-tick');
+                if (!tick) {
+                    tick = document.createElement('span');
+                    tick.className = 'validation-tick';
+                    tick.innerHTML = '✓';
+                    tick.style.cssText = 'color: #00ff88; margin-left: 8px; font-weight: bold; opacity: 0; transition: opacity 0.3s ease;';
+                    label.appendChild(tick);
+                }
+                
+                if (field.value && field.value.trim() !== '') {
+                    tick.style.opacity = '1';
+                    field.classList.remove('error');
+                    field.classList.add('valid');
+                } else {
+                    tick.style.opacity = '0';
+                }
+            }
+            
+            function validateField(field) {
+                const value = field.value;
+                const isRequired = field.hasAttribute('required');
+                
+                if (isRequired && !value) {
+                    field.classList.add('error');
+                    field.classList.remove('valid');
+                    field.style.animation = 'shake 0.5s';
+                    setTimeout(() => field.style.animation = '', 500);
+                    return false;
+                }
+                
+                addValidationTick(field);
+                return true;
+            }
+            
+            document.querySelectorAll('input, select, textarea').forEach(field => {
+                field.addEventListener('blur', () => validateField(field));
+                field.addEventListener('input', () => {
+                    if (field.classList.contains('error')) {
+                        validateField(field);
+                    }
+                });
+            });
+            
+            // Add shake animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-10px); }
+                    75% { transform: translateX(10px); }
+                }
+                .form-input.valid {
+                    border-color: rgba(0, 255, 136, 0.5) !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // ==================== TÍNH NĂNG 9: MOBILE PERFECT ====================
+        function initializeMobileOptimization() {
+            function checkMobile() {
+                const isMobile = window.innerWidth < 768;
+                const runBtn = document.getElementById('run_risk') || document.querySelector('.btn-primary') || document.querySelector('button[onclick*="runAnalysis"]');
+                
+                if (isMobile) {
+                    // Grid 1 cột
+                    document.querySelectorAll('.form-grid').forEach(grid => {
+                        grid.style.gridTemplateColumns = '1fr';
+                    });
+                    
+                    // Tất cả section thu gọn trừ 01 & 02
+                    const sectionIds = ['shipping-info', 'cargo-details', 'seller-info', 'buyer-info', 'advanced-params', 'climate-esg', 'algorithm-modules'];
+                    sectionIds.forEach((sectionId, index) => {
+                        if (index > 1) {
+                            const sectionEl = document.getElementById(sectionId);
+                            if (sectionEl) {
+                                const content = sectionEl.querySelector('.section-content, .form-grid, .modules-grid');
+                                if (content) {
+                                    const originalDisplay = window.getComputedStyle(content).display;
+                                    if (originalDisplay !== 'none') {
+                                        content.setAttribute('data-original-display', originalDisplay);
+                                        content.style.display = 'none';
+                                        content.classList.add('collapsed');
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Nút RUN fixed bottom
+                    if (runBtn) {
+                        runBtn.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; width: 100%; z-index: 1000; border-radius: 0; padding: 16px; font-size: 18px; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);';
+                    }
+                } else {
+                    // Reset desktop
+                    document.querySelectorAll('.form-grid').forEach(grid => {
+                        grid.style.gridTemplateColumns = '';
+                    });
+                    document.querySelectorAll('[data-original-display]').forEach(el => {
+                        const originalDisplay = el.getAttribute('data-original-display');
+                        el.style.display = originalDisplay || '';
+                        el.removeAttribute('data-original-display');
+                        el.classList.remove('collapsed');
+                    });
+                    if (runBtn) {
+                        runBtn.style.cssText = '';
+                    }
+                }
+            }
+            
+            window.addEventListener('resize', checkMobile);
+            checkMobile();
+        }
+
+        // ==================== TÍNH NĂNG 10: GỌI TẤT CẢ KHI CHANGE ====================
+        function setupGlobalChangeListeners() {
+            document.addEventListener('change', function(e) {
+                if (window.applySmartDefaults) applySmartDefaults();
+                if (window.toggleContainerField) toggleContainerField();
+                if (window.smartAutoCalc) smartAutoCalc();
+                if (typeof updateProgress === 'function') updateProgress();
+            });
+            
+            document.addEventListener('input', function(e) {
+                if (window.smartAutoCalc) smartAutoCalc();
+                if (typeof updateProgress === 'function') updateProgress();
+            });
+        }
+
         window.resetForm = resetForm;
         window.runAnalysis = runAnalysis;
         window.setLang = setLang;
         window.getDropdownValue = getDropdownValue;
+        window.toggleSection = toggleSection;
+        window.collectEnhancedFormData = collectEnhancedFormData;
     </script>
+    
+    <!-- Logistics Data -->
+    <script src="/static/js/logistics_data.js"></script>
+    
+    <!-- Smart Input System -->
+    <script src="/static/js/smart_input.js"></script>
+    
+    <!-- Existing scripts -->
     <script src="/static/js/input.js"></script>
     
     <!-- DEBUG SCRIPT - Kiểm tra form setup -->
+    <script>
+        console.log('===== FORM DEBUG =====');
+        console.log('LOGISTICS_DATA loaded?', typeof window.LOGISTICS_DATA !== 'undefined');
+        console.log('SmartInput loaded?', typeof window.SmartInput !== 'undefined');
+        console.log('SmartInputSystem loaded?', typeof window.SmartInputSystem !== 'undefined');
+        console.log('Dropdowns found:', document.querySelectorAll('.custom-dropdown').length);
+        console.log('Port inputs found:', {
+            pol: document.getElementById('pol_input'),
+            pod: document.getElementById('pod_input')
+        });
+        
+        // Force check after delay
+        setTimeout(() => {
+            console.log('===== DELAYED CHECK (500ms) =====');
+            console.log('LOGISTICS_DATA:', typeof window.LOGISTICS_DATA !== 'undefined' ? '✓' : '✗');
+            console.log('SmartInput:', typeof window.SmartInput !== 'undefined' ? '✓' : '✗');
+            console.log('Port inputs:', {
+                pol: document.getElementById('pol_input') ? '✓' : '✗',
+                pod: document.getElementById('pod_input') ? '✓' : '✗'
+            });
+        }, 500);
+    </script>
 
 </body>
 </html>
