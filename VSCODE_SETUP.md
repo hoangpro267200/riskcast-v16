@@ -68,3 +68,7 @@ Nếu VSCode vẫn sử dụng interpreter cũ:
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d1581b2 (first commit)

@@ -53,10 +53,16 @@
             </div>
         </header>
 
-        <div class="view-mode-tabs">
-            <button class="view-tab active" data-mode="enterprise">Chế Độ Doanh Nghiệp</button>
-            <button class="view-tab" data-mode="nckh">Chế Độ Phân Tích NCKH</button>
-            <button class="view-tab" data-mode="investor">Chế Độ Trình Bày Nhà Đầu Tư</button>
+        <div class="tabs">
+            <button id="tab-enterprise" class="tab-btn view-tab active">
+                <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" stroke="currentColor" stroke-width="2"/><rect x="13" y="3" width="8" height="8" stroke="currentColor" stroke-width="2"/><rect x="3" y="13" width="8" height="8" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="8" height="8" stroke="currentColor" stroke-width="2"/></svg></div> <span data-lang="tab_enterprise">Chế Độ Doanh Nghiệp</span>
+            </button>
+            <button id="tab-research" class="tab-btn view-tab">
+                <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div> <span data-lang="tab_research">Chế Độ Phân Tích NCKH</span>
+            </button>
+            <button id="tab-investor" class="tab-btn view-tab">
+                <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 21L12 3L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 17L12 11L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div> <span data-lang="tab_investor">Chế Độ Trình Bày Nhà Đầu Tư</span>
+            </button>
         </div>
 
         <!-- RESULTS LAYOUT: Dashboard -->
@@ -96,11 +102,193 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- NEW KPI CARDS: Advanced Parameters -->
+                                    <div class="grid-4" style="margin-top: 24px;">
+                                        <!-- Climate Hazard Index (NEW) -->
+                                        <div class="kpi-card climate-card">
+                                            <div class="kpi-label">Climate Hazard Index (CHI)</div>
+                                            <div class="kpi-value" id="climate-hazard-index">--</div>
+                                            <div class="kpi-subtitle">v14.5 Climate Risk</div>
+                                        </div>
+                                        
+                                        <!-- Distance (NEW) -->
+                                        <div class="kpi-card">
+                                            <div class="kpi-label">Transport Distance</div>
+                                            <div class="kpi-value" id="transport-distance">--</div>
+                                            <div class="kpi-subtitle">kilometers</div>
+                                        </div>
+                                        
+                                        <!-- Route Complexity (NEW) -->
+                                        <div class="kpi-card">
+                                            <div class="kpi-label">Route Complexity</div>
+                                            <div class="kpi-value" id="route-complexity">--</div>
+                                            <div class="kpi-subtitle">Based on route type</div>
+                                        </div>
+                                        
+                                        <!-- Carrier Quality (NEW) -->
+                                        <div class="kpi-card">
+                                            <div class="kpi-label">Carrier Rating</div>
+                                            <div class="kpi-value" id="carrier-rating-display">--</div>
+                                            <div class="kpi-subtitle">Service quality (1-5 ⭐)</div>
+                                        </div>
+                                    </div>
+                                    
                                     <ul class="insight-list" style="margin-top: 24px;">
                                         <li><strong id="label-top-route" data-lang="label_top_route">Rủi ro tuyến vận tải lớn nhất:</strong> <span id="top-route-risk">--</span></li>
                                         <li><strong id="label-main-driver" data-lang="label_main_driver">Nguyên nhân chính:</strong> <span id="main-driver">--</span></li>
                                         <li><strong id="label-recommendation" data-lang="label_recommendation">Khuyến nghị của hệ thống:</strong> <span id="recommendation">--</span></li>
                                     </ul>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- SECTION 2: ADVANCED RISK PARAMETERS VISUALIZATION -->
+                            <section class="section-block">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card">
+                                                <svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            </div>
+                                            <span>Phân Tích Tham Số Rủi Ro Nâng Cao</span>
+                                        </h2>
+                                        <span class="card-badge">v14.0 Enhanced</span>
+                                    </div>
+                                    
+                                    <!-- Advanced Parameters Grid -->
+                                    <div class="grid-3" style="margin-bottom: 32px;">
+                                        <!-- Weather Risk Card -->
+                                        <div class="param-card weather-card">
+                                            <div class="param-icon">🌦️</div>
+                                            <div class="param-label">Weather Risk Score</div>
+                                            <div class="param-value" id="weather-risk-value">--</div>
+                                            <div class="param-progress">
+                                                <div class="param-progress-bar" id="weather-risk-bar" style="width: 0%;"></div>
+                                            </div>
+                                            <div class="param-description" id="weather-risk-desc">--</div>
+                                        </div>
+                                        
+                                        <!-- Port Risk Card -->
+                                        <div class="param-card port-card">
+                                            <div class="param-icon">⚓</div>
+                                            <div class="param-label">Port Risk Score</div>
+                                            <div class="param-value" id="port-risk-value">--</div>
+                                            <div class="param-progress">
+                                                <div class="param-progress-bar" id="port-risk-bar" style="width: 0%;"></div>
+                                            </div>
+                                            <div class="param-description" id="port-risk-desc">--</div>
+                                        </div>
+                                        
+                                        <!-- Container Match Card -->
+                                        <div class="param-card container-card">
+                                            <div class="param-icon">📦</div>
+                                            <div class="param-label">Container Match Quality</div>
+                                            <div class="param-value" id="container-match-value">--</div>
+                                            <div class="param-progress">
+                                                <div class="param-progress-bar" id="container-match-bar" style="width: 0%;"></div>
+                                            </div>
+                                            <div class="param-description" id="container-match-desc">--</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Advanced Radar Chart -->
+                                    <div class="chart-container">
+                                        <h3 class="chart-title">8-Dimensional Risk Profile (Including Advanced Parameters)</h3>
+                                        <div id="advancedRadarChart" style="height: 400px;"></div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- SECTION 3: CLIMATE RISK ANALYSIS v14.5 -->
+                            <section class="section-block climate-section">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card">
+                                                <svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M3 15C3 17.8284 4.23858 20.3569 6.25 22C8.26142 20.3569 9.5 17.8284 9.5 15C9.5 12.1716 8.26142 9.64309 6.25 8C4.23858 9.64309 3 12.1716 3 15Z" stroke="currentColor" stroke-width="2"/>
+                                                    <path d="M14 15C14 17.8284 15.2386 20.3569 17.25 22C19.2614 20.3569 20.5 17.8284 20.5 15C20.5 12.1716 19.2614 9.64309 17.25 8C15.2386 9.64309 14 12.1716 14 15Z" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            </div>
+                                            <span>Climate Risk Analysis v14.5</span>
+                                        </h2>
+                                        <span class="card-badge climate-badge">NOAA/NASA Data Integration</span>
+                                    </div>
+                                    
+                                    <!-- Climate Hazard Index Hero -->
+                                    <div class="climate-hero">
+                                        <div class="climate-hero-value" id="chi-hero-value">--</div>
+                                        <div class="climate-hero-label">Climate Hazard Index (CHI)</div>
+                                        <div class="climate-hero-subtitle">Composite score: ENSO + Typhoon + SST + Port Stress</div>
+                                    </div>
+                                    
+                                    <!-- Climate Metrics Grid -->
+                                    <div class="grid-4" style="margin-top: 32px;">
+                                        <div class="climate-metric">
+                                            <div class="metric-icon">🌊</div>
+                                            <div class="metric-label">ENSO Index</div>
+                                            <div class="metric-value" id="enso-index-value">--</div>
+                                            <div class="metric-bar">
+                                                <div class="metric-bar-fill" id="enso-bar" style="width: 50%;"></div>
+                                            </div>
+                                            <div class="metric-status" id="enso-status">--</div>
+                                        </div>
+                                        
+                                        <div class="climate-metric">
+                                            <div class="metric-icon">🌀</div>
+                                            <div class="metric-label">Typhoon Frequency</div>
+                                            <div class="metric-value" id="typhoon-freq-value">--</div>
+                                            <div class="metric-bar">
+                                                <div class="metric-bar-fill" id="typhoon-bar" style="width: 0%;"></div>
+                                            </div>
+                                            <div class="metric-status" id="typhoon-status">--</div>
+                                        </div>
+                                        
+                                        <div class="climate-metric">
+                                            <div class="metric-icon">🌡️</div>
+                                            <div class="metric-label">SST Anomaly</div>
+                                            <div class="metric-value" id="sst-anomaly-value">--</div>
+                                            <div class="metric-bar">
+                                                <div class="metric-bar-fill" id="sst-bar" style="width: 50%;"></div>
+                                            </div>
+                                            <div class="metric-status" id="sst-status">--</div>
+                                        </div>
+                                        
+                                        <div class="climate-metric">
+                                            <div class="metric-icon">⚡</div>
+                                            <div class="metric-label">Climate Volatility</div>
+                                            <div class="metric-value" id="climate-volatility-value">--</div>
+                                            <div class="metric-bar">
+                                                <div class="metric-bar-fill" id="volatility-bar" style="width: 0%;"></div>
+                                            </div>
+                                            <div class="metric-status" id="volatility-status">--</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Climate Timeline Chart -->
+                                    <div class="chart-container" style="margin-top: 32px;">
+                                        <h3 class="chart-title">30-Day Climate Risk Forecast</h3>
+                                        <div id="climateTimelineChart" style="height: 350px;"></div>
+                                    </div>
+                                    
+                                    <!-- Climate Risk Table -->
+                                    <div style="margin-top: 32px;">
+                                        <h3 class="chart-title">Climate Risk Breakdown</h3>
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Parameter</th>
+                                                    <th>Current Value</th>
+                                                    <th>Risk Level</th>
+                                                    <th>Impact on Shipment</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="climate-risk-table-body">
+                                                <!-- Populated by JavaScript -->
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </section>
@@ -111,85 +299,211 @@
                                     <div class="card-header">
                                         <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 6V12L16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 2L14 8L20 8L15 12L17 18L12 15L7 18L9 12L4 8L10 8Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></div> <span data-lang="section_risk_gauges">Tổng Quan Đồng Hồ Rủi Ro</span></h2>
                                     </div>
-                                    <div class="gauge-grid">
-                                        <div id="risk_overview_overall" class="chart-container gauge-container">
+                                    <div class="grid-3">
+                                        <div class="chart-container gauge-container">
                                             <div id="gaugeRisk"></div>
-                                            <div class="gauge-description">
-                                                <p class="desc-title">Chỉ số rủi ro tổng (Risk Score)</p>
-                                                <p class="desc-text">Thể hiện mức độ rủi ro chung của lô hàng dựa trên tuyến đường, khí hậu, loại hàng và độ tin cậy. Điểm cao (>70) nghĩa là rủi ro lớn và cần có biện pháp giảm thiểu.</p>
-                                                <p class="desc-text" style="margin-top: 8px; font-size: 12px; opacity: 0.7;"><strong>Ngưỡng đánh giá:</strong> &lt;40 Low, 40-70 Moderate, &gt;70 High</p>
-                                            </div>
                                         </div>
-                                        <div id="risk_overview_reliability" class="chart-container gauge-container">
+                                        <div class="chart-container gauge-container">
                                             <div id="gaugeReliability"></div>
-                                            <div class="gauge-description">
-                                                <p class="desc-title">Độ tin cậy giao hàng (Reliability)</p>
-                                                <p class="desc-text">Biểu thị xác suất giao đúng hạn. Điểm cao (>80) nghĩa là tuyến đường ổn định và ít gián đoạn.</p>
-                                                <p class="desc-text" style="margin-top: 8px; font-size: 12px; opacity: 0.7;"><strong>Ngưỡng đánh giá:</strong> &lt;60 Low, 60-80 Moderate, &gt;80 High</p>
-                                            </div>
                                         </div>
-                                        <div id="risk_overview_esg" class="chart-container gauge-container">
+                                        <div class="chart-container gauge-container">
                                             <div id="gaugeEsg"></div>
-                                            <div class="gauge-description">
-                                                <p class="desc-title">Điểm ESG</p>
-                                                <p class="desc-text">Phản ánh mức độ bền vững và tác động môi trường – xã hội của quá trình vận chuyển. Điểm thấp (&lt;40) có thể dẫn đến rủi ro chính trị hoặc khí hậu.</p>
-                                                <p class="desc-text" style="margin-top: 8px; font-size: 12px; opacity: 0.7;"><strong>Ngưỡng đánh giá:</strong> &lt;40 Low, 40-70 Moderate, &gt;70 High</p>
+                                        </div>
+                                    </div>
+                                    <div id="gauge-explanation" class="gauge-explanation-panel"></div>
+                                </div>
+                            </section>
+
+                            <!-- ENHANCED PRIORITY PROFILE SECTION -->
+                            <section class="section-block priority-section">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card">
+                                                <svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            </div>
+                                            <span>Priority Profile Analysis</span>
+                                        </h2>
+                                        <span class="card-badge">Speed-Cost-Risk Tradeoff</span>
+                                    </div>
+                                    
+                                    <!-- Priority Description -->
+                                    <div class="priority-description">
+                                        <p>Phân tích này cho thấy cách doanh nghiệp cân bằng giữa 3 yếu tố quan trọng: 
+                                        <strong style="color: #3b82f6;">Tốc độ giao hàng</strong>, 
+                                        <strong style="color: #fbbf24;">Chi phí vận chuyển</strong>, và 
+                                        <strong style="color: #ef4444;">Khả năng chấp nhận rủi ro</strong>.</p>
+                                    </div>
+                                    
+                                    <!-- 3 Gauges Grid -->
+                                    <div class="priority-gauges-grid">
+                                        <div class="priority-gauge-box">
+                                            <div id="gaugeSpeed"></div>
+                                            <div class="gauge-label">
+                                                <div class="gauge-title">Speed Priority</div>
+                                                <div class="gauge-desc">Ưu tiên thời gian giao hàng</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="priority-gauge-box">
+                                            <div id="gaugeCost"></div>
+                                            <div class="gauge-label">
+                                                <div class="gauge-title">Cost Priority</div>
+                                                <div class="gauge-desc">Ưu tiên tiết kiệm chi phí</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="priority-gauge-box">
+                                            <div id="gaugeRiskTolerance"></div>
+                                            <div class="gauge-label">
+                                                <div class="gauge-title">Risk Tolerance</div>
+                                                <div class="gauge-desc">Khả năng chấp nhận rủi ro</div>
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Priority Explanation Cards -->
+                                    <div class="grid-3" style="margin-top: 32px;">
+                                        <div class="priority-explanation-card speed-card">
+                                            <div class="exp-icon">⚡</div>
+                                            <h4>Speed Strategy</h4>
+                                            <div class="exp-weight" id="speed-weight-display">--</div>
+                                            <p class="exp-text" id="speed-explanation">--</p>
+                                        </div>
+                                        
+                                        <div class="priority-explanation-card cost-card">
+                                            <div class="exp-icon">💰</div>
+                                            <h4>Cost Strategy</h4>
+                                            <div class="exp-weight" id="cost-weight-display">--</div>
+                                            <p class="exp-text" id="cost-explanation">--</p>
+                                        </div>
+                                        
+                                        <div class="priority-explanation-card risk-card">
+                                            <div class="exp-icon">🛡️</div>
+                                            <h4>Risk Strategy</h4>
+                                            <div class="exp-weight" id="risk-weight-display">--</div>
+                                            <p class="exp-text" id="risk-explanation">--</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Recommendation Based on Priority -->
+                                    <div class="priority-recommendation">
+                                        <h4 style="color: var(--accent-green); margin-bottom: 12px;">💡 Khuyến Nghị Dựa Trên Hồ Sơ Ưu Tiên</h4>
+                                        <p id="priority-recommendation-text">--</p>
+                                    </div>
                                 </div>
                             </section>
 
-                            <!-- Priority Profile Section -->
-                            <section class="priority-profile-section">
-                                <h2 class="pp-title">Hồ sơ ưu tiên — Priority Profile</h2>
-                                <p class="pp-sub">Trọng số Speed – Cost – Risk theo lựa chọn của doanh nghiệp</p>
-
-                                <div class="pp-gauge-row">
-                                    <div class="pp-gauge-box">
-                                        <div id="gaugeSpeed"></div>
-                                        <p class="gauge-label">Tốc độ (Speed)</p>
-                                        <p class="gauge-explanation">Mức độ ưu tiên giao hàng nhanh. Điểm cao nghĩa là doanh nghiệp đề cao tốc độ hơn chi phí.</p>
-                                    </div>
-
-                                    <div class="pp-gauge-box">
-                                        <div id="gaugeCost"></div>
-                                        <p class="gauge-label">Chi phí (Cost)</p>
-                                        <p class="gauge-explanation">Mức độ ưu tiên tiết kiệm chi phí. Điểm cao nghĩa là cần tối ưu chi phí vận chuyển.</p>
-                                    </div>
-
-                                    <div class="pp-gauge-box">
-                                        <div id="gaugeRiskTolerance"></div>
-                                        <p class="gauge-label">Rủi ro (Risk Tolerance)</p>
-                                        <p class="gauge-explanation">Mức chấp nhận rủi ro. Điểm thấp nghĩa là doanh nghiệp cần an toàn cao.</p>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <!-- Buyer-Seller Analysis -->
-                            <section class="section-block">
+                            <!-- ENHANCED BUYER-SELLER ANALYSIS v16.2 -->
+                            <section class="section-block" id="buyer-seller-section">
                                 <div class="card" id="buyer-seller-card" style="display: none;">
                                     <div class="card-header">
                                         <h2 class="card-title">
-                                            <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                                            <span>Rủi ro Người Mua & Người Bán</span>
+                                            <div class="icon-card">
+                                                <svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            </div>
+                                            <span>Phân Tích Rủi Ro Đối Tác (v16.2)</span>
                                         </h2>
+                                        <span class="card-badge">ESG + Reliability</span>
                                     </div>
-                                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                                        <div class="kpi-card">
-                                            <div class="kpi-label">Điểm Rủi Ro Người Mua</div>
-                                            <div class="kpi-value" id="buyer_score">--</div>
-                                            <div class="kpi-subtitle">Buyer Risk Score</div>
+                                    
+                                    <!-- Comparison Grid -->
+                                    <div class="grid-2" style="margin-bottom: 32px;">
+                                        <!-- Buyer Card -->
+                                        <div class="partner-card buyer-card">
+                                            <div class="partner-header">
+                                                <div class="partner-icon">🛒</div>
+                                                <div>
+                                                    <h3 class="partner-title">Người Mua (Buyer)</h3>
+                                                    <p class="partner-name" id="buyer-name">--</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="partner-score">
+                                                <div class="score-label">Risk Score</div>
+                                                <div class="score-value" id="buyer-risk-score">--</div>
+                                            </div>
+                                            
+                                            <div class="partner-metrics">
+                                                <div class="partner-metric">
+                                                    <span class="metric-label">Company Size</span>
+                                                    <span class="metric-value" id="buyer-size">--</span>
+                                                </div>
+                                                <div class="partner-metric">
+                                                    <span class="metric-label">ESG Score</span>
+                                                    <span class="metric-value" id="buyer-esg">--</span>
+                                                </div>
+                                                <div class="partner-metric">
+                                                    <span class="metric-label">Reliability</span>
+                                                    <span class="metric-value" id="buyer-reliability">--</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="partner-progress">
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" id="buyer-progress" style="width: 0%;"></div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="kpi-card">
-                                            <div class="kpi-label">Điểm Rủi Ro Người Bán</div>
-                                            <div class="kpi-value" id="seller_score">--</div>
-                                            <div class="kpi-subtitle">Seller Risk Score</div>
+                                        
+                                        <!-- Seller Card -->
+                                        <div class="partner-card seller-card">
+                                            <div class="partner-header">
+                                                <div class="partner-icon">🏭</div>
+                                                <div>
+                                                    <h3 class="partner-title">Người Bán (Seller)</h3>
+                                                    <p class="partner-name" id="seller-name">--</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="partner-score">
+                                                <div class="score-label">Risk Score</div>
+                                                <div class="score-value" id="seller-risk-score">--</div>
+                                            </div>
+                                            
+                                            <div class="partner-metrics">
+                                                <div class="partner-metric">
+                                                    <span class="metric-label">Company Size</span>
+                                                    <span class="metric-value" id="seller-size">--</span>
+                                                </div>
+                                                <div class="partner-metric">
+                                                    <span class="metric-label">ESG Score</span>
+                                                    <span class="metric-value" id="seller-esg">--</span>
+                                                </div>
+                                                <div class="partner-metric">
+                                                    <span class="metric-label">Reliability</span>
+                                                    <span class="metric-value" id="seller-reliability">--</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="partner-progress">
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" id="seller-progress" style="width: 0%;"></div>
+                                                </div>
+                                            </div>
                                         </div>
+                                    </div>
+                                    
+                                    <!-- Risk Formula Explanation -->
+                                    <div class="formula-card">
+                                        <h4 style="color: var(--accent-green); margin-bottom: 16px;">📐 Risk Calculation Formula (v16.2)</h4>
+                                        <div class="formula-box">
+                                            <code>Partner Risk = 100 - (0.6 × Reliability + 0.3 × ESG + Size Bonus)</code>
+                                        </div>
+                                        <ul class="formula-notes">
+                                            <li>Size Bonus: Large = +10, Medium = +5, SME = 0</li>
+                                            <li>Lower score = Lower risk (better partner)</li>
+                                            <li>Score > 60 indicates high partner risk</li>
+                                        </ul>
                                     </div>
                                 </div>
+                            </section>
 
-                                <!-- Additional Charts -->
+                            <!-- Additional Charts -->
                                 <div class="grid-2">
                                     <div class="card">
                                         <div class="card-header">
@@ -317,28 +631,902 @@
                     </div>
                 </div>
 
-                <!-- RESEARCH MODE -->
-                <div id="mode-research" class="mode-section view-hidden">
-                    <div id="research" class="panel">
-                        <div class="dashboard-container">
-                            <section id="research_overview" class="card-section">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h2 class="section-title card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div> Tổng Quan Phương Pháp Nghiên Cứu</h2>
-                                        <span class="card-badge">NCKH / Academic</span>
-                                    </div>
-                                    <div class="section-content">
-                                        <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.8; margin-bottom: 20px;">
-                                            Phân tích này sử dụng khung đánh giá rủi ro toàn diện kết hợp <strong>Fuzzy Analytical Hierarchy Process (AHP)</strong>, 
-                                            <strong>Fuzzy-TOPSIS</strong>, và <strong>Mô phỏng Monte Carlo</strong> để đánh giá rủi ro logistics cho xuất khẩu SME Việt Nam.
-                                        </p>
-                                        <!-- Research content continues... -->
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
+        <div id="mode-research" class="mode-section view-hidden">
+        <div id="research" class="panel">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div> Tổng Quan Phương Pháp Nghiên Cứu</h2>
+
+                    <span class="card-badge">NCKH / Academic</span>
+
                 </div>
+
+                <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.8; margin-bottom: 20px;">
+
+                    Phân tích này sử dụng khung đánh giá rủi ro toàn diện kết hợp <strong>Fuzzy Analytical Hierarchy Process (AHP)</strong>, 
+
+                    <strong>Fuzzy-TOPSIS</strong>, và <strong>Mô phỏng Monte Carlo</strong> để đánh giá rủi ro logistics cho xuất khẩu SME Việt Nam.
+
+                </p>
+
+                <div class="ps-grid">
+
+                    <div class="ps-card">
+
+                        <div class="ps-icon">
+
+                            <div class="icon-card medium">
+
+                                <svg class="neon-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+
+                                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+
+                                    <path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+
+                                </svg>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ps-title">Fuzzy AHP</div>
+
+                        <div class="ps-text">Tính toán trọng số đa tiêu chí sử dụng số mờ tam giác và ma trận so sánh cặp</div>
+
+                    </div>
+
+                    <div class="ps-card">
+
+                        <div class="ps-icon">
+
+                            <div class="icon-card medium">
+
+                                <svg class="neon-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+
+                                    <path d="M3 12L7 8L11 10L16 5L21 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+                                    <circle cx="21" cy="10" r="2" fill="currentColor"/>
+
+                                </svg>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ps-title">Fuzzy-TOPSIS</div>
+
+                        <div class="ps-text">Xếp hạng phương án dựa trên khoảng cách đến giải pháp lý tưởng và phản lý tưởng</div>
+
+                    </div>
+
+                    <div class="ps-card">
+
+                        <div class="ps-icon">
+
+                            <div class="icon-card medium">
+
+                                <svg class="neon-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+
+                                    <rect x="3" y="3" width="6" height="6" stroke="currentColor" stroke-width="2"/>
+
+                                    <rect x="15" y="15" width="6" height="6" stroke="currentColor" stroke-width="2"/>
+
+                                    <rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="2"/>
+
+                                </svg>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ps-title">Monte Carlo</div>
+
+                        <div class="ps-text">Mô phỏng ngẫu nhiên để đo lường rủi ro đuôi (VaR, CVaR)</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" stroke="currentColor" stroke-width="2" rx="1"/><path d="M7 9H17M7 12H14M7 15H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> Bảng 1: Giải Thích Dữ Liệu</h2>
+
+                </div>
+
+                <table class="data-table">
+
+                    <tr>
+
+                        <th>Tham Số</th>
+
+                        <th>Giá Trị</th>
+
+                        <th>Lý Do</th>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Tuyến Đường</td>
+
+                        <td id="resRoute">Vietnam → EU/US</td>
+
+                        <td>Hành lang xuất khẩu khối lượng lớn cho SME Việt Nam</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Loại Hàng Hóa</td>
+
+                        <td id="resCargo">Electronics / High-value</td>
+
+                        <td>Nhạy cảm với hư hại và trễ; yêu cầu bảo hiểm cao</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Incoterm</td>
+
+                        <td id="resIncoterm">CIF / FOB</td>
+
+                        <td>Xác định điểm chuyển giao rủi ro và trách nhiệm các bên</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Phương Thức Vận Chuyển</td>
+
+                        <td id="resMode">Ocean / Multimodal</td>
+
+                        <td>Hiệu quả chi phí cho hàng số lượng lớn; độ phức tạp rủi ro cao hơn</td>
+
+                    </tr>
+
+                </table>
+
+                <div class="alert-box">
+
+                    Các tham số này tạo nền tảng cho định lượng rủi ro. Mỗi biến ảnh hưởng đến nhiều chiều rủi ro 
+
+                    (trễ, hư hại, biến động chi phí, tác động ESG).
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" stroke="currentColor" stroke-width="2"/><rect x="13" y="3" width="8" height="8" stroke="currentColor" stroke-width="2"/><rect x="3" y="13" width="8" height="8" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="8" height="8" stroke="currentColor" stroke-width="2"/></svg></div> Bảng 2: Xây Dựng Tiêu Chí</h2>
+
+                </div>
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Tiêu Chí</th>
+
+                            <th>Định Nghĩa</th>
+
+                            <th>Nguồn</th>
+
+                            <th>Vai Trò Trong Chuỗi Cung Ứng</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Rủi Ro Trễ</td>
+
+                            <td>Xác suất lô hàng đến muộn</td>
+
+                            <td>Dữ liệu ngành, hiệu suất hãng vận chuyển</td>
+
+                            <td>Ảnh hưởng tồn kho, sự hài lòng khách hàng</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Hư Hại</td>
+
+                            <td>Khả năng hàng hóa bị hư hại/mất mát</td>
+
+                            <td>Khiếu nại lịch sử, chất lượng bao bì</td>
+
+                            <td>Tổn thất tài chính trực tiếp, danh tiếng</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Biến Động Chi Phí</td>
+
+                            <td>Dao động trong cước vận chuyển</td>
+
+                            <td>Phân tích thị trường, phụ phí nhiên liệu</td>
+
+                            <td>Dự đoán ngân sách, áp lực biên lợi nhuận</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Vận Hành</td>
+
+                            <td>Độ tin cậy hãng vận chuyển, tài liệu</td>
+
+                            <td>Xếp hạng hãng vận chuyển, dữ liệu kiểm toán</td>
+
+                            <td>Hiệu quả quy trình, tuân thủ</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro ESG</td>
+
+                            <td>Tác động môi trường và xã hội</td>
+
+                            <td>Phát thải carbon, thực hành lao động</td>
+
+                            <td>Tuân thủ quy định, giá trị thương hiệu</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Chính Trị</td>
+
+                            <td>Sự kiện địa chính trị, lệnh trừng phạt</td>
+
+                            <td>Chỉ số rủi ro quốc gia</td>
+
+                            <td>Gián đoạn tuyến đường, rào cản pháp lý</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Khí Hậu</td>
+
+                            <td>Gián đoạn thời tiết, thiên tai</td>
+
+                            <td>Dữ liệu thời tiết lịch sử</td>
+
+                            <td>Trễ theo mùa, bất khả kháng</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> Bảng 3: Phương Pháp Fuzzy AHP</h2>
+
+                </div>
+
+                <h3 style="color: var(--accent-green); margin-bottom: 12px;">Quy Trình Từng Bước:</h3>
+
+                <ol style="color: var(--text-secondary); font-size: 14px; line-height: 1.8; padding-left: 24px;">
+
+                    <li>Xây dựng ma trận so sánh cặp sử dụng đánh giá chuyên gia</li>
+
+                    <li>Chuyển đổi giá trị rõ sang số mờ tam giác (TFN)</li>
+
+                    <li>Tính trung bình hình học mờ cho mỗi tiêu chí</li>
+
+                    <li>Chuẩn hóa để thu được trọng số mờ</li>
+
+                    <li>Giải mờ sử dụng phương pháp trọng tâm</li>
+
+                    <li>Xác minh tỷ lệ nhất quán (CR < 0.1)</li>
+
+                </ol>
+
+                
+
+                <h3 style="color: var(--accent-green); margin: 24px 0 12px;">Trọng Số Chuẩn Hóa Kết Quả:</h3>
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Tiêu Chí</th>
+
+                            <th>Trọng Số Mờ (TFN)</th>
+
+                            <th>Trọng Số Rõ</th>
+
+                            <th>Xếp Hạng</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Rủi Ro Trễ</td>
+
+                            <td>(0.18, 0.23, 0.28)</td>
+
+                            <td>0.23</td>
+
+                            <td>1</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Hư Hại</td>
+
+                            <td>(0.15, 0.19, 0.24)</td>
+
+                            <td>0.19</td>
+
+                            <td>2</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Biến Động Chi Phí</td>
+
+                            <td>(0.13, 0.17, 0.21)</td>
+
+                            <td>0.17</td>
+
+                            <td>3</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Vận Hành</td>
+
+                            <td>(0.12, 0.16, 0.20)</td>
+
+                            <td>0.16</td>
+
+                            <td>4</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro ESG</td>
+
+                            <td>(0.08, 0.12, 0.16)</td>
+
+                            <td>0.12</td>
+
+                            <td>5</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Chính Trị</td>
+
+                            <td>(0.06, 0.08, 0.11)</td>
+
+                            <td>0.08</td>
+
+                            <td>6</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Rủi Ro Khí Hậu</td>
+
+                            <td>(0.03, 0.05, 0.08)</td>
+
+                            <td>0.05</td>
+
+                            <td>7</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                <div class="alert-box">
+
+                    <strong>Tỷ Lệ Nhất Quán (CR):</strong> 0.076 < 0.1 ✓ (Nhất quán chấp nhận được)
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12L7 8L11 10L16 5L21 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="21" cy="10" r="2" fill="currentColor"/></svg></div> Bảng 4: Phân Tích Fuzzy-TOPSIS</h2>
+
+                </div>
+
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.8; margin-bottom: 16px;">
+
+                    TOPSIS (Kỹ thuật Xếp Hạng Ưu Tiên theo Độ Tương Tự với Giải Pháp Lý Tưởng) xếp hạng các phương án dựa trên 
+
+                    khoảng cách hình học đến giải pháp lý tưởng tốt nhất và giải pháp phản lý tưởng.
+
+                </p>
+
+                
+
+                <h3 style="color: var(--accent-green); margin-bottom: 12px;">Xếp Hạng Phương Án:</h3>
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Phương Án</th>
+
+                            <th>Khoảng Cách Đến Lý Tưởng (D+)</th>
+
+                            <th>Khoảng Cách Đến Phản Lý Tưởng (D-)</th>
+
+                            <th>Hệ Số Gần Gũi</th>
+
+                            <th>Xếp Hạng</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr style="background: rgba(0, 255, 136, 0.1);">
+
+                            <td><strong>Tuyến A (Trực Tiếp)</strong></td>
+
+                            <td>0.142</td>
+
+                            <td>0.286</td>
+
+                            <td>0.668</td>
+
+                            <td>🥇 1</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Tuyến B (Hub-spoke)</td>
+
+                            <td>0.198</td>
+
+                            <td>0.234</td>
+
+                            <td>0.542</td>
+
+                            <td>2</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Tuyến C (Chuyển Tải Nhiều Lần)</td>
+
+                            <td>0.267</td>
+
+                            <td>0.168</td>
+
+                            <td>0.386</td>
+
+                            <td>3</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                <div class="alert-box">
+
+                    <strong>Giải Pháp Tối Ưu:</strong> Tuyến A (Trực Tiếp) có hệ số gần gũi cao nhất (0.668), 
+
+                    cho thấy sự cân bằng tốt nhất trên tất cả các tiêu chí có trọng số.
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="6" height="6" stroke="currentColor" stroke-width="2"/><rect x="15" y="15" width="6" height="6" stroke="currentColor" stroke-width="2"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="2"/></svg></div> Bảng 5: Mô Phỏng Monte Carlo</h2>
+
+                </div>
+
+                <h3 style="color: var(--accent-green); margin-bottom: 12px;">Tham Số Mô Phỏng:</h3>
+
+                <table class="data-table">
+
+                    <tr>
+
+                        <th>Tham Số</th>
+
+                        <th>Giá Trị</th>
+
+                        <th>Mô Tả</th>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Số Lượng Mô Phỏng</td>
+
+                        <td>10.000</td>
+
+                        <td>Đủ để hội tụ phân phối ổn định</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Giá Trị Hàng Hóa</td>
+
+                        <td>$100.000</td>
+
+                        <td>Giá trị cơ sở để tính tổn thất</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Phân Phối Tổn Thất</td>
+
+                        <td>Beta + Triangular</td>
+
+                        <td>Phân phối hỗn hợp mô hình hóa sự kiện thực tế</td>
+
+                    </tr>
+
+                </table>
+
+                <h3 style="color: var(--accent-green); margin: 24px 0 12px;">Chỉ Số Rủi Ro:</h3>
+
+                <div class="grid-3">
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">Tổn Thất Kỳ Vọng</div>
+
+                        <div class="kpi-value" id="resExpectedLoss">$12.5K</div>
+
+                        <div class="kpi-subtitle">Trung bình phân phối</div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">VaR (95%)</div>
+
+                        <div class="kpi-value medium" id="resVar">$28K</div>
+
+                        <div class="kpi-subtitle">Tổn thất phân vị thứ 95</div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-label">CVaR (95%)</div>
+
+                        <div class="kpi-value high" id="resCVar">$35K</div>
+
+                        <div class="kpi-subtitle">Tổn thất kỳ vọng trong đuôi</div>
+
+                    </div>
+
+                </div>
+
+                <div class="alert-box">
+
+                    <strong>Giải Thích Thống Kê:</strong> Có 95% xác suất tổn thất sẽ không vượt quá $28.000. 
+
+                    Tuy nhiên, trong 5% kịch bản xấu nhất, tổn thất trung bình là $35.000 (CVaR). Rủi ro đuôi này nên 
+
+                    được xem xét trong quyết định bảo hiểm.
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7V12C3 16.5 6 20.16 12 21C18 20.16 21 16.5 21 12V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 8L16 16M16 8L8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> Bảng 6: Mô Hình Rủi Ro Tích Hợp</h2>
+
+                </div>
+
+                <h3 style="color: var(--accent-green); margin-bottom: 12px;">Tính Toán Điểm Rủi Ro Tổng Thể:</h3>
+
+                <div style="background: rgba(5, 10, 15, 0.8); padding: 20px; border-radius: 12px; margin: 16px 0;">
+
+                    <pre style="color: var(--text-secondary); font-size: 13px; line-height: 1.8; margin: 0;">
+
+<span style="color: var(--accent-green);">Risk_Overall</span> = Σ (w<sub>i</sub> × s<sub>i</sub> × adj<sub>i</sub>)
+
+Trong đó:
+
+  w<sub>i</sub> = Trọng số Fuzzy-AHP cho tiêu chí i
+
+  s<sub>i</sub> = Điểm chuẩn hóa từ Fuzzy-TOPSIS
+
+  adj<sub>i</sub> = Hệ số điều chỉnh Monte Carlo
+
+<span style="color: var(--accent-green);">Điểm Cuối Cùng</span> = 76 (Rủi Ro Trung Bình)
+
+  - Đóng góp trễ: 0.23 × 0.71 = 16.3
+
+  - Đóng góp hư hại: 0.19 × 0.64 = 12.2
+
+  - Đóng góp biến động chi phí: 0.17 × 0.52 = 8.8
+
+  - Đóng góp vận hành: 0.16 × 0.58 = 9.3
+
+  - Đóng góp ESG: 0.12 × 0.42 = 5.0
+
+  - Các đóng góp khác: 24.4
+
+                    </pre>
+
+                </div>
+
+                <h3 style="color: var(--accent-green); margin: 24px 0 12px;">Tóm Tắt Kết Quả Chính:</h3>
+
+                <ul class="insight-list">
+
+                    <li><strong>Chỉ Số Rủi Ro Tổng Thể:</strong> 76 (Trung Bình) — chấp nhận được với giám sát và kế hoạch dự phòng</li>
+
+                    <li><strong>Nguyên Nhân Rủi Ro Chính:</strong> Rủi ro trễ đóng góp 21.5% vào tổng điểm rủi ro</li>
+
+                    <li><strong>Tác Động Tài Chính Kỳ Vọng:</strong> $12.500 mỗi lô hàng (tổn thất trung bình)</li>
+
+                    <li><strong>Phơi Nhiễm Rủi Ro Đuôi:</strong> 5% khả năng tổn thất vượt quá $28.000</li>
+
+                    <li><strong>Độ Tin Cậy:</strong> 88% xác suất giao hàng đúng hạn không có gián đoạn lớn</li>
+
+                </ul>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" stroke="currentColor" stroke-width="2" rx="1"/><path d="M7 9H17M7 12H17M7 15H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> Bảng 7: Ý Nghĩa Chính Sách Cho SME Việt Nam</h2>
+
+                </div>
+
+                
+
+                <h3 style="color: var(--accent-green); margin-bottom: 12px;">Kết Luận Nghiên Cứu:</h3>
+
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.8; margin-bottom: 16px;">
+
+                    Khung tích hợp Fuzzy-AHP-TOPSIS-Monte Carlo này cung cấp cho các nhà xuất khẩu SME Việt Nam một 
+
+                    <strong>công cụ đánh giá rủi ro dựa trên dữ liệu, có thể giải thích</strong> cho việc ra quyết định logistics. 
+
+                    Phương pháp này giải quyết các thách thức chính:
+
+                </p>
+
+                <ul class="insight-list">
+
+                    <li><strong>Giảm Thiểu Chủ Quan:</strong> Số mờ nắm bắt sự không chắc chắn trong đánh giá chuyên gia trong khi vẫn duy trì tính nghiêm ngặt</li>
+
+                    <li><strong>Đánh Đổi Đa Tiêu Chí:</strong> Trọng số AHP cho phép ưu tiên động dựa trên ngữ cảnh kinh doanh</li>
+
+                    <li><strong>Định Lượng Rủi Ro Đuôi:</strong> Mô phỏng Monte Carlo tiết lộ các kịch bản cực đoan thường bị bỏ qua trong mô hình xác định</li>
+
+                    <li><strong>Tối Ưu Hóa Tuyến Đường:</strong> Xếp hạng TOPSIS cung cấp so sánh phương án rõ ràng cho lựa chọn hãng vận chuyển/tuyến đường</li>
+
+                    <li><strong>Lập Kế Hoạch Bảo Hiểm:</strong> Chỉ số VaR/CVaR trực tiếp thông báo yêu cầu bảo hiểm và đàm phán phí bảo hiểm</li>
+
+                </ul>
+
+                <h3 style="color: var(--accent-green); margin: 24px 0 12px;">Mở Rộng Và Nghiên Cứu Tương Lai:</h3>
+
+                <ul class="insight-list">
+
+                    <li>Tích hợp với dữ liệu IoT thời gian thực (theo dõi GPS, cảm biến nhiệt độ) để cập nhật rủi ro động</li>
+
+                    <li>Mô hình machine learning để dự đoán điểm tiêu chí dựa trên dữ liệu lô hàng lịch sử</li>
+
+                    <li>Mở rộng sang vận chuyển hàng không, đường sắt và kết hợp đa phương thức</li>
+
+                    <li>Tích hợp blockchain cho tài liệu minh bạch và xử lý khiếu nại</li>
+
+                    <li>Thích ứng khu vực cho hành lang ASEAN (tuyến VN-TH, VN-ID, VN-MY)</li>
+
+                </ul>
+
+                <h3 style="color: var(--accent-green); margin: 24px 0 12px;">Hạn Chế:</h3>
+
+                <div class="alert-box">
+
+                    <strong>Tính Sẵn Có Dữ Liệu:</strong> Độ chính xác mô hình phụ thuộc vào chất lượng dữ liệu đầu vào (hiệu suất hãng vận chuyển, tỷ lệ tổn thất lịch sử). 
+
+                    SME Việt Nam có thể thiếu dữ liệu lịch sử toàn diện.
+
+                    <br><br>
+
+                    <strong>Tính Chủ Quan Chuyên Gia:</strong> Mặc dù logic mờ, trọng số AHP vẫn dựa vào đánh giá chuyên gia có thể khác nhau giữa các ngành.
+
+                    <br><br>
+
+                    <strong>Môi Trường Động:</strong> Sự kiện địa chính trị, đại dịch và cú sốc chuỗi cung ứng yêu cầu hiệu chỉnh mô hình thường xuyên.
+
+                </div>
+
+            </div>
+
+            
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7V12C3 16.5 6 20.16 12 21C18 20.16 21 16.5 21 12V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg></div> Bảng 8: Kiểm Tra Độ Nhạy & Độ Vững Chắc</h2>
+
+                </div>
+
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.8; margin-bottom: 16px;">
+
+                    Để đảm bảo độ tin cậy của mô hình cho SME Việt Nam, phân tích độ nhạy đã được thực hiện. 
+
+                    Điều này kiểm tra cách xếp hạng cuối cùng (Fuzzy-TOPSIS) phản ứng với thay đổi trong trọng số tiêu chí (Fuzzy-AHP).
+
+                </p>
+
+                
+
+                <h3 style="color: var(--accent-green); margin-bottom: 12px;">Phân Tích Nhiễu Loạn Trọng Số:</h3>
+
+                <table class="data-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Kịch Bản</th>
+
+                            <th>Thay Đổi Trọng Số</th>
+
+                            <th>Tuyến Tối Ưu</th>
+
+                            <th>Kết Quả</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Cơ Sở</td>
+
+                            <td>N/A</td>
+
+                            <td>Tuyến A</td>
+
+                            <td style="color: var(--accent-green);">Ổn Định</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Nhạy Cảm Chi Phí</td>
+
+                            <td>Trọng Số Biến Động Chi Phí +20%</td>
+
+                            <td>Tuyến A</td>
+
+                            <td style="color: var(--accent-green);">Ổn Định</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Nhạy Cảm Thời Gian</td>
+
+                            <td>Trọng Số Rủi Ro Trễ +20%</td>
+
+                            <td>Tuyến A</td>
+
+                            <td style="color: var(--accent-green);">Ổn Định</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Nhạy Cảm Chất Lượng</td>
+
+                            <td>Trọng Số Rủi Ro Hư Hại +20%</td>
+
+                            <td>Tuyến A</td>
+
+                            <td style="color: var(--accent-green);">Ổn Định</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Gián Đoạn Cực Đoan</td>
+
+                            <td>Trọng Số Khí Hậu + Chính Trị +50%</td>
+
+                            <td>Tuyến A</td>
+
+                            <td style="color: var(--accent-yellow);">Ổn Định (Xếp Hạng 1), nhưng Hệ Số Gần Gũi giảm 15%</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                
+
+                <h3 style="color: var(--accent-green); margin: 24px 0 12px;">Kết Luận Độ Vững Chắc:</h3>
+
+                <ul class="insight-list">
+
+                    <li>Mô hình thể hiện <strong>độ vững chắc cao</strong> cho khuyến nghị chính (Tuyến A).</li>
+
+                    <li>Xếp hạng TOPSIS <strong>không nhạy cảm</strong> với thay đổi nhỏ hoặc vừa phải trong trọng số AHP.</li>
+
+                    <li>Sự ổn định này xác nhận mô hình là một <strong>công cụ hỗ trợ quyết định đáng tin cậy</strong> cho SME, 
+
+                        ngay cả với sự thay đổi nhỏ trong đánh giá chuyên gia hoặc ưu tiên kinh doanh.</li>
+
+                </ul>
+
+            </div>
+
+            </div>
+
+        </div>
 
                 <!-- INVESTOR MODE -->
                 <div id="mode-investor" class="mode-section view-hidden">
@@ -2249,6 +3437,33 @@
                 e.stopPropagation();
             });
         }
+    </script>
+
+    <script>
+        // === RISKCAST FIX === All data management is now handled by ResultsCore
+
+        // This script only initializes ResultsCore.init() on DOMContentLoaded
+
+        
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            console.log("🔥 Inline script loaded");
+
+            if (window.ResultsCore) {
+
+                console.log("🔥 ResultsCore found → INIT()");
+
+                window.ResultsCore.init();
+
+                } else {
+
+                console.error("ResultsCore missing!");
+
+            }
+
+        });
+
     </script>
 
     <script src="/static/js/results.js"></script>

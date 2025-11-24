@@ -62,3 +62,7 @@ Sau khi disable:
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d1581b2 (first commit)

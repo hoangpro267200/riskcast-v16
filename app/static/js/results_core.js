@@ -88,8 +88,10 @@ window.ResultsCore = {
         this.updateSnapshot();
         
         // ===============================
-        // STEP 6.5: RENDER PRIORITY GAUGES
+        // STEP 6.5: RENDER NEW SECTIONS
         // ===============================
+        this.renderAdvancedParameters(data);
+        this.renderClimateModule(data);
         this.renderPriorityGauges(data);
         
         // ===============================
@@ -197,6 +199,47 @@ window.ResultsCore = {
             return def;
         }
         return val;
+    },
+
+    // ===============================
+    // HELPER: SET TEXT CONTENT
+    // ===============================
+    setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = text;
+        } else {
+            console.warn(`[RISKCAST] Element #${id} not found for setText`);
+        }
+    },
+
+    // ===============================
+    // HELPER: FORMAT NUMBER
+    // ===============================
+    formatNumber(num, decimals = 2) {
+        if (num === null || num === undefined || isNaN(num)) return "0.00";
+        return Number(num).toFixed(decimals);
+    },
+
+    // ===============================
+    // HELPER: FORMAT USD
+    // ===============================
+    formatUSD(amount) {
+        if (amount === null || amount === undefined || isNaN(amount)) return "$0.00";
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    },
+
+    // ===============================
+    // HELPER: FORMAT PERCENT
+    // ===============================
+    formatPercent(value) {
+        if (value === null || value === undefined || isNaN(value)) return "0%";
+        return value.toFixed(1) + "%";
     },
 
     // ===============================
@@ -554,16 +597,44 @@ window.ResultsCore = {
     // ===============================
     updateSummaryCards(data) {
         const riskScore = (this.safe(data.risk_score, 0.5)) * 10;
-        this.setText("overall_risk_value", this.formatNumber(riskScore, 2));
-        this.setText("risk_level_label", this.safe(data.risk_level, "MODERATE"));
+        this.setText("overall-risk-index", this.formatNumber(riskScore, 1));
+        this.setText("risk-level-label", this.safe(data.risk_level, "MODERATE"));
 
         const expectedLoss = this.safe(data.expected_loss, 0);
-        this.setText("expected_loss_usd_value", this.formatUSD(expectedLoss));
+        this.setText("expected-loss", this.formatUSD(expectedLoss));
 
-        const var95 = this.safe(data.var, 0);
-        const cvar95 = this.safe(data.cvar, 0);
-        this.setText("var99_value", this.formatUSD(var95));
-        this.setText("std_value", this.formatUSD(cvar95));
+        const reliability = (this.safe(data.reliability, 0.88)) * 100;
+        this.setText("reliability-score", this.formatNumber(reliability, 1) + "%");
+
+        const esg = (this.safe(data.esg, 0.72)) * 100;
+        this.setText("esg-score", this.formatNumber(esg, 1));
+
+        // NEW KPI CARDS
+        const climateHazard = this.safe(data.climate_v14?.climate_hazard_index, data.climate_hazard_index, 5.0);
+        this.setText("climate-hazard-index", this.formatNumber(climateHazard, 1));
+
+        const distance = this.safe(data.advanced_parameters?.distance, data.distance, 5000);
+        if (distance && typeof distance === 'number') {
+            this.setText("transport-distance", distance.toLocaleString("vi-VN") + " km");
+        } else {
+            this.setText("transport-distance", "N/A");
+        }
+
+        const routeType = this.safe(data.advanced_parameters?.route_type, data.route_type, "standard");
+        this.setText("route-complexity", this.translateRouteType(routeType));
+
+        const carrierRating = this.safe(data.advanced_parameters?.carrier_rating, data.carrier_rating, 3.0);
+        this.setText("carrier-rating-display", carrierRating.toFixed(1) + " ⭐");
+    },
+
+    translateRouteType(type) {
+        const types = {
+            "direct": "Direct - Trực tiếp",
+            "standard": "Standard - Tiêu chuẩn",
+            "complex": "Complex - Phức tạp",
+            "hazardous": "Hazardous - Nguy hiểm"
+        };
+        return types[type] || type;
     },
 
     // ===============================
@@ -592,29 +663,71 @@ window.ResultsCore = {
     },
 
     // ===============================
-    // UPDATE BUYER-SELLER ANALYSIS (v16.2)
+    // UPDATE BUYER-SELLER ANALYSIS (v16.2) - ENHANCED
     // ===============================
     updateBuyerSeller(data) {
         const buyerSeller = this.safe(data.buyer_seller_analysis, null);
+        const section = document.getElementById('buyer-seller-section');
         const card = document.getElementById('buyer-seller-card');
         
-        if (buyerSeller && card) {
-            // Show card if data exists
-            card.style.display = 'block';
-            
-            // Update buyer score
-            const buyerRisk = this.safe(buyerSeller.buyer_risk, 50);
-            this.setText("buyer_score", this.formatNumber(buyerRisk, 1));
-            
-            // Update seller score
-            const sellerRisk = this.safe(buyerSeller.seller_risk, 50);
-            this.setText("seller_score", this.formatNumber(sellerRisk, 1));
-            
-            console.log('[RISKCAST] Buyer-Seller analysis updated:', buyerSeller);
-        } else if (card) {
-            // Hide card if no data
-            card.style.display = 'none';
+        if (!buyerSeller || !card) {
+            if (card) card.style.display = 'none';
+            return;
         }
+        
+        card.style.display = 'block';
+        
+        // Buyer Data
+        const buyer = this.safe(buyerSeller.buyer_data, {});
+        this.setText("buyer-name", buyer.name || "Unknown");
+        this.setText("buyer-size", buyer.size || "Unknown");
+        this.setText("buyer-esg", (buyer.esg || 50).toString());
+        this.setText("buyer-reliability", (buyer.reliability || 50).toString());
+        
+        const buyerRisk = this.safe(buyerSeller.buyer_risk, 50);
+        this.setText("buyer-risk-score", buyerRisk.toFixed(1));
+        this.setText("buyer_score", buyerRisk.toFixed(1)); // Keep for backward compatibility
+        const buyerProgress = document.getElementById("buyer-progress");
+        if (buyerProgress) buyerProgress.style.width = buyerRisk + "%";
+        
+        // Color code buyer score
+        const buyerScoreEl = document.getElementById("buyer-risk-score");
+        if (buyerScoreEl) {
+            if (buyerRisk < 40) {
+                buyerScoreEl.style.color = "#10b981";
+            } else if (buyerRisk < 60) {
+                buyerScoreEl.style.color = "#fbbf24";
+            } else {
+                buyerScoreEl.style.color = "#ef4444";
+            }
+        }
+        
+        // Seller Data
+        const seller = this.safe(buyerSeller.seller_data, {});
+        this.setText("seller-name", seller.name || "Unknown");
+        this.setText("seller-size", seller.size || "Unknown");
+        this.setText("seller-esg", (seller.esg || 50).toString());
+        this.setText("seller-reliability", (seller.reliability || 50).toString());
+        
+        const sellerRisk = this.safe(buyerSeller.seller_risk, 50);
+        this.setText("seller-risk-score", sellerRisk.toFixed(1));
+        this.setText("seller_score", sellerRisk.toFixed(1)); // Keep for backward compatibility
+        const sellerProgress = document.getElementById("seller-progress");
+        if (sellerProgress) sellerProgress.style.width = sellerRisk + "%";
+        
+        // Color code seller score
+        const sellerScoreEl = document.getElementById("seller-risk-score");
+        if (sellerScoreEl) {
+            if (sellerRisk < 40) {
+                sellerScoreEl.style.color = "#10b981";
+            } else if (sellerRisk < 60) {
+                sellerScoreEl.style.color = "#fbbf24";
+            } else {
+                sellerScoreEl.style.color = "#ef4444";
+            }
+        }
+        
+        console.log('[RISKCAST] Buyer-Seller analysis updated:', buyerSeller);
     },
     
     // ===============================
@@ -1040,9 +1153,58 @@ window.ResultsCore = {
 
         // Render 3 gauges with slight delay to ensure DOM is ready
         setTimeout(() => {
-            this.renderGauge("gaugeSpeed", w.speed);
-            this.renderGauge("gaugeCost", w.cost);
-            this.renderGauge("gaugeRiskTolerance", w.risk);
+            this.renderGauge("gaugeSpeed", w.speed, "#3b82f6");
+            this.renderGauge("gaugeCost", w.cost, "#fbbf24");
+            this.renderGauge("gaugeRiskTolerance", w.risk, "#ef4444");
+            
+            // Update weight displays
+            this.setText("speed-weight-display", w.speed + "%");
+            this.setText("cost-weight-display", w.cost + "%");
+            this.setText("risk-weight-display", w.risk + "%");
+            
+            // Generate explanations
+            let speedExplanation = "";
+            if (w.speed > 50) {
+                speedExplanation = "Ưu tiên cao về tốc độ. Khuyến nghị sử dụng Air Freight hoặc Express Sea cho hàng khẩn cấp.";
+            } else if (w.speed > 30) {
+                speedExplanation = "Cân bằng tốc độ. Có thể chấp nhận thời gian vận chuyển 15-25 ngày.";
+            } else {
+                speedExplanation = "Ưu tiên thấp về tốc độ. Chấp nhận thời gian dài hơn để tiết kiệm chi phí.";
+            }
+            this.setText("speed-explanation", speedExplanation);
+            
+            let costExplanation = "";
+            if (w.cost > 50) {
+                costExplanation = "Ưu tiên cao về chi phí. Nên chọn Ocean Freight LCL hoặc consolidation để giảm chi phí.";
+            } else if (w.cost > 30) {
+                costExplanation = "Cân bằng chi phí. Có thể chấp nhận chi phí vừa phải cho dịch vụ tốt hơn.";
+            } else {
+                costExplanation = "Ưu tiên thấp về chi phí. Sẵn sàng trả thêm cho dịch vụ cao cấp và nhanh.";
+            }
+            this.setText("cost-explanation", costExplanation);
+            
+            let riskExplanation = "";
+            if (w.risk > 40) {
+                riskExplanation = "Khả năng chấp nhận rủi ro cao. Có thể thử các tuyến đường mới hoặc carrier mới.";
+            } else if (w.risk > 20) {
+                riskExplanation = "Khả năng chấp nhận rủi ro trung bình. Cân bằng giữa an toàn và linh hoạt.";
+            } else {
+                riskExplanation = "Khả năng chấp nhận rủi ro thấp. Nên chọn carrier uy tín và tuyến ổn định.";
+            }
+            this.setText("risk-explanation", riskExplanation);
+            
+            // Generate recommendation
+            let recommendation = "";
+            if (w.speed > 50) {
+                recommendation = "Với ưu tiên tốc độ cao, khuyến nghị: (1) Sử dụng Air Freight cho hàng nhỏ, (2) Express Ocean Service (Fast Vessel) cho FCL, (3) Chọn carrier có schedule reliability > 90%.";
+            } else if (w.cost > 50) {
+                recommendation = "Với ưu tiên chi phí, khuyến nghị: (1) Consolidation/LCL thay vì FCL nếu hàng < 15 CBM, (2) Chọn slow steamer để tiết kiệm 15-20%, (3) Book trước 2-3 tuần để có rate tốt.";
+            } else if (w.risk < 20) {
+                recommendation = "Với khả năng chấp nhận rủi ro thấp, khuyến nghị: (1) Chỉ dùng Top 10 carrier (Maersk, MSC, CMA), (2) Mua bảo hiểm All Risk, (3) Tránh transshipment nhiều lần.";
+            } else {
+                recommendation = "Với hồ sơ cân bằng, khuyến nghị: (1) Chọn Standard Service của carrier Tier 1-2, (2) Cân nhắc multimodal nếu inland transport dài, (3) Theo dõi market rate để negotiate tốt hơn.";
+            }
+            this.setText("priority-recommendation-text", recommendation);
             
             // Add resize handler for Priority Profile gauges
             window.addEventListener('resize', () => {
@@ -1053,6 +1215,279 @@ window.ResultsCore = {
                 }
             });
         }, 100);
+    },
+
+    // ===============================
+    // RENDER ADVANCED PARAMETERS
+    // ===============================
+    renderAdvancedParameters(data) {
+        const adv = this.safe(data.advanced_parameters, {});
+        
+        // Weather Risk
+        const weatherRisk = this.safe(adv.weather_risk, data.weather_risk, 5.0);
+        this.setText("weather-risk-value", weatherRisk.toFixed(1) + "/10");
+        document.getElementById("weather-risk-bar")?.setAttribute("style", `width: ${weatherRisk * 10}%`);
+        
+        const weatherDesc = weatherRisk < 3 ? "Điều kiện thời tiết ổn định, rủi ro thấp" :
+                           weatherRisk < 7 ? "Thời tiết trung bình, cần theo dõi" :
+                           "Cảnh báo thời tiết xấu, khả năng trễ cao";
+        this.setText("weather-risk-desc", weatherDesc);
+        
+        // Port Risk
+        const portRisk = this.safe(adv.port_risk, data.port_risk, 4.0);
+        this.setText("port-risk-value", portRisk.toFixed(1) + "/10");
+        document.getElementById("port-risk-bar")?.setAttribute("style", `width: ${portRisk * 10}%`);
+        
+        const portDesc = portRisk < 3 ? "Cảng ổn định, ít tắc nghẽn" :
+                        portRisk < 7 ? "Cảng trung bình, có thể xếp hàng" :
+                        "Cảnh báo tắc nghẽn nghiêm trọng";
+        this.setText("port-risk-desc", portDesc);
+        
+        // Container Match
+        const containerMatch = this.safe(adv.container_match, data.container_match, 8.0);
+        this.setText("container-match-value", containerMatch.toFixed(1) + "/10");
+        document.getElementById("container-match-bar")?.setAttribute("style", `width: ${containerMatch * 10}%`);
+        
+        const containerDesc = containerMatch > 7 ? "Container phù hợp hoàn hảo với hàng hóa" :
+                             containerMatch > 4 ? "Container khá phù hợp" :
+                             "Cảnh báo: Container không tối ưu";
+        this.setText("container-match-desc", containerDesc);
+        
+        // Render 8D Radar Chart
+        this.renderAdvancedRadarChart(data);
+    },
+
+    // ===============================
+    // RENDER ADVANCED RADAR CHART (8 Dimensions)
+    // ===============================
+    renderAdvancedRadarChart(data) {
+        if (!window.Plotly) return;
+        
+        const el = document.getElementById("advancedRadarChart");
+        if (!el) return;
+        
+        const layers = this.safe(data.layers, []);
+        const adv = this.safe(data.advanced_parameters, {});
+        const climate = this.safe(data.climate_v14, {});
+        
+        // 8 dimensions
+        const labels = [
+            "Delay Risk", 
+            "Damage Risk", 
+            "Cost Volatility",
+            "Weather Risk",
+            "Port Risk",
+            "Carrier Quality",
+            "Container Match",
+            "Climate Risk"
+        ];
+        
+        const delayRisk = layers.find(l => l.name?.toLowerCase().includes("delay"))?.score || 0.5;
+        const damageRisk = layers.find(l => l.name?.toLowerCase().includes("damage"))?.score || 0.5;
+        const costVol = layers.find(l => l.name?.toLowerCase().includes("cost"))?.score || 0.5;
+        
+        const values = [
+            delayRisk * 100,
+            damageRisk * 100,
+            costVol * 100,
+            (this.safe(adv.weather_risk, data.weather_risk, 5.0)) * 10,
+            (this.safe(adv.port_risk, data.port_risk, 4.0)) * 10,
+            (this.safe(adv.carrier_rating, data.carrier_rating, 3.0)) * 20,
+            (this.safe(adv.container_match, data.container_match, 8.0)) * 10,
+            (this.safe(climate.climate_hazard_index, data.climate_hazard_index, 5.0)) * 10
+        ];
+        
+        const trace = {
+            type: 'scatterpolar',
+            r: values.concat([values[0]]),
+            theta: labels.concat([labels[0]]),
+            fill: 'toself',
+            fillcolor: 'rgba(0, 255, 136, 0.2)',
+            line: { color: '#00ff88', width: 3 },
+            marker: { color: '#00ff88', size: 8 }
+        };
+        
+        const layout = {
+            polar: {
+                bgcolor: 'rgba(0,0,0,0)',
+                radialaxis: {
+                    visible: true,
+                    range: [0, 100],
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    tickfont: { color: '#9fb3c8', size: 11 }
+                },
+                angularaxis: {
+                    tickfont: { color: '#9fb3c8', size: 11 },
+                    gridcolor: 'rgba(255,255,255,0.1)'
+                }
+            },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            margin: { t: 40, b: 60, l: 60, r: 60 },
+            showlegend: false
+        };
+        
+        Plotly.newPlot(el, [trace], layout, { displayModeBar: false, responsive: true });
+    },
+
+    // ===============================
+    // RENDER CLIMATE MODULE v14.5
+    // ===============================
+    renderClimateModule(data) {
+        const climate = this.safe(data.climate_v14, {});
+        
+        // Climate Hazard Index (CHI)
+        const chi = this.safe(climate.climate_hazard_index, data.climate_hazard_index, 5.0);
+        this.setText("chi-hero-value", chi.toFixed(1));
+        
+        // ENSO Index (-2 to +2 → convert to 0-100 for display)
+        const enso = this.safe(climate.ENSO_index, data.ENSO_index, 0.0);
+        this.setText("enso-index-value", enso.toFixed(2));
+        const ensoPercent = ((enso + 2) / 4) * 100;
+        document.getElementById("enso-bar")?.setAttribute("style", `width: ${ensoPercent}%`);
+        
+        let ensoStatus = "Neutral";
+        if (enso < -0.5) ensoStatus = "La Niña (Cold Phase)";
+        else if (enso > 0.5) ensoStatus = "El Niño (Warm Phase)";
+        this.setText("enso-status", ensoStatus);
+        
+        // Typhoon Frequency (0-1 scale)
+        const typhoonFreq = this.safe(climate.typhoon_frequency, data.typhoon_frequency, 0.5);
+        this.setText("typhoon-freq-value", (typhoonFreq * 100).toFixed(0) + "%");
+        document.getElementById("typhoon-bar")?.setAttribute("style", `width: ${typhoonFreq * 100}%`);
+        
+        const typhoonStatus = typhoonFreq < 0.3 ? "Low Season" :
+                             typhoonFreq < 0.7 ? "Moderate Season" : "High Season (Jun-Nov)";
+        this.setText("typhoon-status", typhoonStatus);
+        
+        // SST Anomaly (-3 to +3 °C)
+        const sstAnomaly = this.safe(climate.sst_anomaly, data.sst_anomaly, 0.0);
+        this.setText("sst-anomaly-value", sstAnomaly.toFixed(1) + "°C");
+        const sstPercent = ((sstAnomaly + 3) / 6) * 100;
+        document.getElementById("sst-bar")?.setAttribute("style", `width: ${sstPercent}%`);
+        
+        const sstStatus = sstAnomaly < -1 ? "Cooler than Average" :
+                         sstAnomaly > 1 ? "Warmer than Average" : "Near Average";
+        this.setText("sst-status", sstStatus);
+        
+        // Climate Volatility (1-10 scale)
+        const climateVol = this.safe(climate.climate_volatility_index, data.climate_volatility_index, 5.0);
+        this.setText("climate-volatility-value", climateVol.toFixed(1) + "/10");
+        document.getElementById("volatility-bar")?.setAttribute("style", `width: ${climateVol * 10}%`);
+        
+        const volStatus = climateVol < 3 ? "Stable Conditions" :
+                         climateVol < 7 ? "Moderate Variability" : "Highly Volatile";
+        this.setText("volatility-status", volStatus);
+        
+        // Render Climate Timeline Chart
+        this.renderClimateTimelineChart(data);
+        
+        // Render Climate Risk Table
+        this.renderClimateRiskTable(data);
+    },
+
+    // ===============================
+    // RENDER CLIMATE TIMELINE CHART
+    // ===============================
+    renderClimateTimelineChart(data) {
+        if (!window.Plotly) return;
+        
+        const el = document.getElementById("climateTimelineChart");
+        if (!el) return;
+        
+        const chi = this.safe(data.climate_v14?.climate_hazard_index, data.climate_hazard_index, 5.0);
+        const days = [];
+        const riskValues = [];
+        
+        for (let i = 1; i <= 30; i++) {
+            days.push(`Day ${i}`);
+            const variation = Math.sin(i * 0.2) * 1.5 + (Math.random() - 0.5) * 1.0;
+            riskValues.push(Math.max(0, Math.min(10, chi + variation)));
+        }
+        
+        const trace = {
+            type: 'scatter',
+            x: days,
+            y: riskValues,
+            mode: 'lines+markers',
+            line: { color: '#3b82f6', width: 3 },
+            marker: { color: '#3b82f6', size: 6 },
+            fill: 'tozeroy',
+            fillcolor: 'rgba(59, 130, 246, 0.2)'
+        };
+        
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            xaxis: {
+                title: { text: 'Days', font: { color: '#9fb3c8', size: 12 } },
+                tickfont: { color: '#9fb3c8', size: 10 },
+                gridcolor: 'rgba(255,255,255,0.05)'
+            },
+            yaxis: {
+                title: { text: 'Climate Risk (0-10)', font: { color: '#9fb3c8', size: 12 } },
+                tickfont: { color: '#9fb3c8', size: 11 },
+                gridcolor: 'rgba(255,255,255,0.1)',
+                range: [0, 10]
+            },
+            margin: { t: 20, b: 60, l: 60, r: 40 },
+            showlegend: false
+        };
+        
+        Plotly.newPlot(el, [trace], layout, { displayModeBar: false, responsive: true });
+    },
+
+    // ===============================
+    // RENDER CLIMATE RISK TABLE
+    // ===============================
+    renderClimateRiskTable(data) {
+        const tbody = document.getElementById("climate-risk-table-body");
+        if (!tbody) return;
+        
+        const climate = this.safe(data.climate_v14, {});
+        
+        const rows = [
+            {
+                param: "ENSO Phase",
+                value: (this.safe(climate.ENSO_index, data.ENSO_index, 0.0)).toFixed(2),
+                risk: Math.abs(this.safe(climate.ENSO_index, data.ENSO_index, 0.0)) > 0.5 ? "High" : "Low",
+                impact: "Affects sea conditions and typhoon intensity"
+            },
+            {
+                param: "Typhoon Season",
+                value: ((this.safe(climate.typhoon_frequency, data.typhoon_frequency, 0.5)) * 100).toFixed(0) + "%",
+                risk: (this.safe(climate.typhoon_frequency, data.typhoon_frequency, 0.5)) > 0.7 ? "High" : "Medium",
+                impact: "Potential route diversions and delays"
+            },
+            {
+                param: "Ocean Temperature",
+                value: (this.safe(climate.sst_anomaly, data.sst_anomaly, 0.0)).toFixed(1) + "°C",
+                risk: Math.abs(this.safe(climate.sst_anomaly, data.sst_anomaly, 0.0)) > 1.5 ? "High" : "Low",
+                impact: "Affects marine ecosystem and storm formation"
+            },
+            {
+                param: "Port Climate Stress",
+                value: (this.safe(climate.port_climate_stress, data.port_climate_stress, 5.0)).toFixed(1) + "/10",
+                risk: (this.safe(climate.port_climate_stress, data.port_climate_stress, 5.0)) > 7 ? "High" : "Medium",
+                impact: "Port infrastructure vulnerability to extreme weather"
+            }
+        ];
+        
+        tbody.innerHTML = "";
+        rows.forEach(row => {
+            const tr = document.createElement("tr");
+            
+            const riskColor = row.risk === "High" ? "#ef4444" : 
+                             row.risk === "Medium" ? "#f59e0b" : "#10b981";
+            
+            tr.innerHTML = `
+                <td><strong>${row.param}</strong></td>
+                <td style="font-family: 'Courier New', monospace;">${row.value}</td>
+                <td><span style="color: ${riskColor}; font-weight: 600;">${row.risk}</span></td>
+                <td style="font-size: 13px; color: var(--text-secondary);">${row.impact}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     },
 
     // ===============================
