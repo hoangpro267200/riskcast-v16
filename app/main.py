@@ -42,6 +42,21 @@ if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # ============================
+# HANDLE BROWSER REQUESTS (Ignore 404 for common browser requests)
+# ============================
+@app.get("/.well-known/{path:path}")
+async def well_known_handler(path: str):
+    """Handle browser DevTools requests - return 204 No Content to avoid 404 logs"""
+    from fastapi.responses import Response
+    return Response(status_code=204)
+
+@app.get("/favicon.ico")
+async def favicon_handler():
+    """Handle favicon requests - return 204 No Content to avoid 404 logs"""
+    from fastapi.responses import Response
+    return Response(status_code=204)
+
+# ============================
 # PAGES
 # ============================
 
@@ -51,11 +66,28 @@ async def home(request: Request):
 
 @app.get("/input", response_class=HTMLResponse)
 async def input_page(request: Request):
+    """Input page - Form to enter shipment data"""
     return templates.TemplateResponse("input.html", {"request": request})
 
 @app.get("/results", response_class=HTMLResponse)
 async def results_page(request: Request):
+    """Results page - Display risk analysis results"""
     return templates.TemplateResponse("results.html", {"request": request})
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page(request: Request):
+    """Dashboard page - Shipment Tracking & Management"""
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
+@app.get("/overview", response_class=HTMLResponse)
+async def overview_page(request: Request):
+    """Overview page - Summary Overview of all shipment data"""
+    return templates.TemplateResponse("overview.html", {"request": request})
+
+@app.get("/summary", response_class=HTMLResponse)
+async def summary_page(request: Request):
+    """Summary page - Alias for overview"""
+    return templates.TemplateResponse("overview.html", {"request": request})
 
 # ============================
 # API ROUTES

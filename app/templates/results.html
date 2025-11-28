@@ -11,9 +11,14 @@
     
     <!-- External CSS files -->
     <link rel="stylesheet" href="/static/css/results.css">
+    <link rel="stylesheet" href="/static/css/results_v16.css">
     <link rel="stylesheet" href="/static/css/neon_icons.css">
     <link rel="stylesheet" href="/static/css/ai_panel.css">
     <link rel="stylesheet" href="/static/css/neon.css">
+    <link rel="stylesheet" href="/static/css/ai_chat.css">
+    <link rel="stylesheet" href="/static/css/smart_input_styles.css">
+    <link rel="stylesheet" href="/static/css/booking_summary.css">
+    <link rel="stylesheet" href="/static/css/summary.css">
     
     <!-- External JS libraries -->
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -23,6 +28,9 @@
     <script src="/static/js/results_core.js"></script>
     <script src="/static/js/streaming.js"></script>
     <script src="/static/js/ai_adviser.js"></script>
+    <script src="/static/js/logistics_data.js"></script>
+    <script src="/static/js/booking_summary.js"></script>
+    <script src="/static/js/summary.js"></script>
 </head>
 <body>
     <div class="container">
@@ -46,9 +54,6 @@
                     </div>
                     <div class="chip" id="routeChip" data-lang="loading">Đang tải dữ liệu…</div>
                     <div class="chip" id="dateChip" data-lang="loading">Đang tải dữ liệu…</div>
-                    <button id="ai-chat-toggle" class="neon-button" style="display: none;">
-                        <span>🤖</span> AI Chat
-                    </button>
                 </div>
             </div>
         </header>
@@ -71,6 +76,332 @@
                 <div id="mode-enterprise" class="mode-section">
                     <div id="enterprise" class="panel">
                         <div class="dashboard-container">
+                            <!-- TÓM TẮT THÔNG TIN - SUMMARY SECTION -->
+                            <section class="summary-section section-block">
+                                <div class="summary-header">
+                                    <h1 class="summary-title">Tóm Tắt Thông Tin</h1>
+                                    <button class="realtime-badge">
+                                        <span class="pulse-dot"></span>
+                                        AI REAL-TIME UPDATED
+                                    </button>
+                                </div>
+
+                                <div class="summary-content">
+                                    <!-- Transport Overview -->
+                                    <div class="summary-section-item">
+                                        <h2 class="summary-section-title">Transport Overview</h2>
+                                        <div class="summary-cards-grid summary-grid-4">
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M4 7h16M4 12h16M4 17h16" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">TUYẾN ĐƯỜNG</div>
+                                                    <div class="summary-card-value" id="summary-route">Chưa chọn</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <rect x="3" y="8" width="18" height="12" rx="2" stroke-width="2"/>
+                                                        <circle cx="7" cy="17" r="2" stroke-width="2"/>
+                                                        <circle cx="17" cy="17" r="2" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">PHƯƠNG THỨC</div>
+                                                    <div class="summary-card-value" id="summary-transport-mode">Chưa chọn</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="2"/>
+                                                        <polyline points="9 22 9 12 15 12 15 22" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">POL / POD</div>
+                                                    <div class="summary-card-value" id="summary-pol-pod">Chưa chọn</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                                                        <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">KHOẢNG CÁCH</div>
+                                                    <div class="summary-card-value" id="summary-distance">-- km</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card highlight">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                                                        <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">THỜI GIAN</div>
+                                                    <div class="summary-card-value highlight-value" id="summary-transit-time-highlight">-- ngày</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Container & Cargo Details -->
+                                    <div class="summary-section-item">
+                                        <h2 class="summary-section-title">Container & Cargo Details</h2>
+                                        <div class="summary-cards-grid summary-grid-4">
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">LOẠI HÀNG</div>
+                                                    <div class="summary-card-value" id="summary-cargo">Chưa chọn</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <rect x="3" y="6" width="18" height="12" rx="2" stroke-width="2"/>
+                                                        <path d="M3 10h18" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">LOẠI CONTAINER</div>
+                                                    <div class="summary-card-value" id="summary-container">Chưa chọn</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M4 7h16M4 12h16M4 17h16" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">INCOTERM</div>
+                                                    <div class="summary-card-value" id="summary-incoterm">Chưa chọn</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <rect x="3" y="6" width="18" height="12" rx="2" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">CHẤT LƯỢNG ĐÓNG GÓI</div>
+                                                    <div class="summary-card-value" id="summary-packaging">Chưa chọn</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card highlight border-glow">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <rect x="3" y="6" width="18" height="12" rx="2" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">ĐỘ PHÙ HỢP CONTAINER</div>
+                                                    <div class="summary-card-value highlight-value" id="summary-container-match">--/10</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Carrier -->
+                                    <div class="summary-section-item">
+                                        <h2 class="summary-section-title">Carrier</h2>
+                                        <div class="summary-carrier-card">
+                                            <div class="summary-carrier-info">
+                                                <div class="summary-carrier-logo" id="summary-carrier-logo">--</div>
+                                                <div class="summary-carrier-details">
+                                                    <div class="summary-carrier-name" id="summary-carrier">Chưa chọn</div>
+                                                    <div class="summary-carrier-rating">
+                                                        <div class="summary-stars" id="summary-carrier-rating-stars">
+                                                            <span class="summary-star">☆</span>
+                                                            <span class="summary-star">☆</span>
+                                                            <span class="summary-star">☆</span>
+                                                            <span class="summary-star">☆</span>
+                                                            <span class="summary-star">☆</span>
+                                                        </div>
+                                                        <span class="summary-rating-value" id="summary-carrier-rating-value">3.0</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Shipment Milestones -->
+                                    <div class="summary-section-item">
+                                        <h2 class="summary-section-title">Shipment Milestones</h2>
+                                        <div class="summary-cards-grid summary-grid-4">
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M4 7h16M4 12h16M4 17h16" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">SỐ LƯỢNG KIỆN</div>
+                                                    <div class="summary-card-value" id="summary-packages">-- đơn vị</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M12 2L2 7l10 5 10-5-10-5z" stroke-width="2"/>
+                                                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">GIÁ TRỊ HÀNG</div>
+                                                    <div class="summary-card-value" id="summary-cargo-value">-- USD</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                                                        <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+                                                        <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+                                                        <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">ETD</div>
+                                                    <div class="summary-card-value" id="summary-etd">--</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                                                        <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+                                                        <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+                                                        <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">ETA</div>
+                                                    <div class="summary-card-value" id="summary-eta">--</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card highlight border-glow">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                                                        <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">TRANSIT TIME</div>
+                                                    <div class="summary-card-value highlight-value" id="summary-transit-time">-- ngày</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Parties -->
+                                    <div class="summary-section-item">
+                                        <h2 class="summary-section-title">Parties</h2>
+                                        <div class="summary-cards-grid summary-grid-2">
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="2"/>
+                                                        <circle cx="12" cy="7" r="4" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">NGƯỜI BÁN</div>
+                                                    <div class="summary-card-value" id="summary-seller">Chưa nhập</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="2"/>
+                                                        <circle cx="12" cy="7" r="4" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">NGƯỜI MUA</div>
+                                                    <div class="summary-card-value" id="summary-buyer">Chưa nhập</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Weather & ESG -->
+                                    <div class="summary-section-item">
+                                        <h2 class="summary-section-title">Weather & ESG</h2>
+                                        <div class="summary-cards-grid summary-grid-4">
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <circle cx="12" cy="12" r="5" stroke-width="2"/>
+                                                        <line x1="12" y1="1" x2="12" y2="3" stroke-width="2"/>
+                                                        <line x1="12" y1="21" x2="12" y2="23" stroke-width="2"/>
+                                                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke-width="2"/>
+                                                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke-width="2"/>
+                                                        <line x1="1" y1="12" x2="3" y2="12" stroke-width="2"/>
+                                                        <line x1="21" y1="12" x2="23" y2="12" stroke-width="2"/>
+                                                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke-width="2"/>
+                                                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">ENSO</div>
+                                                    <div class="summary-card-value" id="summary-enso">--</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">DỰ BÁO BÃO</div>
+                                                    <div class="summary-card-value" id="summary-storms">--</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <circle cx="12" cy="12" r="5" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">CLIMATE PRESSURE</div>
+                                                    <div class="summary-card-value" id="summary-climate-stress">--/10</div>
+                                                </div>
+                                            </div>
+                                            <div class="summary-info-card">
+                                                <div class="summary-card-icon">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke-width="2"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="summary-card-content">
+                                                    <div class="summary-card-label">ESG SCORE</div>
+                                                    <div class="summary-card-value" id="summary-esg">--/100</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
                             <!-- Executive Overview Section -->
                             <section id="executive_overview" class="card-section section-block overview-risk">
                                 <div class="card">
@@ -142,6 +473,52 @@
                                 </div>
                             </section>
 
+                    <!-- CLIMATE-VAR METRICS SECTION (NEW) -->
+                    <section class="section-block climate-var-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <div class="icon-card">
+                                        <svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                            <path d="M3 21L12 3L21 21" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M12 9V13M12 17H12.01" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </div>
+                                    <span>Climate-Adjusted Risk Metrics (v14.5)</span>
+                                </h2>
+                                <span class="card-badge climate-badge">Fat-Tailed Distribution</span>
+                            </div>
+
+                            <div class="grid-3" style="margin-bottom: 32px;">
+                                <div class="climate-var-card">
+                                    <div class="var-icon">📊</div>
+                                    <div class="var-label">Climate-Adjusted VaR 95%</div>
+                                    <div class="var-value" id="climate-var-95-value">--</div>
+                                    <div class="var-subtitle">Risk score adjusted for climate</div>
+                                </div>
+
+                                <div class="climate-var-card">
+                                    <div class="var-icon">⚡</div>
+                                    <div class="var-label">Climate-Adjusted CVaR 95%</div>
+                                    <div class="var-value" id="climate-cvar-95-value">--</div>
+                                    <div class="var-subtitle">Expected shortfall with climate</div>
+                                </div>
+
+                                <div class="climate-var-card">
+                                    <div class="var-icon">🌪️</div>
+                                    <div class="var-label">Climate Tail Probability</div>
+                                    <div class="var-value" id="climate-tail-prob-value">--</div>
+                                    <div class="var-subtitle">Extreme event likelihood</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 32px;">
+                                <h3 class="chart-title">Climate Impact Comparison</h3>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Metric</th>
+                        ...
                             <!-- SECTION 2: ADVANCED RISK PARAMETERS VISUALIZATION -->
                             <section class="section-block">
                                 <div class="card">
@@ -291,9 +668,9 @@
                                         </table>
                                     </div>
                                 </div>
-                            </section>
+                    </section>
 
-                            <!-- Risk Gauges Overview -->
+                    <!-- Risk Gauges Overview -->
                             <section class="section-block">
                                 <div class="card">
                                     <div class="card-header">
@@ -392,6 +769,398 @@
                                     <div class="priority-recommendation">
                                         <h4 style="color: var(--accent-green); margin-bottom: 12px;">💡 Khuyến Nghị Dựa Trên Hồ Sơ Ưu Tiên</h4>
                                         <p id="priority-recommendation-text">--</p>
+                                    </div>
+                                    
+                                    <!-- ============================================================
+                                         V16.0: PRIORITY ALIGNMENT ANALYSIS (ENHANCEMENT)
+                                         ============================================================ -->
+                                    <div class="priority-alignment-card" style="margin-top: 32px;">
+                                        <h4 class="section-subtitle">
+                                            <span class="icon-badge">🎯</span>
+                                            Priority Alignment Analysis
+                                        </h4>
+                                        
+                                        <div class="alignment-score-display">
+                                            <div class="score-circle" id="alignment-score-circle">
+                                                <div class="score-value" id="alignment-score">--</div>
+                                                <div class="score-label">/100</div>
+                                            </div>
+                                            <div class="score-meta">
+                                                <div class="score-title">Alignment Score</div>
+                                                <div class="score-desc" id="alignment-desc">--</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Current vs Target Distribution -->
+                                        <div class="distribution-comparison">
+                                            <h5>Current vs Target Distribution</h5>
+                                            <div class="comparison-grid">
+                                                <div class="comparison-item">
+                                                    <span class="label">Speed Priority</span>
+                                                    <div class="comparison-bars">
+                                                        <div class="bar current" id="speed-current-bar" style="width: 0%;">
+                                                            <span id="speed-current-text">0%</span>
+                                                        </div>
+                                                        <div class="bar target" id="speed-target-bar" style="width: 0%;">
+                                                            <span id="speed-target-text">Target: 0%</span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="delta" id="speed-delta">Δ 0%</span>
+                                                </div>
+                                                
+                                                <div class="comparison-item">
+                                                    <span class="label">Cost Priority</span>
+                                                    <div class="comparison-bars">
+                                                        <div class="bar current" id="cost-current-bar" style="width: 0%;">
+                                                            <span id="cost-current-text">0%</span>
+                                                        </div>
+                                                        <div class="bar target" id="cost-target-bar" style="width: 0%;">
+                                                            <span id="cost-target-text">Target: 0%</span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="delta" id="cost-delta">Δ 0%</span>
+                                                </div>
+                                                
+                                                <div class="comparison-item">
+                                                    <span class="label">Risk Priority</span>
+                                                    <div class="comparison-bars">
+                                                        <div class="bar current" id="risk-current-bar" style="width: 0%;">
+                                                            <span id="risk-current-text">0%</span>
+                                                        </div>
+                                                        <div class="bar target" id="risk-target-bar" style="width: 0%;">
+                                                            <span id="risk-target-text">Target: 0%</span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="delta" id="risk-delta">Δ 0%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Misalignments Alert -->
+                                        <div class="misalignments-alert" id="misalignments-container" style="display: none;">
+                                            <!-- Populated if misalignments exist -->
+                                        </div>
+                                        
+                                        <!-- Suggestions -->
+                                        <div class="alignment-suggestions" style="margin-top: 24px;">
+                                            <h5>💡 Suggestions to Improve Alignment</h5>
+                                            <ul id="alignment-suggestions-list">
+                                                <!-- Populated by JS -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- ============================================================
+                                 V16.0: CARRIER INTELLIGENCE ANALYSIS
+                                 ============================================================ -->
+                            <section class="section-block carrier-intelligence-section" id="carrier-intelligence-section" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card">🚢</div>
+                                            <span>Carrier Intelligence Analysis (v16.0)</span>
+                                        </h2>
+                                        <span class="card-badge">AI-Powered Reputation Scoring</span>
+                                    </div>
+                                    
+                                    <!-- Carrier Performance Dashboard -->
+                                    <div class="carrier-dashboard">
+                                        <div class="carrier-hero-card">
+                                            <div class="carrier-logo" id="carrier-logo-display">
+                                                <!-- Dynamic carrier logo -->
+                                            </div>
+                                            <div class="carrier-meta">
+                                                <h3 id="carrier-name-display">--</h3>
+                                                <div class="carrier-tier-badge" id="carrier-tier-badge">
+                                                    <span class="tier-icon">🏆</span>
+                                                    <span id="carrier-tier-text">--</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 4-Metric Grid -->
+                                        <div class="grid-4">
+                                            <div class="carrier-metric-card">
+                                                <div class="metric-icon">⭐</div>
+                                                <div class="metric-label">Reputation Grade</div>
+                                                <div class="metric-value grade" id="carrier-grade-value">--</div>
+                                                <div class="metric-subtitle" id="carrier-grade-desc">--</div>
+                                            </div>
+                                            
+                                            <div class="carrier-metric-card">
+                                                <div class="metric-icon">🎯</div>
+                                                <div class="metric-label">Reliability Score</div>
+                                                <div class="metric-value" id="carrier-reliability-value">--/10</div>
+                                                <div class="metric-progress">
+                                                    <div class="progress-fill" id="carrier-reliability-bar" style="width: 0%;"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="carrier-metric-card">
+                                                <div class="metric-icon">📈</div>
+                                                <div class="metric-label">On-Time Performance</div>
+                                                <div class="metric-value" id="carrier-ontime-value">--%</div>
+                                                <div class="metric-subtitle" id="carrier-ontime-subtitle">vs 89% industry avg</div>
+                                            </div>
+                                            
+                                            <div class="carrier-metric-card risk">
+                                                <div class="metric-icon">⚠️</div>
+                                                <div class="metric-label">Carrier Risk Score</div>
+                                                <div class="metric-value" id="carrier-risk-value">--/10</div>
+                                                <div class="metric-subtitle">Lower = Better</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Strengths & Risk Factors -->
+                                        <div class="grid-2" style="margin-top: 24px;">
+                                            <div class="strength-factors-card">
+                                                <h4 class="section-subtitle">
+                                                    <span class="icon-badge">✅</span>
+                                                    Strengths
+                                                </h4>
+                                                <ul class="factor-list strengths" id="carrier-strengths-list">
+                                                    <!-- Populated by JS -->
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="risk-factors-card">
+                                                <h4 class="section-subtitle">
+                                                    <span class="icon-badge">⚠️</span>
+                                                    Risk Factors
+                                                </h4>
+                                                <ul class="factor-list risks" id="carrier-risks-list">
+                                                    <!-- Populated by JS -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Alternative Carriers -->
+                                        <div class="carrier-alternatives" style="margin-top: 32px;">
+                                            <h4 class="section-subtitle">
+                                                <span class="icon-badge">🔄</span>
+                                                Alternative Carriers
+                                            </h4>
+                                            <div class="alternatives-grid" id="carrier-alternatives-grid">
+                                                <!-- Populated by JS -->
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Carrier Performance Radar Chart -->
+                                        <div style="margin-top: 32px;">
+                                            <h3 class="chart-title">Carrier Performance Radar</h3>
+                                            <div id="carrierRadarChart" style="height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- ============================================================
+                                 V16.0: PORT-SPECIFIC RISK ANALYSIS
+                                 ============================================================ -->
+                            <section class="section-block port-analysis-section" id="port-analysis-section" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card">⚓</div>
+                                            <span>Port-Specific Risk Analysis (v16.0)</span>
+                                        </h2>
+                                        <span class="card-badge">Real-Time Congestion Data</span>
+                                    </div>
+                                    
+                                    <!-- Port Comparison Grid -->
+                                    <div class="grid-2">
+                                        <!-- POL (Port of Loading) -->
+                                        <div class="port-risk-card pol-card">
+                                            <div class="port-header">
+                                                <div class="port-icon">🚢</div>
+                                                <div>
+                                                    <h3>Port of Loading (POL)</h3>
+                                                    <div class="port-code" id="pol-code-display">--</div>
+                                                    <div class="port-name" id="pol-name-display">--</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="port-risk-score">
+                                                <div class="risk-gauge">
+                                                    <div class="gauge-fill" id="pol-risk-gauge" style="width: 0%;"></div>
+                                                </div>
+                                                <div class="risk-value" id="pol-risk-value">--/10</div>
+                                                <div class="risk-level-badge" id="pol-risk-level">--</div>
+                                            </div>
+                                            
+                                            <div class="port-metrics-grid">
+                                                <div class="port-metric">
+                                                    <span class="metric-label">Congestion Level</span>
+                                                    <span class="metric-value" id="pol-congestion">--/10</span>
+                                                </div>
+                                                <div class="port-metric">
+                                                    <span class="metric-label">Efficiency Rating</span>
+                                                    <span class="metric-value" id="pol-efficiency">--/10</span>
+                                                </div>
+                                                <div class="port-metric highlight">
+                                                    <span class="metric-label">Expected Delay</span>
+                                                    <span class="metric-value" id="pol-delay">-- days</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="port-recommendations">
+                                                <h4>🎯 Recommendations</h4>
+                                                <ul id="pol-recommendations-list">
+                                                    <!-- Populated by JS -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- POD (Port of Discharge) -->
+                                        <div class="port-risk-card pod-card">
+                                            <div class="port-header">
+                                                <div class="port-icon">🏭</div>
+                                                <div>
+                                                    <h3>Port of Discharge (POD)</h3>
+                                                    <div class="port-code" id="pod-code-display">--</div>
+                                                    <div class="port-name" id="pod-name-display">--</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="port-risk-score">
+                                                <div class="risk-gauge">
+                                                    <div class="gauge-fill" id="pod-risk-gauge" style="width: 0%;"></div>
+                                                </div>
+                                                <div class="risk-value" id="pod-risk-value">--/10</div>
+                                                <div class="risk-level-badge" id="pod-risk-level">--</div>
+                                            </div>
+                                            
+                                            <div class="port-metrics-grid">
+                                                <div class="port-metric">
+                                                    <span class="metric-label">Congestion Level</span>
+                                                    <span class="metric-value" id="pod-congestion">--/10</span>
+                                                </div>
+                                                <div class="port-metric">
+                                                    <span class="metric-label">Customs Complexity</span>
+                                                    <span class="metric-value" id="pod-customs">--/10</span>
+                                                </div>
+                                                <div class="port-metric highlight">
+                                                    <span class="metric-label">Expected Delay</span>
+                                                    <span class="metric-value" id="pod-delay">-- days</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="port-recommendations">
+                                                <h4>🎯 Recommendations</h4>
+                                                <ul id="pod-recommendations-list">
+                                                    <!-- Populated by JS -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Port Timeline Comparison -->
+                                    <div style="margin-top: 32px;">
+                                        <h3 class="chart-title">Port Delay Timeline</h3>
+                                        <div id="portTimelineChart" style="height: 300px;"></div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- ============================================================
+                                 V16.0: PACKING EFFICIENCY ANALYSIS
+                                 ============================================================ -->
+                            <section class="section-block packing-efficiency-section" id="packing-efficiency-section" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card">📦</div>
+                                            <span>Packing Efficiency Analysis (v16.0)</span>
+                                        </h2>
+                                        <span class="card-badge">Cost Optimization</span>
+                                    </div>
+                                    
+                                    <!-- Efficiency Hero Card -->
+                                    <div class="packing-hero-card">
+                                        <div class="efficiency-grade-display">
+                                            <div class="grade-circle" id="packing-grade-circle">
+                                                <span id="packing-grade-text">--</span>
+                                            </div>
+                                            <div class="grade-meta">
+                                                <div class="grade-label">Container Efficiency</div>
+                                                <div class="grade-value" id="packing-utilization">--%</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="efficiency-stats-grid">
+                                            <div class="stat-item">
+                                                <div class="stat-label">Risk Score</div>
+                                                <div class="stat-value" id="packing-risk-score">--/10</div>
+                                            </div>
+                                            <div class="stat-item">
+                                                <div class="stat-label">Space Waste</div>
+                                                <div class="stat-value" id="packing-space-waste">-- m³</div>
+                                            </div>
+                                            <div class="stat-item highlight">
+                                                <div class="stat-label">Cost Impact</div>
+                                                <div class="stat-value" id="packing-cost-impact">$--</div>
+                                            </div>
+                                            <div class="stat-item">
+                                                <div class="stat-label">Quality Score</div>
+                                                <div class="stat-value" id="packing-quality">--/10</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Inefficiencies & Suggestions -->
+                                    <div class="grid-2" style="margin-top: 32px;">
+                                        <div class="inefficiencies-card">
+                                            <h4 class="section-subtitle">
+                                                <span class="icon-badge">⚠️</span>
+                                                Identified Inefficiencies
+                                            </h4>
+                                            <div id="packing-inefficiencies-list">
+                                                <!-- Populated by JS -->
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="optimization-card">
+                                            <h4 class="section-subtitle">
+                                                <span class="icon-badge">💡</span>
+                                                Optimization Suggestions
+                                            </h4>
+                                            <ul id="packing-suggestions-list">
+                                                <!-- Populated by JS -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Savings Potential -->
+                                    <div class="savings-potential-card" style="margin-top: 32px;">
+                                        <h4 class="section-subtitle">
+                                            <span class="icon-badge">💰</span>
+                                            Savings Potential Analysis
+                                        </h4>
+                                        <div class="grid-3">
+                                            <div class="savings-metric">
+                                                <div class="metric-label">Current Waste Cost</div>
+                                                <div class="metric-value" id="savings-current-waste">$--</div>
+                                            </div>
+                                            <div class="savings-metric">
+                                                <div class="metric-label">Optimization Cost</div>
+                                                <div class="metric-value" id="savings-optimization-cost">$--</div>
+                                            </div>
+                                            <div class="savings-metric highlight">
+                                                <div class="metric-label">Net Savings</div>
+                                                <div class="metric-value success" id="savings-net">$--</div>
+                                                <div class="metric-subtitle">ROI: <span id="savings-roi">--%</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Container Utilization Visualization -->
+                                    <div style="margin-top: 32px;">
+                                        <h3 class="chart-title">Container Space Utilization</h3>
+                                        <div id="containerVisualization" style="height: 400px;">
+                                            <!-- Gauge chart -->
+                                        </div>
                                     </div>
                                 </div>
                             </section>
@@ -502,6 +1271,84 @@
                                     </div>
                                 </div>
                             </section>
+
+                            <!-- ESG RESILIENCE SECTION (NEW) -->
+                            <section class="section-block esg-resilience-section">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="card-title">
+                                            <div class="icon-card">
+                                                <svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                                                    <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                            </div>
+                                            <span>ESG Climate Resilience Analysis (v14.5)</span>
+                                        </h2>
+                                        <span class="card-badge">Sustainability Impact</span>
+                                    </div>
+
+                                    <div class="esg-mini-row">
+                                        <div class="esg-component-card">
+                                            <div class="esg-component-main">
+                                                <div class="esg-icon" style="color: #10b981;">🌱</div>
+                                                <div class="esg-component-body">
+                                                    <div class="esg-label-row">
+                                                        <div class="esg-label">Environmental</div>
+                                                        <div class="esg-weight">40% ESG</div>
+                                                    </div>
+                                                    <div class="esg-score-row">
+                                                        <div class="esg-score" id="esg-e-score">--</div>
+                                                        <div class="esg-score-note" id="esg-e-meta">Trọng số 40%.</div>
+                                                    </div>
+                                                    <div class="esg-bar">
+                                                        <div class="esg-bar-fill" id="esg-e-bar" style="width: 0%; background: #10b981;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="esg-explanation" id="esg-e-explain">Đang phân tích tác động môi trường...</p>
+                                        </div>
+
+                                        <div class="esg-component-card">
+                                            <div class="esg-component-main">
+                                                <div class="esg-icon" style="color: #3b82f6;">👥</div>
+                                                <div class="esg-component-body">
+                                                    <div class="esg-label-row">
+                                                        <div class="esg-label">Social</div>
+                                                        <div class="esg-weight">35% ESG</div>
+                                                    </div>
+                                                    <div class="esg-score-row">
+                                                        <div class="esg-score" id="esg-s-score">--</div>
+                                                        <div class="esg-score-note" id="esg-s-meta">Trọng số 35%.</div>
+                                                    </div>
+                                                    <div class="esg-bar">
+                                                        <div class="esg-bar-fill" id="esg-s-bar" style="width: 0%; background: #3b82f6;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="esg-explanation" id="esg-s-explain">Đang phân tích tác động xã hội...</p>
+                                        </div>
+
+                                        <div class="esg-component-card">
+                                            <div class="esg-component-main">
+                                                <div class="esg-icon" style="color: #facc15;">🏛️</div>
+                                                <div class="esg-component-body">
+                                                    <div class="esg-label-row">
+                                                        <div class="esg-label">Governance</div>
+                                                        <div class="esg-weight">25% ESG</div>
+                                                    </div>
+                                                    <div class="esg-score-row">
+                                                        <div class="esg-score" id="esg-g-score">--</div>
+                                                        <div class="esg-score-note" id="esg-g-meta">Trọng số 25%.</div>
+                                                    </div>
+                                                    <div class="esg-bar">
+                                                        <div class="esg-bar-fill" id="esg-g-bar" style="width: 0%; background: #facc15;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="esg-explanation" id="esg-g-explain">Đang phân tích quản trị & tuân thủ...</p>
+                                        </div>
+                                    </div>
 
                             <!-- Additional Charts -->
                                 <div class="grid-2">
@@ -632,9 +1479,9 @@
                 </div>
 
         <div id="mode-research" class="mode-section view-hidden">
-        <div id="research" class="panel">
-
-            <div class="card">
+            <div id="research" class="panel">
+                <div class="dashboard-container">
+                    <div class="card">
 
                 <div class="card-header">
 
@@ -1524,14 +2371,16 @@ Trong đó:
 
             </div>
 
+                    </div>
+                </div>
             </div>
-
         </div>
 
                 <!-- INVESTOR MODE -->
                 <div id="mode-investor" class="mode-section view-hidden">
                     <div id="investor" class="panel">
-                        <div class="card">
+                        <div class="dashboard-container">
+                            <div class="card">
                             <div class="hero-section">
                                 <div class="hero-number" id="investorHeroNumber">32%</div>
                                 <div class="hero-caption">Giảm Rủi Ro Thông Qua Định Tuyến Thông Minh</div>
@@ -1788,898 +2637,21 @@ Trong đó:
                             </div>
                         </div>
                     </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
     </div>
 
     <!-- ========================================
-         3D AI CHAT WIDGET
+         3D AI CHAT WIDGET - CSS moved to /static/css/ai_chat.css
     ======================================== -->
-    <style>
-        /* ========================================
-           FLOATING WIDGET CONTAINER
-        ======================================== */
-        .ai-widget-container {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            z-index: 9999;
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            pointer-events: none;
-        }
-        .ai-widget-container > * {
-            pointer-events: auto;
-        }
+    <!-- CSS removed - using external file /static/css/ai_chat.css -->
+    <!-- OLD INLINE CSS REMOVED - Using external CSS file instead -->
 
-        /* ========================================
-           3D BOT CHARACTER
-        ======================================== */
-        .ai-bot-3d {
-            position: relative;
-            width: 80px;
-            height: 120px;
-            cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            animation: botIdle 4s ease-in-out infinite;
-            transform-style: preserve-3d;
-        }
-        .ai-bot-3d:hover {
-            transform: scale(1.08) translateY(-4px);
-            animation-play-state: paused;
-        }
-
-        .bot-head {
-            position: absolute;
-            bottom: 55px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 55px;
-            height: 55px;
-            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50% 50% 48% 52%;
-            box-shadow: 
-                0 8px 24px rgba(102, 126, 234, 0.4),
-                inset 0 -3px 8px rgba(0, 0, 0, 0.3),
-                inset 0 3px 8px rgba(255, 255, 255, 0.2);
-            animation: headBob 3s ease-in-out infinite;
-        }
-
-        .bot-antenna {
-            position: absolute;
-            top: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 15px;
-            background: linear-gradient(180deg, #667eea, transparent);
-        }
-        .bot-antenna::after {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: #00f2ff;
-            border-radius: 50%;
-            box-shadow: 0 0 12px #00f2ff;
-            animation: antennaPulse 2s ease-in-out infinite;
-        }
-
-        .bot-eyes {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            gap: 12px;
-        }
-        .bot-eye {
-            width: 10px;
-            height: 10px;
-            background: #00f2ff;
-            border-radius: 50%;
-            box-shadow: 
-                0 0 8px #00f2ff,
-                0 0 16px rgba(0, 242, 255, 0.5);
-            animation: eyeBlink 6s ease-in-out infinite;
-        }
-
-        .bot-mouth {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 8px;
-            border: 2px solid #00f2ff;
-            border-top: none;
-            border-radius: 0 0 10px 10px;
-            opacity: 0.7;
-        }
-
-        .bot-body {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 45px;
-            height: 35px;
-            background: linear-gradient(145deg, #764ba2 0%, #667eea 100%);
-            border-radius: 8px;
-            box-shadow: 
-                0 6px 16px rgba(102, 126, 234, 0.3),
-                inset 0 -2px 6px rgba(0, 0, 0, 0.2);
-        }
-        .bot-body::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 6px;
-            height: 6px;
-            background: #00f2ff;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #00f2ff;
-        }
-
-        .bot-arm {
-            position: absolute;
-            top: 5px;
-            width: 18px;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 4px;
-        }
-        .bot-arm.left {
-            left: -14px;
-            transform: rotate(-25deg);
-            animation: armWave 3s ease-in-out infinite;
-        }
-        .bot-arm.right {
-            right: -14px;
-            transform: rotate(25deg);
-            animation: armWave 3s ease-in-out infinite 0.5s;
-        }
-
-        .bot-legs {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-        }
-        .bot-leg {
-            width: 12px;
-            height: 20px;
-            background: linear-gradient(180deg, #764ba2, #667eea);
-            border-radius: 6px 6px 4px 4px;
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-        }
-
-        .ai-chat-button {
-            width: 68px;
-            height: 68px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            box-shadow: 
-                0 8px 32px rgba(102, 126, 234, 0.5),
-                0 0 0 0 rgba(102, 126, 234, 0.7);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .ai-chat-button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease;
-            border-radius: 50%;
-        }
-        .ai-chat-button:hover {
-            transform: scale(1.12) rotate(5deg);
-            box-shadow: 
-                0 12px 48px rgba(102, 126, 234, 0.6),
-                0 0 0 8px rgba(102, 126, 234, 0.2);
-        }
-        .ai-chat-button:hover::before {
-            transform: translate(-50%, -50%) scale(1.5);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 22px;
-            height: 22px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            border-radius: 50%;
-            border: 3px solid #1a1a2e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-            color: white;
-            animation: badgePulse 2s ease-in-out infinite;
-        }
-
-        .ai-chat-popup {
-            position: fixed;
-            bottom: 115px;
-            right: 28px;
-            width: 380px;
-            height: 550px;
-            background: rgba(26, 26, 46, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 22px;
-            border: 2px solid;
-            border-image: linear-gradient(135deg, #667eea, #764ba2, #f093fb) 1;
-            box-shadow: 
-                0 24px 64px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(102, 126, 234, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            display: none;
-            flex-direction: column;
-            z-index: 9998;
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .ai-chat-popup.active {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .chat-header {
-            padding: 20px 24px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-            border-radius: 20px 20px 0 0;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .chat-header-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .chat-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        .chat-title {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .chat-title h3 {
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 600;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        .chat-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #a0aec0;
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #48bb78;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #48bb78;
-            animation: statusPulse 2s ease-in-out infinite;
-        }
-        .chat-close {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .chat-close:hover {
-            background: rgba(255, 107, 107, 0.2);
-            transform: rotate(90deg);
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #667eea, #764ba2);
-            border-radius: 10px;
-        }
-        .message {
-            display: flex;
-            gap: 10px;
-            animation: messageSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .message.user {
-            flex-direction: row-reverse;
-        }
-        .message-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-        .message.ai .message-avatar {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
-        }
-        .message-bubble {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.5;
-            font-family: "Inter", "Roboto", -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        .message.ai .message-bubble {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            color: #e2e8f0;
-            border-radius: 18px 18px 18px 4px;
-        }
-        
-        /* AI Response Formatting Styles */
-        /* AI Result Card */
-        .message-bubble .ai-result-card {
-            margin-bottom: 16px;
-            padding: 16px;
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 217, 255, 0.1));
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.2);
-        }
-        .message-bubble .ai-result-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .message-bubble .ai-result-header strong {
-            color: #00ff88;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .message-bubble .result-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: #00ffa7;
-            line-height: 1.2;
-        }
-        
-        /* AI Reasoning Card */
-        .message-bubble .ai-reasoning-card {
-            margin-top: 16px;
-            padding: 16px;
-            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 200, 0, 0.05));
-            border: 1px solid rgba(255, 170, 0, 0.3);
-            border-radius: 12px;
-        }
-        .message-bubble .ai-reasoning-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .message-bubble .ai-reasoning-header strong {
-            color: #ffaa00;
-            font-size: 14px;
-        }
-        .message-bubble .reasoning-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .message-bubble .reasoning-list li {
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            background: rgba(255, 170, 0, 0.08);
-            border-left: 3px solid rgba(255, 170, 0, 0.5);
-            border-radius: 6px;
-            color: #e2e8f0;
-            line-height: 1.7;
-            transition: all 0.2s ease;
-        }
-        .message-bubble .reasoning-list li:hover {
-            background: rgba(255, 170, 0, 0.12);
-            transform: translateX(4px);
-        }
-        .message-bubble .reasoning-list li:last-child {
-            margin-bottom: 0;
-        }
-        
-        /* AI Field Cards */
-        .message-bubble .ai-field-card {
-            margin-top: 16px;
-            padding: 14px;
-            background: rgba(15, 20, 25, 0.6);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        .message-bubble .ai-field-card:hover {
-            border-color: rgba(102, 126, 234, 0.5);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-            transform: translateY(-2px);
-        }
-        .message-bubble .ai-field-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
-        }
-        .message-bubble .ai-field-header strong {
-            color: #9effe0;
-            font-size: 14px;
-            flex: 1;
-        }
-        .message-bubble .ai-icon-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 217, 255, 0.2));
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            border-radius: 8px;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-        .message-bubble .ai-badge-count {
-            padding: 4px 10px;
-            background: rgba(0, 217, 255, 0.2);
-            color: #00d9ff;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .message-bubble .ai-field-content {
-            color: #e2e8f0;
-            line-height: 1.6;
-            padding: 8px 0;
-        }
-        
-        /* Field Lists */
-        .message-bubble .field-list {
-            margin-top: 8px;
-            padding: 0;
-            list-style: none;
-        }
-        .message-bubble .field-item {
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            background: rgba(0, 255, 180, 0.06);
-            border-left: 2px solid rgba(0, 255, 180, 0.4);
-            border-radius: 6px;
-            color: #cbd5e1;
-            line-height: 1.6;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-        .message-bubble .field-item:last-child {
-            margin-bottom: 0;
-        }
-        .message-bubble .item-number {
-            color: #00ffa7;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-        
-        /* Object Container */
-        .message-bubble .object-container {
-            margin-top: 10px;
-            padding: 12px;
-            background: rgba(0, 255, 180, 0.05);
-            border-left: 3px solid rgba(0, 255, 180, 0.4);
-            border-radius: 8px;
-        }
-        .message-bubble .object-container.nested {
-            margin-left: 12px;
-            background: rgba(0, 255, 180, 0.03);
-        }
-        .message-bubble .object-field-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-        }
-        .message-bubble .object-field-item:last-child {
-            margin-bottom: 0;
-        }
-        .message-bubble .object-field-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-        .message-bubble .object-field-label strong {
-            color: #00ffa7;
-            font-size: 13px;
-            flex: 1;
-        }
-        .message-bubble .mini-icon {
-            font-size: 14px;
-            width: 20px;
-            height: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 255, 136, 0.15);
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-        .message-bubble .mini-badge {
-            padding: 2px 8px;
-            background: rgba(0, 217, 255, 0.2);
-            color: #00d9ff;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        .message-bubble .object-field-value {
-            color: #e2e8f0;
-            padding-left: 28px;
-            line-height: 1.6;
-        }
-        .message-bubble .nested-list {
-            margin-top: 8px;
-            padding-left: 0;
-            list-style: none;
-        }
-        .message-bubble .nested-item {
-            padding: 8px 10px;
-            margin-bottom: 4px;
-            color: #cbd5e1;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            line-height: 1.6;
-        }
-        .message-bubble .item-bullet {
-            color: #00ffa7;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-        .message-bubble .object-empty,
-        .message-bubble .object-nested-too-deep,
-        .message-bubble .object-error {
-            padding: 8px;
-            color: #9fb3c8;
-            font-style: italic;
-        }
-        .message-bubble .ai-error {
-            color: #ff6b6b;
-            padding: 8px;
-            background: rgba(255, 107, 107, 0.1);
-            border-left: 3px solid #ff6b6b;
-            border-radius: 4px;
-        }
-        .message-bubble .ai-error a {
-            color: #ffd93d;
-            text-decoration: underline;
-        }
-        .message-bubble code {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #00ffa7;
-        }
-        .message-bubble pre {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 12px;
-            border-radius: 6px;
-            overflow-x: auto;
-            margin: 8px 0;
-        }
-        .message-bubble pre code {
-            background: none;
-            padding: 0;
-            color: #e2e8f0;
-        }
-        
-        /* Text Content Styling */
-        .message-bubble .ai-text-content {
-            line-height: 1.8;
-            color: #e2e8f0;
-            font-family: "Inter", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-        .message-bubble .ai-text-header {
-            color: #00ff88;
-            font-size: 18px;
-            font-weight: 700;
-            margin: 16px 0 12px 0;
-            padding-bottom: 8px;
-            border-bottom: 2px solid rgba(0, 255, 136, 0.3);
-        }
-        .message-bubble .ai-text-subheader {
-            color: #00d9ff;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 14px 0 10px 0;
-        }
-        .message-bubble .ai-text-list {
-            margin: 12px 0;
-            padding-left: 24px;
-            list-style: none;
-        }
-        .message-bubble .ai-text-list li {
-            padding: 6px 0;
-            color: #cbd5e1;
-            position: relative;
-            line-height: 1.7;
-        }
-        .message-bubble .ai-text-list li:before {
-            content: "▸ ";
-            color: #00ffa7;
-            font-weight: bold;
-            position: absolute;
-            left: -20px;
-        }
-        .message-bubble .ai-bold {
-            color: #9effe0;
-            font-weight: 600;
-        }
-        .message-bubble .ai-italic {
-            color: #00d9ff;
-            font-style: italic;
-        }
-        .message-bubble .ai-code-block {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            overflow-x: auto;
-            margin: 12px 0;
-        }
-        .message-bubble .ai-inline-code {
-            background: rgba(0, 255, 136, 0.15);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #00ffa7;
-            border: 1px solid rgba(0, 255, 136, 0.3);
-        }
-        
-        /* AI Response Card Styling */
-        .message-bubble .ai-response-card {
-            background: rgba(0, 255, 136, 0.05);
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 16px 0;
-        }
-        .message-bubble .ai-response-content {
-            line-height: 1.8;
-            color: #e2e8f0;
-            font-family: "Inter", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-        .message-bubble .ai-response-content p {
-            margin: 12px 0;
-            color: #e2e8f0;
-        }
-        .message-bubble .ai-response-content p:first-child {
-            margin-top: 0;
-        }
-        .message-bubble .ai-response-content p:last-child {
-            margin-bottom: 0;
-        }
-        
-        .message.user .message-bubble {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #ffffff;
-            border-radius: 18px 18px 4px 18px;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-        }
-
-        .chat-input-container {
-            padding: 16px 20px 20px;
-            background: rgba(26, 26, 46, 0.8);
-            border-top: 1px solid rgba(102, 126, 234, 0.2);
-            border-radius: 0 0 20px 20px;
-        }
-        .chat-input-wrapper {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 16px;
-            padding: 4px 4px 4px 16px;
-            transition: all 0.3s ease;
-        }
-        .chat-input-wrapper:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-        .chat-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            color: #ffffff;
-            font-size: 14px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            outline: none;
-            padding: 10px 0;
-        }
-        .chat-input::placeholder {
-            color: #718096;
-        }
-        .chat-send-btn {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 12px;
-            color: #ffffff;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            flex-shrink: 0;
-        }
-        .chat-send-btn:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-        .chat-send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .typing-indicator {
-            display: none;
-            gap: 4px;
-            padding: 12px 16px;
-        }
-        .typing-indicator.active {
-            display: flex;
-        }
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #667eea;
-            border-radius: 50%;
-            animation: typingBounce 1.4s infinite ease-in-out;
-        }
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes botIdle {
-            0%, 100% { transform: rotate(0deg) translateY(0); }
-            25% { transform: rotate(-2deg) translateY(-2px); }
-            75% { transform: rotate(2deg) translateY(-2px); }
-        }
-        @keyframes headBob {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-3px); }
-        }
-        @keyframes eyeBlink {
-            0%, 96%, 100% { transform: scaleY(1); }
-            98% { transform: scaleY(0.1); }
-        }
-        @keyframes antennaPulse {
-            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
-            50% { opacity: 0.6; transform: translateX(-50%) scale(1.3); }
-        }
-        @keyframes armWave {
-            0%, 100% { transform: rotate(-25deg); }
-            50% { transform: rotate(-35deg); }
-        }
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(238, 90, 111, 0.7); }
-            50% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(238, 90, 111, 0); }
-        }
-        @keyframes statusPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        @keyframes messageSlide {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
-        }
-
-        @media (max-width: 480px) {
-            .ai-chat-popup {
-                width: calc(100vw - 32px);
-                height: calc(100vh - 140px);
-                right: 16px;
-                bottom: 100px;
-            }
-            .ai-widget-container {
-                bottom: 20px;
-                right: 20px;
-            }
-            .ai-bot-3d {
-                width: 70px;
-                height: 100px;
-            }
-            .ai-chat-button {
-                width: 60px;
-                height: 60px;
-                font-size: 28px;
-            }
-        }
-    </style>
-
-    <!-- HTML STRUCTURE -->
-    <div class="ai-widget-container">
+    <!-- Fixed AI Chat Widget -->
+    <div class="ai-widget-container" id="aiWidgetContainer">
         <!-- 3D Bot Character -->
         <div class="ai-bot-3d" id="aiBot">
             <div class="bot-head">
@@ -2689,27 +2661,20 @@ Trong đó:
                     <div class="bot-eye"></div>
                 </div>
                 <div class="bot-mouth"></div>
-                <div class="bot-body">
-                    <div class="bot-arm left"></div>
-                    <div class="bot-arm right"></div>
-                </div>
+            </div>
+            <div class="bot-body">
+                <div class="bot-arm left"></div>
+                <div class="bot-arm right"></div>
             </div>
             <div class="bot-legs">
                 <div class="bot-leg"></div>
                 <div class="bot-leg"></div>
             </div>
         </div>
-
-        <!-- Floating Chat Button -->
-        <button class="ai-chat-button" id="chatButton">
-            🤖
-            <span class="notification-badge" id="notificationBadge" style="display: none;">3</span>
-        </button>
     </div>
 
-    <!-- Chat Popup -->
-    <div class="ai-chat-popup" id="chatPopup">
-        <!-- Header -->
+    <!-- AI Chat Popup (separate from widget container) -->
+    <div class="ai-chat-popup" id="chatPopup" aria-live="polite">
         <div class="chat-header">
             <div class="chat-header-info">
                 <div class="chat-avatar">🤖</div>
@@ -2717,105 +2682,37 @@ Trong đó:
                     <h3>RISKCAST AI Assistant</h3>
                     <div class="chat-status">
                         <span class="status-dot"></span>
-                        <span>Online</span>
+                        <span>Online • 24/7</span>
                     </div>
                 </div>
             </div>
-            <button class="chat-close" id="chatClose">✕</button>
+            <button class="chat-close" id="chatClose" aria-label="Đóng trợ lý">✕</button>
         </div>
 
-        <!-- Messages Container -->
         <div class="chat-messages" id="chatMessages">
             <div class="message ai">
                 <div class="message-avatar">🤖</div>
                 <div class="message-bubble">
-                    Xin chào! Tôi là RISKCAST AI Assistant. Tôi có thể giúp bạn phân tích rủi ro logistics. 👋
-                </div>
-            </div>
-            <div class="message ai">
-                <div class="message-avatar">🤖</div>
-                <div class="message-bubble">
-                    Bạn có thể hỏi tôi về bất kỳ điều gì liên quan đến rủi ro vận tải, bảo hiểm, ESG, hoặc khuyến nghị tuyến đường!
+                    Xin chào! Tôi có thể giúp bạn giải thích điểm rủi ro, ESG, climate hazard index hoặc đề xuất cách tối ưu tuyến vận chuyển. 👋
                 </div>
             </div>
         </div>
 
-        <!-- Input Container -->
         <div class="chat-input-container">
             <div class="chat-input-wrapper">
                 <input 
                     type="text" 
                     class="chat-input" 
                     id="chatInput" 
-                    placeholder="Nhập tin nhắn..."
+                    placeholder="Hỏi tôi về rủi ro logistics..."
                     autocomplete="off"
                 >
-                <button class="chat-send-btn" id="sendButton">➤</button>
+                <button class="chat-send-btn" id="sendButton" aria-label="Gửi câu hỏi">➤</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ========================================
-        // DOM ELEMENTS
-        // ========================================
-        const chatButton = document.getElementById('chatButton');
-        const aiBot = document.getElementById('aiBot');
-        const chatPopup = document.getElementById('chatPopup');
-        const chatClose = document.getElementById('chatClose');
-        const chatInput = document.getElementById('chatInput');
-        const sendButton = document.getElementById('sendButton');
-        const chatMessages = document.getElementById('chatMessages');
-        const notificationBadge = document.getElementById('notificationBadge');
-
-        // ========================================
-        // OPEN/CLOSE CHAT POPUP
-        // ========================================
-        function openChat() {
-            chatPopup.classList.add('active');
-            chatInput.focus();
-            if (notificationBadge) {
-                notificationBadge.style.display = 'none';
-            }
-        }
-
-        function closeChat() {
-            chatPopup.classList.remove('active');
-        }
-
-        if (chatButton) chatButton.addEventListener('click', openChat);
-        if (aiBot) aiBot.addEventListener('click', openChat);
-        if (chatClose) chatClose.addEventListener('click', closeChat);
-
-        // ========================================
-        // BOT HOVER EFFECT
-        // ========================================
-        if (aiBot) {
-            aiBot.addEventListener('mousemove', (e) => {
-                const rect = aiBot.getBoundingClientRect();
-                const botCenterX = rect.left + rect.width / 2;
-                const botCenterY = rect.top + rect.height / 2;
-                
-                const deltaX = e.clientX - botCenterX;
-                const deltaY = e.clientY - botCenterY;
-                
-                const angle = Math.atan2(deltaY, deltaX);
-                const rotation = (angle * 180 / Math.PI) / 10;
-                
-                const head = aiBot.querySelector('.bot-head');
-                if (head) {
-                    head.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
-                }
-            });
-
-            aiBot.addEventListener('mouseleave', () => {
-                const head = aiBot.querySelector('.bot-head');
-                if (head) {
-                    head.style.transform = 'translateX(-50%) rotate(0deg)';
-                }
-            });
-        }
-
         // ========================================
         // FORMAT AI RESPONSE (Parse JSON and format nicely)
         // ========================================
@@ -3466,6 +3363,11 @@ Trong đó:
 
     </script>
 
+    <!-- Logistics Data & Smart Input System -->
+    <script src="/static/js/logistics_data.js"></script>
+    <script src="/static/js/smart_input.js"></script>
+    
     <script src="/static/js/results.js"></script>
+    <script src="/static/js/ai_chat.js"></script>
 </body>
 </html>

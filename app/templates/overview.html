@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}RISKCAST v12.5 — Summary Overview{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/overview.css">
+{% endblock %}
+
+{% block content %}
+<div class="riskcast-overview-container">
+  <!-- Page Header -->
+  <header class="overview-page-header">
+    <h1 class="overview-page-title">RISKCAST v12.5</h1>
+    <p class="overview-page-subtitle">AI Risk Analytics — Summary Overview</p>
+  </header>
+
+  <!-- Summary Grid -->
+  <div class="overview-summary-grid" id="summaryGrid">
+    <!-- Cards will be dynamically generated here -->
+    <div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--overview-text-muted);">
+      <p>⏳ Đang tải Summary Overview...</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Global Data Store (if not already loaded) -->
+<script src="/static/js/riskcast_data_store.js"></script>
+<!-- Overview Page Script -->
+<script src="/static/js/overview.js"></script>
+
+<!-- Debug Script -->
+<script>
+console.log('🔍 [OVERVIEW DEBUG] Script block loaded');
+console.log('🔍 [OVERVIEW DEBUG] summaryGrid exists:', !!document.getElementById('summaryGrid'));
+console.log('🔍 [OVERVIEW DEBUG] RiskCastData:', typeof window.RiskCastData !== 'undefined' ? 'exists' : 'not found');
+
+// Force render after 2 seconds if no cards
+setTimeout(function() {
+    const cards = document.querySelectorAll('.overview-summary-card');
+    console.log('🔍 [OVERVIEW DEBUG] Cards found:', cards.length);
+    if (cards.length === 0) {
+        console.warn('⚠️ [OVERVIEW DEBUG] No cards rendered, forcing refresh...');
+        if (window.RiskCastOverview && window.RiskCastOverview.refresh) {
+            window.RiskCastOverview.refresh();
+        }
+    }
+}, 2000);
+</script>
+{% endblock %}
+

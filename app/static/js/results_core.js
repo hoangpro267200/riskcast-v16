@@ -21,6 +21,14 @@ window.ResultsCore = {
         console.log("[RISKCAST DEBUG] ResultsCore.init() STARTED");
         console.log("=".repeat(80));
         
+        // Ensure enterprise mode is visible by default (fallback)
+        const enterpriseSection = document.getElementById("mode-enterprise");
+        if (enterpriseSection) {
+            enterpriseSection.classList.remove("view-hidden");
+            enterpriseSection.style.display = "block";
+            enterpriseSection.style.opacity = "1";
+        }
+        
         // If no data provided, fetch from backend
         if (!data) {
             try {
@@ -92,7 +100,14 @@ window.ResultsCore = {
         // ===============================
         this.renderAdvancedParameters(data);
         this.renderClimateModule(data);
-        this.renderPriorityGauges(data);
+        this.displayClimateVarMetrics(data);
+        this.displayESGResilience(data);
+        this.displayPriorityProfile(data);
+        
+        // ===============================
+        // STEP 6.6: RENDER V16.0 COMPONENTS
+        // ===============================
+        this.renderV16Components(data);
         
         // ===============================
         // STEP 7: RENDER GAUGE EXPLANATIONS
@@ -157,16 +172,46 @@ window.ResultsCore = {
     applyMode(mode) {
         this.mode = mode;
         
+        console.log("🔄 applyMode called with mode:", mode);
+        
+        // Get target section first
+        const targetSection = document.getElementById("mode-" + mode);
+        console.log("📍 Target section found:", targetSection ? "YES" : "NO");
+        
+        if (!targetSection) {
+            console.error("❌ Target section not found for mode:", mode);
+            return;
+        }
+        
         // Hide all mode sections using view-hidden class
         document.querySelectorAll(".mode-section").forEach(el => {
-            el.classList.add("view-hidden");
+            if (el !== targetSection) {
+                el.classList.add("view-hidden");
+                el.style.display = "none";
+                el.style.opacity = "0";
+            }
         });
         
-        // Show selected mode
-        const targetSection = document.getElementById("mode-" + mode);
-        if (targetSection) {
-            targetSection.classList.remove("view-hidden");
+        // Show selected mode (ensure it's visible)
+        targetSection.classList.remove("view-hidden");
+        // Force display in case of CSS conflicts
+        targetSection.style.display = "block";
+        targetSection.style.opacity = "1";
+        targetSection.style.visibility = "visible";
+        
+        // Also ensure panel and dashboard-container are visible
+        const panel = targetSection.querySelector(".panel");
+        const dashboard = targetSection.querySelector(".dashboard-container");
+        if (panel) {
+            panel.style.display = "block";
+            panel.style.visibility = "visible";
         }
+        if (dashboard) {
+            dashboard.style.display = "block";
+            dashboard.style.visibility = "visible";
+        }
+        
+        console.log("✅ Mode section displayed:", targetSection.style.display);
         
         // Update tab buttons
         document.querySelectorAll(".view-tab").forEach(el => {
@@ -176,6 +221,7 @@ window.ResultsCore = {
         const targetTab = document.getElementById("tab-" + mode);
         if (targetTab) {
             targetTab.classList.add("active");
+            console.log("✅ Tab activated:", targetTab.id);
         }
         
         console.log("⭐ Switched to mode:", mode);
@@ -194,23 +240,57 @@ window.ResultsCore = {
     // ===============================
     // SAFE VALUE HELPER
     // ===============================
-    safe(val, def) {
-        if (val === undefined || val === null || (typeof val === 'number' && Number.isNaN(val))) {
-            return def;
+    safe(...values) {
+        for (const val of values) {
+            if (val === undefined || val === null) continue;
+            if (typeof val === 'number' && Number.isNaN(val)) continue;
+            return val;
         }
-        return val;
+        return undefined;
     },
 
     // ===============================
     // HELPER: SET TEXT CONTENT
     // ===============================
-    setText(id, text) {
-        const el = document.getElementById(id);
-        if (el) {
-            el.textContent = text;
-        } else {
-            console.warn(`[RISKCAST] Element #${id} not found for setText`);
+    getElements(id) {
+        if (id === undefined || id === null || typeof document === "undefined") return [];
+        const normalizedId = String(id);
+        const selector = (typeof CSS !== "undefined" && CSS.escape)
+            ? `#${CSS.escape(normalizedId)}`
+            : `[id="${normalizedId.replace(/"/g, '\\"')}"]`;
+        try {
+            const nodes = document.querySelectorAll(selector);
+            if (nodes && nodes.length) return Array.from(nodes);
+        } catch (err) {
+            console.warn(`[RISKCAST] querySelectorAll failed for #${id}:`, err);
         }
+        const fallback = document.getElementById(normalizedId);
+        return fallback ? [fallback] : [];
+    },
+
+    setText(id, text) {
+        const elements = this.getElements(id);
+        if (elements.length === 0) {
+            console.warn(`[RISKCAST] Element #${id} not found for setText`);
+            return;
+        }
+        elements.forEach(el => {
+            el.textContent = text;
+        });
+    },
+
+    // ===============================
+    // HELPER: UPDATE INNER HTML
+    // ===============================
+    updateElement(id, value) {
+        const elements = this.getElements(id);
+        if (elements.length === 0) {
+            console.warn(`[RISKCAST] Element #${id} not found for updateElement`);
+            return;
+        }
+        elements.forEach(el => {
+            el.innerHTML = value;
+        });
     },
 
     // ===============================
@@ -240,6 +320,79 @@ window.ResultsCore = {
     formatPercent(value) {
         if (value === null || value === undefined || isNaN(value)) return "0%";
         return value.toFixed(1) + "%";
+    },
+
+    normalizeScore(rawValue) {
+        let value = rawValue;
+        if (value === null || value === undefined) return 0;
+        if (typeof value === "string") {
+            const cleaned = value.replace("%", "").trim();
+            value = parseFloat(cleaned);
+        }
+        if (Number.isNaN(value)) return 0;
+        const normalized = value <= 1 ? value * 100 : value;
+        return Math.max(0, Math.min(100, normalized));
+    },
+
+    describeESGTier(score) {
+        if (score >= 70) return "Điểm thuộc vùng mạnh";
+        if (score >= 40) return "Điểm ở mức trung bình, cần thêm cải thiện";
+        return "Điểm đang cảnh báo rủi ro cao";
+    },
+
+    buildESGMetaText(weight, contribution, totalScore) {
+        const weightPct = Math.round(weight * 100);
+        const totalRounded = Math.round(totalScore);
+        return `Trọng số ${weightPct}% · Đóng góp ${Math.round(contribution)}/100 → ESG ${totalRounded}/100`;
+    },
+
+    extractRiskFactorScore(factors, keywords = [], fallback = 0) {
+        if (!Array.isArray(factors) || factors.length === 0) return fallback;
+        const lowerKeywords = keywords.map(k => k.toLowerCase());
+        const matched = factors.find(f => {
+            const name = (this.safe(f.name, "") + "").toLowerCase();
+            return lowerKeywords.some(key => name.includes(key));
+        });
+        if (!matched) return fallback;
+        const candidate = this.safe(matched.score, matched.value, fallback);
+        return this.normalizeScore(candidate);
+    },
+
+    buildESGExplanation(dimension, context = {}) {
+        const score = this.safe(context.score, 0);
+        const tierText = this.describeESGTier(score);
+        let detail = "";
+
+        if (dimension === "environmental") {
+            const packaging = this.safe(context.greenPackScore, 0);
+            const resilience = this.safe(context.climateResilience, 0);
+            const packagingText = packaging >= 65
+                ? `Bao bì xanh đạt ${packaging.toFixed(0)}/100 giúp giảm phát thải vật liệu`
+                : `Bao bì xanh chỉ ${packaging.toFixed(0)}/100 đang kéo điểm phát thải xuống`;
+            const resilienceText = resilience >= 7
+                ? `Độ chống chịu khí hậu ${resilience.toFixed(1)}/10 giữ tuyến ổn định trước thời tiết`
+                : `Độ chống chịu khí hậu chỉ ${resilience.toFixed(1)}/10 khiến lô hàng dễ bị gián đoạn khí hậu`;
+            detail = `${packagingText}. ${resilienceText}.`;
+        } else if (dimension === "social") {
+            const delayProbability = this.safe(context.delayProbability, 0);
+            const reliability = this.safe(context.reliabilityScore, 0);
+            const delayText = delayProbability >= 35
+                ? `Xác suất trễ ${delayProbability.toFixed(1)}% vượt ngưỡng 35% và phản ánh áp lực lao động`
+                : `Xác suất trễ chỉ ${delayProbability.toFixed(1)}% nên áp lực nhân sự vẫn kiểm soát`;
+            const reliabilityText = reliability >= 70
+                ? `Độ tin cậy vận hành ${reliability.toFixed(0)}% duy trì trải nghiệm khách hàng`
+                : `Độ tin cậy chỉ ${reliability.toFixed(0)}% cần thêm đào tạo & tiêu chuẩn an toàn`;
+            detail = `${delayText}. ${reliabilityText}.`;
+        } else {
+            const policyRisk = this.safe(context.policyRisk, 0);
+            const incoterm = this.safe(context.incoterm, "CIF");
+            const policyText = policyRisk >= 60
+                ? `Chỉ số chính sách/tuân thủ khoảng ${policyRisk.toFixed(0)} kéo điểm quản trị xuống`
+                : `Rủi ro chính sách & tuân thủ chỉ ${policyRisk.toFixed(0)} nhưng vẫn cần khóa kiểm soát rõ ràng`;
+            detail = `${policyText}. Incoterm ${incoterm} yêu cầu kiểm soát chứng từ & bảo hiểm chặt chẽ.`;
+        }
+
+        return `${tierText}. ${detail}`;
     },
 
     // ===============================
@@ -1141,80 +1294,95 @@ window.ResultsCore = {
     // ===============================
     // RENDER PRIORITY GAUGES (Speed, Cost, Risk)
     // ===============================
-    renderPriorityGauges(data) {
+    displayPriorityProfile(data) {
         if (!window.Plotly) {
-            console.warn("[RISKCAST] Plotly not loaded for priority gauges");
+            console.warn("[RISKCAST] Plotly not loaded for priority profile");
             return;
         }
 
-        const w = this.safe(data.priority_weights, { speed: 40, cost: 40, risk: 20 });
-        
-        console.log("[RISKCAST] Rendering priority gauges:", w);
+        const weights = this.safe(data.priority_weights, { speed: 40, cost: 40, risk: 20 });
+        const profile = this.safe(data.priority_profile, 'standard');
 
-        // Render 3 gauges with slight delay to ensure DOM is ready
-        setTimeout(() => {
-            this.renderGauge("gaugeSpeed", w.speed, "#3b82f6");
-            this.renderGauge("gaugeCost", w.cost, "#fbbf24");
-            this.renderGauge("gaugeRiskTolerance", w.risk, "#ef4444");
-            
-            // Update weight displays
-            this.setText("speed-weight-display", w.speed + "%");
-            this.setText("cost-weight-display", w.cost + "%");
-            this.setText("risk-weight-display", w.risk + "%");
-            
-            // Generate explanations
-            let speedExplanation = "";
-            if (w.speed > 50) {
-                speedExplanation = "Ưu tiên cao về tốc độ. Khuyến nghị sử dụng Air Freight hoặc Express Sea cho hàng khẩn cấp.";
-            } else if (w.speed > 30) {
-                speedExplanation = "Cân bằng tốc độ. Có thể chấp nhận thời gian vận chuyển 15-25 ngày.";
-            } else {
-                speedExplanation = "Ưu tiên thấp về tốc độ. Chấp nhận thời gian dài hơn để tiết kiệm chi phí.";
-            }
-            this.setText("speed-explanation", speedExplanation);
-            
-            let costExplanation = "";
-            if (w.cost > 50) {
-                costExplanation = "Ưu tiên cao về chi phí. Nên chọn Ocean Freight LCL hoặc consolidation để giảm chi phí.";
-            } else if (w.cost > 30) {
-                costExplanation = "Cân bằng chi phí. Có thể chấp nhận chi phí vừa phải cho dịch vụ tốt hơn.";
-            } else {
-                costExplanation = "Ưu tiên thấp về chi phí. Sẵn sàng trả thêm cho dịch vụ cao cấp và nhanh.";
-            }
-            this.setText("cost-explanation", costExplanation);
-            
-            let riskExplanation = "";
-            if (w.risk > 40) {
-                riskExplanation = "Khả năng chấp nhận rủi ro cao. Có thể thử các tuyến đường mới hoặc carrier mới.";
-            } else if (w.risk > 20) {
-                riskExplanation = "Khả năng chấp nhận rủi ro trung bình. Cân bằng giữa an toàn và linh hoạt.";
-            } else {
-                riskExplanation = "Khả năng chấp nhận rủi ro thấp. Nên chọn carrier uy tín và tuyến ổn định.";
-            }
-            this.setText("risk-explanation", riskExplanation);
-            
-            // Generate recommendation
-            let recommendation = "";
-            if (w.speed > 50) {
-                recommendation = "Với ưu tiên tốc độ cao, khuyến nghị: (1) Sử dụng Air Freight cho hàng nhỏ, (2) Express Ocean Service (Fast Vessel) cho FCL, (3) Chọn carrier có schedule reliability > 90%.";
-            } else if (w.cost > 50) {
-                recommendation = "Với ưu tiên chi phí, khuyến nghị: (1) Consolidation/LCL thay vì FCL nếu hàng < 15 CBM, (2) Chọn slow steamer để tiết kiệm 15-20%, (3) Book trước 2-3 tuần để có rate tốt.";
-            } else if (w.risk < 20) {
-                recommendation = "Với khả năng chấp nhận rủi ro thấp, khuyến nghị: (1) Chỉ dùng Top 10 carrier (Maersk, MSC, CMA), (2) Mua bảo hiểm All Risk, (3) Tránh transshipment nhiều lần.";
-            } else {
-                recommendation = "Với hồ sơ cân bằng, khuyến nghị: (1) Chọn Standard Service của carrier Tier 1-2, (2) Cân nhắc multimodal nếu inland transport dài, (3) Theo dõi market rate để negotiate tốt hơn.";
-            }
-            this.setText("priority-recommendation-text", recommendation);
-            
-            // Add resize handler for Priority Profile gauges
-            window.addEventListener('resize', () => {
-                if (document.getElementById("gaugeSpeed")) {
-                    Plotly.Plots.resize("gaugeSpeed");
-                    Plotly.Plots.resize("gaugeCost");
-                    Plotly.Plots.resize("gaugeRiskTolerance");
+        this.createPriorityGauge('gaugeSpeed', weights.speed, 'Speed', '#3b82f6');
+        this.createPriorityGauge('gaugeCost', weights.cost, 'Cost', '#fbbf24');
+        this.createPriorityGauge('gaugeRiskTolerance', weights.risk, 'Risk', '#ef4444');
+
+        this.updateElement('speed-weight-display', `${weights.speed}%`);
+        this.updateElement('cost-weight-display', `${weights.cost}%`);
+        this.updateElement('risk-weight-display', `${weights.risk}%`);
+
+        this.setText('speed-explanation', this.getSpeedExplanation(weights.speed));
+        this.setText('cost-explanation', this.getCostExplanation(weights.cost));
+        this.setText('risk-explanation', this.getRiskExplanation(weights.risk));
+
+        this.updateElement('priority-recommendation-text', this.getPriorityRecommendation(profile, weights));
+    },
+
+    createPriorityGauge(elementId, value, title, color) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+
+        Plotly.newPlot(elementId, [{
+            type: "indicator",
+            mode: "gauge+number",
+            value: value,
+            title: { text: title, font: { color: '#e2e8f0', size: 16 } },
+            number: { suffix: "%", font: { size: 34, color } },
+            gauge: {
+                axis: { range: [0, 100], tickwidth: 1, tickcolor: color },
+                bar: { color },
+                bgcolor: "rgba(255,255,255,0.03)",
+                borderwidth: 2,
+                bordercolor: color,
+                steps: [
+                    { range: [0, 33], color: "rgba(255, 255, 255, 0.05)" },
+                    { range: [33, 66], color: "rgba(255, 255, 255, 0.1)" },
+                    { range: [66, 100], color: "rgba(255, 255, 255, 0.15)" }
+                ],
+                threshold: {
+                    line: { color: "#ffffff", width: 4 },
+                    thickness: 0.75,
+                    value
                 }
-            });
-        }, 100);
+            }
+        }], {
+            paper_bgcolor: "transparent",
+            font: { color: '#e2e8f0' },
+            margin: { t: 20, r: 20, l: 20, b: 10 },
+            height: 260
+        }, { responsive: true, displayModeBar: false });
+    },
+
+    getSpeedExplanation(weight) {
+        if (weight >= 70) return "Ưu tiên cực cao về tốc độ. Chọn express delivery, chấp nhận chi phí cao hơn 30-50%.";
+        if (weight >= 50) return "Ưu tiên cao về tốc độ. Cân bằng giữa express và standard shipping.";
+        if (weight >= 30) return "Ưu tiên trung bình. Standard shipping với timeline hợp lý.";
+        return "Ưu tiên thấp về tốc độ. Có thể dùng economy shipping để tiết kiệm.";
+    },
+
+    getCostExplanation(weight) {
+        if (weight >= 60) return "Tối ưu chi phí là mục tiêu chính. Chọn tuyến giá rẻ nhất, chấp nhận thời gian lâu hơn.";
+        if (weight >= 40) return "Cân bằng chi phí. Không chọn cực rẻ nhưng cũng tránh premium pricing.";
+        return "Chi phí không phải ưu tiên. Tập trung vào chất lượng và độ tin cậy.";
+    },
+
+    getRiskExplanation(weight) {
+        if (weight >= 30) return "Nhạy cảm với rủi ro cao. Chọn carriers rating > 4.5⭐, route ổn định.";
+        if (weight >= 15) return "Risk tolerance trung bình. Cân bằng cost/speed.";
+        return "Risk tolerance cao. Có thể chấp nhận carriers mới hoặc tuyến phức tạp.";
+    },
+
+    getPriorityRecommendation(profile, weights) {
+        if (weights.speed >= 70) {
+            return "🚀 <strong>Express Strategy:</strong> Ưu tiên air freight hoặc premium ocean để giảm 40-60% transit time.";
+        }
+        if (weights.cost >= 60) {
+            return "💰 <strong>Cost-Optimized Strategy:</strong> Chọn LCL hoặc slow steaming để tiết kiệm 20-35% chi phí.";
+        }
+        if (weights.risk <= 20) {
+            return "🛡️ <strong>Risk-Averse Strategy:</strong> Chỉ dùng carrier Tier 1, mua bảo hiểm All Risk và giữ buffer time.";
+        }
+        return "⚖️ <strong>Balanced Strategy:</strong> FCL ocean freight với carrier Tier 1-2, cân bằng giữa cost, speed và reliability.";
     },
 
     // ===============================
@@ -1344,7 +1512,7 @@ window.ResultsCore = {
         const enso = this.safe(climate.ENSO_index, data.ENSO_index, 0.0);
         this.setText("enso-index-value", enso.toFixed(2));
         const ensoPercent = ((enso + 2) / 4) * 100;
-        document.getElementById("enso-bar")?.setAttribute("style", `width: ${ensoPercent}%`);
+        this.setBarWidth("enso-bar", ensoPercent);
         
         let ensoStatus = "Neutral";
         if (enso < -0.5) ensoStatus = "La Niña (Cold Phase)";
@@ -1354,7 +1522,7 @@ window.ResultsCore = {
         // Typhoon Frequency (0-1 scale)
         const typhoonFreq = this.safe(climate.typhoon_frequency, data.typhoon_frequency, 0.5);
         this.setText("typhoon-freq-value", (typhoonFreq * 100).toFixed(0) + "%");
-        document.getElementById("typhoon-bar")?.setAttribute("style", `width: ${typhoonFreq * 100}%`);
+        this.setBarWidth("typhoon-bar", typhoonFreq * 100);
         
         const typhoonStatus = typhoonFreq < 0.3 ? "Low Season" :
                              typhoonFreq < 0.7 ? "Moderate Season" : "High Season (Jun-Nov)";
@@ -1364,16 +1532,17 @@ window.ResultsCore = {
         const sstAnomaly = this.safe(climate.sst_anomaly, data.sst_anomaly, 0.0);
         this.setText("sst-anomaly-value", sstAnomaly.toFixed(1) + "°C");
         const sstPercent = ((sstAnomaly + 3) / 6) * 100;
-        document.getElementById("sst-bar")?.setAttribute("style", `width: ${sstPercent}%`);
+        this.setBarWidth("sst-bar", sstPercent);
         
         const sstStatus = sstAnomaly < -1 ? "Cooler than Average" :
                          sstAnomaly > 1 ? "Warmer than Average" : "Near Average";
         this.setText("sst-status", sstStatus);
         
         // Climate Volatility (1-10 scale)
-        const climateVol = this.safe(climate.climate_volatility_index, data.climate_volatility_index, 5.0);
+        const rawClimateVol = this.safe(climate.climate_volatility_index, data.climate_volatility_index, 5.0);
+        const climateVol = rawClimateVol > 10 ? rawClimateVol / 10 : rawClimateVol;
         this.setText("climate-volatility-value", climateVol.toFixed(1) + "/10");
-        document.getElementById("volatility-bar")?.setAttribute("style", `width: ${climateVol * 10}%`);
+        this.setBarWidth("volatility-bar", (climateVol / 10) * 100);
         
         const volStatus = climateVol < 3 ? "Stable Conditions" :
                          climateVol < 7 ? "Moderate Variability" : "Highly Volatile";
@@ -1384,6 +1553,159 @@ window.ResultsCore = {
         
         // Render Climate Risk Table
         this.renderClimateRiskTable(data);
+    },
+
+    // ===============================
+    // DISPLAY CLIMATE-VAR METRICS
+    // ===============================
+    displayClimateVarMetrics(data) {
+        const advanced = this.safe(data.advanced_metrics, {});
+        const climateMetrics = this.safe(advanced.climate_var_metrics, {});
+
+        const standardVar95 = this.safe(advanced.var_95, this.safe(data.var, 0));
+        const standardCVar95 = this.safe(advanced.cvar_95, this.safe(data.cvar, 0));
+        const standardMax = this.safe(advanced.max_loss, this.safe(data.max_loss, this.safe(data.expected_loss, 0)));
+
+        const climateVar95 = this.safe(climateMetrics.climate_var_95, standardVar95);
+        const climateCVar95 = this.safe(climateMetrics.climate_cvar_95, standardCVar95);
+        const climateMax = this.safe(climateMetrics.climate_max, standardMax);
+        const climateTailProb = this.safe(climateMetrics.climate_tail_probability, data.climate_tail_event_probability, 0.05);
+
+        const computeImpact = (climateValue, baseValue) => {
+            if (!baseValue || baseValue === 0) return 0;
+            return ((climateValue - baseValue) / baseValue) * 100;
+        };
+
+        const formatImpact = (value) => {
+            if (!isFinite(value)) return '<span style="color: var(--text-secondary); font-weight: 600;">0.0%</span>';
+            const color = value > 0 ? '#ff6b6b' : '#10b981';
+            const symbol = value > 0 ? '+' : '';
+            return `<span style="color: ${color}; font-weight: 700;">${symbol}${value.toFixed(1)}%</span>`;
+        };
+
+        this.updateElement('climate-var-95-value', this.formatNumber(climateVar95, 2));
+        this.updateElement('climate-cvar-95-value', this.formatNumber(climateCVar95, 2));
+        this.updateElement('climate-tail-prob-value', `${(climateTailProb * 100).toFixed(2)}%`);
+
+        this.updateElement('standard-var-95', this.formatNumber(standardVar95, 2));
+        this.updateElement('climate-var-95', this.formatNumber(climateVar95, 2));
+        this.updateElement('climate-impact-95', formatImpact(computeImpact(climateVar95, standardVar95)));
+
+        this.updateElement('standard-cvar-95', this.formatNumber(standardCVar95, 2));
+        this.updateElement('climate-cvar-95', this.formatNumber(climateCVar95, 2));
+        this.updateElement('climate-impact-cvar', formatImpact(computeImpact(climateCVar95, standardCVar95)));
+
+        this.updateElement('standard-max', this.formatNumber(standardMax, 2));
+        this.updateElement('climate-max', this.formatNumber(climateMax, 2));
+        this.updateElement('climate-impact-max', formatImpact(computeImpact(climateMax, standardMax)));
+    },
+
+    // ===============================
+    // DISPLAY ESG RESILIENCE METRICS
+    // ===============================
+    displayESGResilience(data) {
+        const advanced = this.safe(data.advanced_metrics, {});
+
+        const esgScore = this.safe(advanced.esg_score, this.safe(data.esg, 0.5) * 100, 50);
+        const greenPackScore = this.safe(advanced.green_packaging, data.green_packaging, 50);
+        const climateResilience = this.safe(advanced.climate_resilience, data.climate_resilience, 5.0);
+        const reliabilityScore = this.normalizeScore(this.safe(data.reliability, 0.5));
+        const delayProbability = this.normalizeScore(this.safe(data.delay_probability, data.delay_probability_percent, 0.35));
+        const overallRisk = this.normalizeScore(this.safe(data.risk_score, 0.5));
+        const policyRisk = this.extractRiskFactorScore(this.safe(data.risk_factors, []), ['governance', 'political', 'compliance', 'esg'], overallRisk);
+        const incoterm = this.safe(data.incoterm, "CIF");
+
+        const eScore = Math.round(esgScore * 0.4);
+        const sScore = Math.round(esgScore * 0.35);
+        const gScore = Math.round(esgScore * 0.25);
+
+        this.updateElement('esg-e-score', `${eScore}/100`);
+        this.updateElement('esg-s-score', `${sScore}/100`);
+        this.updateElement('esg-g-score', `${gScore}/100`);
+
+        this.setBarWidth('esg-e-bar', eScore);
+        this.setBarWidth('esg-s-bar', sScore);
+        this.setBarWidth('esg-g-bar', gScore);
+
+        this.updateElement('esg-e-meta', this.buildESGMetaText(0.4, eScore, esgScore));
+        this.updateElement('esg-s-meta', this.buildESGMetaText(0.35, sScore, esgScore));
+        this.updateElement('esg-g-meta', this.buildESGMetaText(0.25, gScore, esgScore));
+
+        this.updateElement('esg-e-explain', this.buildESGExplanation('environmental', {
+            score: eScore,
+            greenPackScore,
+            climateResilience
+        }));
+        this.updateElement('esg-s-explain', this.buildESGExplanation('social', {
+            score: sScore,
+            delayProbability,
+            reliabilityScore
+        }));
+        this.updateElement('esg-g-explain', this.buildESGExplanation('governance', {
+            score: gScore,
+            policyRisk,
+            incoterm
+        }));
+
+        this.updateElement('green-pack-score', `${greenPackScore.toFixed(0)}/100`);
+        const riskReduction = ((greenPackScore / 100) * 15).toFixed(1);
+        this.updateElement('green-pack-reduction', `${riskReduction}%`);
+
+        this.createESGResilienceChart(esgScore, climateResilience);
+    },
+
+    setBarWidth(id, percentage) {
+        const elements = this.getElements(id);
+        if (elements.length === 0) {
+            console.warn(`[RISKCAST] Element #${id} not found for setBarWidth`);
+            return;
+        }
+        const width = `${Math.min(100, Math.max(0, percentage))}%`;
+        elements.forEach(bar => {
+            bar.style.width = width;
+        });
+    },
+
+    createESGResilienceChart(esgScore, climateResilience) {
+        if (!window.Plotly) return;
+        const chartDiv = document.getElementById('esgResilienceChart');
+        if (!chartDiv) return;
+
+        const data = [{
+            x: [climateResilience],
+            y: [esgScore],
+            mode: 'markers',
+            type: 'scatter',
+            name: 'Your Shipment',
+            marker: {
+                size: 20,
+                color: '#00ff88',
+                line: { color: '#fff', width: 2 }
+            }
+        }, {
+            x: [3, 4, 5, 6, 7, 8, 9],
+            y: [30, 40, 50, 60, 70, 80, 90],
+            mode: 'markers',
+            type: 'scatter',
+            name: 'Industry Benchmark',
+            marker: {
+                size: 10,
+                color: 'rgba(102, 126, 234, 0.5)'
+            }
+        }];
+
+        const layout = {
+            title: '',
+            xaxis: { title: 'Climate Resilience Score', range: [0, 10] },
+            yaxis: { title: 'ESG Score', range: [0, 100] },
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'rgba(255,255,255,0.03)',
+            font: { color: '#e2e8f0' },
+            showlegend: true,
+            legend: { x: 0, y: 1 }
+        };
+
+        Plotly.newPlot(chartDiv, data, layout, { responsive: true, displayModeBar: false });
     },
 
     // ===============================
@@ -3101,6 +3423,579 @@ function sendToAI() {
         showAIError(`Lỗi khi gọi AI: ${error.message}`);
     });
 }
+
+// ============================================================
+// V16.0 COMPONENT RENDERERS
+// ============================================================
+ResultsCore.renderV16Components = function(data) {
+    console.log('[V16.0] Rendering v16.0 components...');
+    
+    // Check if v16 data exists
+    if (!data.carrier_insights && !data.port_analysis && !data.packing_analysis) {
+        console.warn('[V16.0] v16.0 data not found, skipping v16 components');
+        return;
+    }
+    
+    // Render Carrier Intelligence
+    if (data.carrier_insights) {
+        this.renderCarrierIntelligence(data.carrier_insights, data.carrier_alternatives || []);
+    }
+    
+    // Render Port Analysis
+    if (data.port_analysis) {
+        this.renderPortAnalysis(data.port_analysis.pol, data.port_analysis.pod);
+    }
+    
+    // Render Packing Efficiency
+    if (data.packing_analysis) {
+        this.renderPackingAnalysis(data.packing_analysis);
+    }
+    
+    // Render Priority Optimization (enhancement)
+    if (data.priority_optimization) {
+        this.renderPriorityOptimization(data.priority_optimization);
+    }
+    
+    console.log('[V16.0] ✅ All v16.0 components rendered');
+};
+
+/**
+ * Render Carrier Intelligence Section
+ */
+ResultsCore.renderCarrierIntelligence = function(carrier_insights, carrier_alternatives) {
+    console.log('[V16.0] Rendering Carrier Intelligence:', carrier_insights);
+    
+    // Show section
+    const section = document.getElementById('carrier-intelligence-section');
+    if (section) {
+        section.style.display = 'block';
+    }
+    
+    // Carrier name
+    const carrierNameEl = document.getElementById('carrier-name-display');
+    if (carrierNameEl) carrierNameEl.textContent = carrier_insights.carrier_name || '--';
+    
+    // Tier badge
+    const tierText = document.getElementById('carrier-tier-text');
+    if (tierText) {
+        const tier = carrier_insights.tier || 'tier_2';
+        tierText.textContent = tier.toUpperCase().replace('_', ' ');
+    }
+    
+    // Grade
+    const gradeValue = document.getElementById('carrier-grade-value');
+    if (gradeValue) gradeValue.textContent = carrier_insights.reputation_grade || '--';
+    
+    const gradeDesc = document.getElementById('carrier-grade-desc');
+    if (gradeDesc) gradeDesc.textContent = carrier_insights.performance_summary || '--';
+    
+    // Reliability score
+    const reliabilityValue = document.getElementById('carrier-reliability-value');
+    if (reliabilityValue) {
+        reliabilityValue.textContent = (carrier_insights.reliability_score || 0).toFixed(1) + '/10';
+    }
+    
+    const reliabilityBar = document.getElementById('carrier-reliability-bar');
+    if (reliabilityBar) {
+        reliabilityBar.style.width = ((carrier_insights.reliability_score || 0) * 10) + '%';
+    }
+    
+    // On-time performance
+    const ontimeValue = document.getElementById('carrier-ontime-value');
+    if (ontimeValue) {
+        const ontime = carrier_insights.ontime_rate || '--';
+        ontimeValue.textContent = typeof ontime === 'string' ? ontime : ontime + '%';
+    }
+    
+    // Risk score
+    const riskValue = document.getElementById('carrier-risk-value');
+    if (riskValue) {
+        riskValue.textContent = (carrier_insights.risk_score || 0).toFixed(1) + '/10';
+    }
+    
+    // Strengths
+    const strengthsList = document.getElementById('carrier-strengths-list');
+    if (strengthsList && carrier_insights.strengths) {
+        strengthsList.innerHTML = carrier_insights.strengths.map(s => 
+            `<li class="factor-item strength"><span class="icon">✅</span>${s}</li>`
+        ).join('');
+    }
+    
+    // Risk factors
+    const risksList = document.getElementById('carrier-risks-list');
+    if (risksList && carrier_insights.risk_factors) {
+        if (carrier_insights.risk_factors.length > 0) {
+            risksList.innerHTML = carrier_insights.risk_factors.map(r => 
+                `<li class="factor-item risk"><span class="icon">⚠️</span>${r}</li>`
+            ).join('');
+        } else {
+            risksList.innerHTML = '<li class="factor-item strength"><span class="icon">✅</span>No significant risk factors identified</li>';
+        }
+    }
+    
+    // Alternative carriers
+    const alternativesGrid = document.getElementById('carrier-alternatives-grid');
+    if (alternativesGrid && carrier_alternatives && carrier_alternatives.length > 0) {
+        alternativesGrid.innerHTML = carrier_alternatives.map(alt => `
+            <div class="alternative-carrier-card ${alt.recommended ? 'recommended' : ''}">
+                <div class="alt-carrier-header">
+                    <span class="carrier-name">${alt.carrier_name}</span>
+                    <span class="carrier-grade">${alt.grade || '--'}</span>
+                </div>
+                <div class="alt-metrics">
+                    <span>Risk: ${alt.risk_delta > 0 ? '↓' : '↑'} ${Math.abs(alt.risk_delta || 0).toFixed(1)}</span>
+                    <span>Cost: ${alt.cost_delta_pct > 0 ? '↑' : '↓'} ${Math.abs(alt.cost_delta_pct || 0)}%</span>
+                </div>
+                <div class="alt-reason">${alt.reason || '--'}</div>
+                ${alt.recommended ? '<div class="recommended-badge">RECOMMENDED</div>' : ''}
+            </div>
+        `).join('');
+    }
+    
+    // Render radar chart
+    this.renderCarrierRadar(carrier_insights);
+};
+
+/**
+ * Render Carrier Performance Radar Chart
+ */
+ResultsCore.renderCarrierRadar = function(carrier_insights) {
+    if (!window.Plotly) {
+        console.warn('[V16.0] Plotly not loaded, skipping radar chart');
+        return;
+    }
+    
+    const ontimeRate = parseFloat(carrier_insights.ontime_rate) || 0;
+    const rating = parseFloat(carrier_insights.customer_rating) || 0;
+    const reliability = carrier_insights.reliability_score || 0;
+    
+    const data = [{
+        type: 'scatterpolar',
+        r: [
+            reliability,
+            ontimeRate / 10,
+            rating * 2,
+            8, // Price quality (assumed)
+            7  // Review volume (normalized)
+        ],
+        theta: [
+            'Reliability',
+            'On-Time',
+            'Rating',
+            'Price Quality',
+            'Review Volume'
+        ],
+        fill: 'toself',
+        name: carrier_insights.carrier_name || 'Carrier',
+        line: { color: '#00ff88' },
+        fillcolor: 'rgba(0, 255, 136, 0.2)'
+    }];
+    
+    const layout = {
+        polar: {
+            radialaxis: {
+                visible: true,
+                range: [0, 10]
+            }
+        },
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#ffffff' }
+    };
+    
+    Plotly.newPlot('carrierRadarChart', data, layout, { responsive: true });
+};
+
+/**
+ * Render Port Analysis Section
+ */
+ResultsCore.renderPortAnalysis = function(pol_analysis, pod_analysis) {
+    console.log('[V16.0] Rendering Port Analysis:', { pol: pol_analysis, pod: pod_analysis });
+    
+    // Show section
+    const section = document.getElementById('port-analysis-section');
+    if (section) {
+        section.style.display = 'block';
+    }
+    
+    // POL
+    if (pol_analysis) {
+        const polCode = document.getElementById('pol-code-display');
+        if (polCode) polCode.textContent = pol_analysis.port_code || '--';
+        
+        const polRiskValue = document.getElementById('pol-risk-value');
+        if (polRiskValue) polRiskValue.textContent = (pol_analysis.risk_score || 0).toFixed(1) + '/10';
+        
+        const polRiskLevel = document.getElementById('pol-risk-level');
+        if (polRiskLevel) {
+            polRiskLevel.textContent = pol_analysis.risk_level || '--';
+            polRiskLevel.className = 'risk-level-badge ' + (pol_analysis.risk_level || '').toLowerCase();
+        }
+        
+        const polRiskGauge = document.getElementById('pol-risk-gauge');
+        if (polRiskGauge) {
+            polRiskGauge.style.width = ((pol_analysis.risk_score || 0) * 10) + '%';
+        }
+        
+        const polCongestion = document.getElementById('pol-congestion');
+        if (polCongestion) polCongestion.textContent = (pol_analysis.congestion_level || 0).toFixed(1) + '/10';
+        
+        const polEfficiency = document.getElementById('pol-efficiency');
+        if (polEfficiency) polEfficiency.textContent = (pol_analysis.efficiency_rating || 0).toFixed(1) + '/10';
+        
+        const polDelay = document.getElementById('pol-delay');
+        if (polDelay) polDelay.textContent = (pol_analysis.expected_delay_days || 0).toFixed(1) + ' days';
+        
+        const polRecs = document.getElementById('pol-recommendations-list');
+        if (polRecs && pol_analysis.recommendations) {
+            polRecs.innerHTML = pol_analysis.recommendations.map(rec => 
+                `<li><span class="rec-icon">🎯</span>${rec}</li>`
+            ).join('');
+        }
+    }
+    
+    // POD
+    if (pod_analysis) {
+        const podCode = document.getElementById('pod-code-display');
+        if (podCode) podCode.textContent = pod_analysis.port_code || '--';
+        
+        const podRiskValue = document.getElementById('pod-risk-value');
+        if (podRiskValue) podRiskValue.textContent = (pod_analysis.risk_score || 0).toFixed(1) + '/10';
+        
+        const podRiskLevel = document.getElementById('pod-risk-level');
+        if (podRiskLevel) {
+            podRiskLevel.textContent = pod_analysis.risk_level || '--';
+            podRiskLevel.className = 'risk-level-badge ' + (pod_analysis.risk_level || '').toLowerCase();
+        }
+        
+        const podRiskGauge = document.getElementById('pod-risk-gauge');
+        if (podRiskGauge) {
+            podRiskGauge.style.width = ((pod_analysis.risk_score || 0) * 10) + '%';
+        }
+        
+        const podCongestion = document.getElementById('pod-congestion');
+        if (podCongestion) podCongestion.textContent = (pod_analysis.congestion_level || 0).toFixed(1) + '/10';
+        
+        const podCustoms = document.getElementById('pod-customs');
+        if (podCustoms) podCustoms.textContent = (pod_analysis.customs_complexity || 0).toFixed(1) + '/10';
+        
+        const podDelay = document.getElementById('pod-delay');
+        if (podDelay) podDelay.textContent = (pod_analysis.expected_delay_days || 0).toFixed(1) + ' days';
+        
+        const podRecs = document.getElementById('pod-recommendations-list');
+        if (podRecs && pod_analysis.recommendations) {
+            podRecs.innerHTML = pod_analysis.recommendations.map(rec => 
+                `<li><span class="rec-icon">🎯</span>${rec}</li>`
+            ).join('');
+        }
+    }
+    
+    // Render timeline chart
+    this.renderPortTimeline(pol_analysis, pod_analysis);
+};
+
+/**
+ * Render Port Delay Timeline Chart
+ */
+ResultsCore.renderPortTimeline = function(pol_analysis, pod_analysis) {
+    if (!window.Plotly) {
+        console.warn('[V16.0] Plotly not loaded, skipping timeline chart');
+        return;
+    }
+    
+    const polDelay = pol_analysis?.expected_delay_days || 0;
+    const podDelay = pod_analysis?.expected_delay_days || 0;
+    
+    const data = [{
+        x: ['POL Congestion', 'POL Processing', 'Transit', 'POD Congestion', 'POD Customs'],
+        y: [
+            polDelay * 0.6,
+            polDelay * 0.4,
+            0,
+            podDelay * 0.5,
+            podDelay * 0.5
+        ],
+        type: 'bar',
+        marker: {
+            color: ['#ef4444', '#f59e0b', '#10b981', '#ef4444', '#f59e0b']
+        },
+        text: [
+            polDelay.toFixed(1) + ' days',
+            (polDelay * 0.4).toFixed(1) + ' days',
+            'In transit',
+            podDelay.toFixed(1) + ' days',
+            (podDelay * 0.5).toFixed(1) + ' days'
+        ],
+        textposition: 'auto'
+    }];
+    
+    const layout = {
+        title: 'Port Delay Breakdown',
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#ffffff' },
+        xaxis: { title: 'Stage' },
+        yaxis: { title: 'Delay (days)' }
+    };
+    
+    Plotly.newPlot('portTimelineChart', data, layout, { responsive: true });
+};
+
+/**
+ * Render Packing Efficiency Section
+ */
+ResultsCore.renderPackingAnalysis = function(packing_analysis) {
+    console.log('[V16.0] Rendering Packing Analysis:', packing_analysis);
+    
+    // Show section
+    const section = document.getElementById('packing-efficiency-section');
+    if (section) {
+        section.style.display = 'block';
+    }
+    
+    // Efficiency grade
+    const gradeText = document.getElementById('packing-grade-text');
+    if (gradeText) gradeText.textContent = packing_analysis.efficiency_grade || '--';
+    
+    const gradeCircle = document.getElementById('packing-grade-circle');
+    if (gradeCircle) {
+        const grade = (packing_analysis.efficiency_grade || '').toLowerCase();
+        gradeCircle.className = 'grade-circle grade-' + grade;
+    }
+    
+    // Utilization
+    const utilization = document.getElementById('packing-utilization');
+    if (utilization) {
+        const util = packing_analysis.container_utilization || '--';
+        utilization.textContent = typeof util === 'string' ? util : util + '%';
+    }
+    
+    // Metrics
+    const riskScore = document.getElementById('packing-risk-score');
+    if (riskScore) riskScore.textContent = (packing_analysis.risk_score || 0).toFixed(1) + '/10';
+    
+    const spaceWaste = document.getElementById('packing-space-waste');
+    if (spaceWaste) spaceWaste.textContent = (packing_analysis.space_waste_m3 || 0).toFixed(1) + ' m³';
+    
+    const costImpact = document.getElementById('packing-cost-impact');
+    if (costImpact) costImpact.textContent = '$' + (packing_analysis.cost_impact_usd || 0).toFixed(0);
+    
+    const quality = document.getElementById('packing-quality');
+    if (quality) {
+        const q = packing_analysis.quality_score || packing_analysis.packing_quality_score || 0;
+        quality.textContent = q.toFixed(1) + '/10';
+    }
+    
+    // Inefficiencies
+    const ineffList = document.getElementById('packing-inefficiencies-list');
+    if (ineffList && packing_analysis.inefficiencies && packing_analysis.inefficiencies.length > 0) {
+        ineffList.innerHTML = packing_analysis.inefficiencies.map(ineff => `
+            <div class="inefficiency-item ${(ineff.severity || '').toLowerCase()}">
+                <div class="ineff-header">
+                    <span class="ineff-type ${(ineff.type || '').toLowerCase()}">${ineff.type || 'WARNING'}</span>
+                    <span class="ineff-category">${ineff.category || '--'}</span>
+                </div>
+                <div class="ineff-desc">${ineff.description || '--'}</div>
+                <div class="ineff-impact">${ineff.impact || '--'}</div>
+            </div>
+        `).join('');
+    } else if (ineffList) {
+        ineffList.innerHTML = '<div class="inefficiency-item">No significant inefficiencies detected</div>';
+    }
+    
+    // Suggestions
+    const suggestionsList = document.getElementById('packing-suggestions-list');
+    if (suggestionsList && packing_analysis.optimization_suggestions) {
+        suggestionsList.innerHTML = packing_analysis.optimization_suggestions.map(sug => 
+            `<li><span class="sug-icon">💡</span>${sug}</li>`
+        ).join('');
+    }
+    
+    // Savings potential
+    if (packing_analysis.savings_potential) {
+        const sp = packing_analysis.savings_potential;
+        
+        const currentWaste = document.getElementById('savings-current-waste');
+        if (currentWaste) currentWaste.textContent = '$' + (sp.current_waste_cost || 0).toFixed(0);
+        
+        const optCost = document.getElementById('savings-optimization-cost');
+        if (optCost) optCost.textContent = '$' + (sp.quality_upgrade_cost || 0).toFixed(0);
+        
+        const net = document.getElementById('savings-net');
+        if (net) net.textContent = '$' + (sp.net_savings_potential || 0).toFixed(0);
+        
+        const roi = document.getElementById('savings-roi');
+        if (roi) roi.textContent = (sp.roi_pct || 0).toFixed(0) + '%';
+    }
+    
+    // Render visualization
+    this.renderContainerViz(packing_analysis);
+};
+
+/**
+ * Render Container Utilization Visualization
+ */
+ResultsCore.renderContainerViz = function(packing_analysis) {
+    if (!window.Plotly) {
+        console.warn('[V16.0] Plotly not loaded, skipping container viz');
+        return;
+    }
+    
+    const utilization = parseFloat(packing_analysis.container_utilization) || 0;
+    
+    const data = [{
+        type: 'indicator',
+        mode: 'gauge+number+delta',
+        value: utilization,
+        title: { text: 'Container Utilization (%)' },
+        delta: { reference: 90, position: 'top' },
+        gauge: {
+            axis: { range: [null, 100] },
+            bar: { color: '#00ff88' },
+            steps: [
+                { range: [0, 70], color: '#ef4444' },
+                { range: [70, 80], color: '#f59e0b' },
+                { range: [80, 100], color: '#10b981' }
+            ],
+            threshold: {
+                line: { color: 'red', width: 4 },
+                thickness: 0.75,
+                value: 90
+            }
+        }
+    }];
+    
+    const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#ffffff' }
+    };
+    
+    Plotly.newPlot('containerVisualization', data, layout, { responsive: true });
+};
+
+/**
+ * Render Priority Optimization Section (Enhancement)
+ */
+ResultsCore.renderPriorityOptimization = function(priority_optimization) {
+    console.log('[V16.0] Rendering Priority Optimization:', priority_optimization);
+    
+    if (!priority_optimization || !priority_optimization.alignment) {
+        return;
+    }
+    
+    const alignment = priority_optimization.alignment;
+    
+    // Alignment score
+    const scoreEl = document.getElementById('alignment-score');
+    if (scoreEl) scoreEl.textContent = Math.round(alignment.alignment_score || 0);
+    
+    const scoreCircle = document.getElementById('alignment-score-circle');
+    if (scoreCircle) {
+        const score = alignment.alignment_score || 0;
+        let scoreClass = 'score-low';
+        if (score >= 80) scoreClass = 'score-good';
+        else if (score >= 60) scoreClass = 'score-medium';
+        scoreCircle.className = 'score-circle ' + scoreClass;
+    }
+    
+    // Description
+    const descEl = document.getElementById('alignment-desc');
+    if (descEl) {
+        const score = alignment.alignment_score || 0;
+        let desc = '';
+        if (score >= 80) {
+            desc = '✅ Excellent alignment with your priorities';
+        } else if (score >= 60) {
+            desc = '⚠️ Moderate alignment - some adjustments recommended';
+        } else {
+            desc = '🔴 Poor alignment - significant adjustments needed';
+        }
+        descEl.textContent = desc;
+    }
+    
+    // Distribution comparison
+    const current = alignment.current_distribution || {};
+    const target = alignment.target_distribution || {};
+    
+    // Speed
+    const speedCurrent = current.speed || 0;
+    const speedTarget = target.speed || 0;
+    const speedCurrentBar = document.getElementById('speed-current-bar');
+    const speedTargetBar = document.getElementById('speed-target-bar');
+    const speedCurrentText = document.getElementById('speed-current-text');
+    const speedTargetText = document.getElementById('speed-target-text');
+    const speedDelta = document.getElementById('speed-delta');
+    
+    if (speedCurrentBar) speedCurrentBar.style.width = speedCurrent + '%';
+    if (speedTargetBar) speedTargetBar.style.width = speedTarget + '%';
+    if (speedCurrentText) speedCurrentText.textContent = speedCurrent.toFixed(0) + '%';
+    if (speedTargetText) speedTargetText.textContent = 'Target: ' + speedTarget + '%';
+    if (speedDelta) {
+        const delta = alignment.deltas?.speed || 0;
+        speedDelta.textContent = 'Δ ' + delta.toFixed(0) + '%';
+    }
+    
+    // Cost
+    const costCurrent = current.cost || 0;
+    const costTarget = target.cost || 0;
+    const costCurrentBar = document.getElementById('cost-current-bar');
+    const costTargetBar = document.getElementById('cost-target-bar');
+    const costCurrentText = document.getElementById('cost-current-text');
+    const costTargetText = document.getElementById('cost-target-text');
+    const costDelta = document.getElementById('cost-delta');
+    
+    if (costCurrentBar) costCurrentBar.style.width = costCurrent + '%';
+    if (costTargetBar) costTargetBar.style.width = costTarget + '%';
+    if (costCurrentText) costCurrentText.textContent = costCurrent.toFixed(0) + '%';
+    if (costTargetText) costTargetText.textContent = 'Target: ' + costTarget + '%';
+    if (costDelta) {
+        const delta = alignment.deltas?.cost || 0;
+        costDelta.textContent = 'Δ ' + delta.toFixed(0) + '%';
+    }
+    
+    // Risk
+    const riskCurrent = current.risk || 0;
+    const riskTarget = target.risk || 0;
+    const riskCurrentBar = document.getElementById('risk-current-bar');
+    const riskTargetBar = document.getElementById('risk-target-bar');
+    const riskCurrentText = document.getElementById('risk-current-text');
+    const riskTargetText = document.getElementById('risk-target-text');
+    const riskDelta = document.getElementById('risk-delta');
+    
+    if (riskCurrentBar) riskCurrentBar.style.width = riskCurrent + '%';
+    if (riskTargetBar) riskTargetBar.style.width = riskTarget + '%';
+    if (riskCurrentText) riskCurrentText.textContent = riskCurrent.toFixed(0) + '%';
+    if (riskTargetText) riskTargetText.textContent = 'Target: ' + riskTarget + '%';
+    if (riskDelta) {
+        const delta = alignment.deltas?.risk || 0;
+        riskDelta.textContent = 'Δ ' + delta.toFixed(0) + '%';
+    }
+    
+    // Misalignments
+    const misalignmentsContainer = document.getElementById('misalignments-container');
+    if (misalignmentsContainer && alignment.misalignments && alignment.misalignments.length > 0) {
+        misalignmentsContainer.innerHTML = `
+            <div class="alert-box warning">
+                <h5>⚠️ Detected Misalignments</h5>
+                <ul>
+                    ${alignment.misalignments.map(m => `<li>${m}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+        misalignmentsContainer.style.display = 'block';
+    } else if (misalignmentsContainer) {
+        misalignmentsContainer.style.display = 'none';
+    }
+    
+    // Suggestions
+    const suggestionsList = document.getElementById('alignment-suggestions-list');
+    if (suggestionsList && alignment.suggestions && alignment.suggestions.length > 0) {
+        suggestionsList.innerHTML = alignment.suggestions.map(sug => 
+            `<li><span class="icon">💡</span>${sug}</li>`
+        ).join('');
+    }
+};
 
 // Export functions for global access
 window.runAIAdviser = runAIAdviser;

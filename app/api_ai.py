@@ -209,8 +209,32 @@ async def _call_claude(prompt: str, stream: bool = False, user_question: str = N
             detail="ANTHROPIC_API_KEY not configured"
         )
     
+    # Founder Context
+    founder_context = """
+Bạn đang chạy trong hệ thống RISKCAST v12.5.
+
+Người tạo ra hệ thống này là Bùi Xuân Hoàng – Founder & AI-first Developer.
+
+Triết lý của Bùi Xuân Hoàng: tốc độ, tối ưu, tạo giá trị thật, AI-first development.
+
+Tầm nhìn RISKCAST: tạo ra nền tảng dự báo rủi ro logistics & ESG thông minh, 
+ứng dụng mô hình FAHP, TOPSIS, VaR/CVaR, climate risk, và network resilience.
+
+Sứ mệnh: đưa ra đánh giá rủi ro minh bạch, chính xác, giúp doanh nghiệp ra quyết định tốt hơn.
+
+Nếu người dùng hỏi:
+- "Ai tạo ra hệ thống này?" → trả lời rằng người tạo ra là Bùi Xuân Hoàng.
+- "Founder là ai?" → mô tả đúng vai trò Founder AI-first developer (Bùi Xuân Hoàng).
+- "Tầm nhìn dự án?" → trả lời theo tầm nhìn ở trên.
+- "Sứ mệnh dự án?" → trả lời theo nội dung đã mô tả.
+- "Bạn có biết owner của dự án không?" → trả lời Bùi Xuân Hoàng.
+
+Không bao giờ bịa thêm thông tin.
+"""
+    
     # Build system instruction to focus on the question
-    system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information that directly addresses what was asked. Use structured formats for clarity. Be concise - avoid unnecessary background unless directly relevant.
+    system_instruction = founder_context + """
+You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information that directly addresses what was asked. Use structured formats for clarity. Be concise - avoid unnecessary background unless directly relevant.
 
 IMPORTANT: Always respond in Vietnamese (Tiếng Việt). All your responses must be in Vietnamese language."""
     
@@ -433,8 +457,32 @@ INSTRUCTIONS:
                     detail="Anthropic client not properly initialized. Please check ANTHROPIC_API_KEY in .env file."
                 )
             
+            # Founder Context
+            founder_context = """
+Bạn đang chạy trong hệ thống RISKCAST v12.5.
+
+Người tạo ra hệ thống này là Bùi Xuân Hoàng – Founder & AI-first Developer.
+
+Triết lý của Bùi Xuân Hoàng: tốc độ, tối ưu, tạo giá trị thật, AI-first development.
+
+Tầm nhìn RISKCAST: tạo ra nền tảng dự báo rủi ro logistics & ESG thông minh, 
+ứng dụng mô hình FAHP, TOPSIS, VaR/CVaR, climate risk, và network resilience.
+
+Sứ mệnh: đưa ra đánh giá rủi ro minh bạch, chính xác, giúp doanh nghiệp ra quyết định tốt hơn.
+
+Nếu người dùng hỏi:
+- "Ai tạo ra hệ thống này?" → trả lời rằng người tạo ra là Bùi Xuân Hoàng.
+- "Founder là ai?" → mô tả đúng vai trò Founder AI-first developer (Bùi Xuân Hoàng).
+- "Tầm nhìn dự án?" → trả lời theo tầm nhìn ở trên.
+- "Sứ mệnh dự án?" → trả lời theo nội dung đã mô tả.
+- "Bạn có biết owner của dự án không?" → trả lời Bùi Xuân Hoàng.
+
+Không bao giờ bịa thêm thông tin.
+"""
+            
             # Create system instruction to emphasize question-focused behavior
-            system_instruction = """You are RISKCAST Enterprise AI - a Logistics Risk Intelligence System.
+            system_instruction = founder_context + """
+You are RISKCAST Enterprise AI - a Logistics Risk Intelligence System.
 
 CRITICAL: Your primary goal is to answer the user's question directly and specifically.
 
@@ -539,7 +587,7 @@ async def analyze(payload: dict):
         raise HTTPException(status_code=400, detail=error)
     
     # Calculate risk
-    from app.core.risk_engine_v14 import calculate_enterprise_risk
+    from app.core.risk_engine_v16 import calculate_enterprise_risk
     risk_result = calculate_enterprise_risk(shipment_data)
     
     # Build prompt
@@ -783,6 +831,87 @@ class PromptData(BaseModel):
     prompt: str
 
 
+class ChatRequest(BaseModel):
+    message: str
+    context: Optional[Dict] = None
+
+
+@router.post("/chat")
+async def ai_chat(request: ChatRequest):
+    """
+    AI Chat endpoint - General chat with Founder context
+    
+    Input:
+        message: User message
+        context: Optional context data
+    
+    Output:
+        AI response with Founder context awareness
+    """
+    try:
+        from anthropic import APIError
+        if not client:
+            raise HTTPException(
+                status_code=500,
+                detail="ANTHROPIC_API_KEY not configured"
+            )
+        
+        # Founder Context
+        founder_context = """
+Bạn đang chạy trong hệ thống RISKCAST v12.5.
+
+Người tạo ra hệ thống này là Bùi Xuân Hoàng – Founder & AI-first Developer.
+
+Triết lý của Bùi Xuân Hoàng: tốc độ, tối ưu, tạo giá trị thật, AI-first development.
+
+Tầm nhìn RISKCAST: tạo ra nền tảng dự báo rủi ro logistics & ESG thông minh, 
+ứng dụng mô hình FAHP, TOPSIS, VaR/CVaR, climate risk, và network resilience.
+
+Sứ mệnh: đưa ra đánh giá rủi ro minh bạch, chính xác, giúp doanh nghiệp ra quyết định tốt hơn.
+
+Nếu người dùng hỏi:
+- "Ai tạo ra hệ thống này?" → trả lời rằng người tạo ra là Bùi Xuân Hoàng.
+- "Founder là ai?" → mô tả đúng vai trò Founder AI-first developer (Bùi Xuân Hoàng).
+- "Tầm nhìn dự án?" → trả lời theo tầm nhìn ở trên.
+- "Sứ mệnh dự án?" → trả lời theo nội dung đã mô tả.
+- "Bạn có biết owner của dự án không?" → trả lời Bùi Xuân Hoàng.
+
+Không bao giờ bịa thêm thông tin.
+"""
+        
+        # Build system prompt with Founder context
+        system_prompt = founder_context + """
+Bạn là AI Assistant của hệ thống RISKCAST. Hãy trả lời đúng bối cảnh và dữ liệu người dùng cung cấp.
+
+IMPORTANT: Always respond in Vietnamese (Tiếng Việt). All your responses must be in Vietnamese language.
+"""
+        
+        # Build user message
+        user_message = request.message.strip()
+        
+        # Add context if provided
+        if request.context:
+            context_str = json.dumps(request.context, indent=2, ensure_ascii=False)
+            user_message = f"{user_message}\n\nCONTEXT:\n{context_str}"
+        
+        response = client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=4096,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_message}]
+        )
+        
+        reply = response.content[0].text
+        return {"reply": reply}
+    except APIError as e:
+        raise HTTPException(
+            status_code=e.status_code if hasattr(e, 'status_code') else 500,
+            detail=f"Anthropic API error: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/adviser")
 async def ai_adviser(data: PromptData):
     """
@@ -802,13 +931,37 @@ async def ai_adviser(data: PromptData):
                 detail="ANTHROPIC_API_KEY not configured"
             )
         
+        # Founder Context
+        founder_context = """
+Bạn đang chạy trong hệ thống RISKCAST v12.5.
+
+Người tạo ra hệ thống này là Bùi Xuân Hoàng – Founder & AI-first Developer.
+
+Triết lý của Bùi Xuân Hoàng: tốc độ, tối ưu, tạo giá trị thật, AI-first development.
+
+Tầm nhìn RISKCAST: tạo ra nền tảng dự báo rủi ro logistics & ESG thông minh, 
+ứng dụng mô hình FAHP, TOPSIS, VaR/CVaR, climate risk, và network resilience.
+
+Sứ mệnh: đưa ra đánh giá rủi ro minh bạch, chính xác, giúp doanh nghiệp ra quyết định tốt hơn.
+
+Nếu người dùng hỏi:
+- "Ai tạo ra hệ thống này?" → trả lời rằng người tạo ra là Bùi Xuân Hoàng.
+- "Founder là ai?" → mô tả đúng vai trò Founder AI-first developer (Bùi Xuân Hoàng).
+- "Tầm nhìn dự án?" → trả lời theo tầm nhìn ở trên.
+- "Sứ mệnh dự án?" → trả lời theo nội dung đã mô tả.
+- "Bạn có biết owner của dự án không?" → trả lời Bùi Xuân Hoàng.
+
+Không bao giờ bịa thêm thông tin.
+"""
+        
         # Build focused prompt
         user_question = data.prompt.strip()
         focused_prompt = f"""QUESTION: {user_question}
 
 Please answer this question directly and specifically. Focus on providing relevant information that directly addresses what was asked."""
         
-        system_instruction = """You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information. Be concise and structured. Do not provide generic information that doesn't address the specific question.
+        system_instruction = founder_context + """
+You are RISKCAST Enterprise AI. Answer the user's question directly and specifically. Focus on providing relevant, actionable information. Be concise and structured. Do not provide generic information that doesn't address the specific question.
 
 IMPORTANT: Always respond in Vietnamese (Tiếng Việt). All your responses must be in Vietnamese language."""
         

@@ -27,10 +27,18 @@ class AIAdviserPanel {
 
         if (this.sidebar) {
             this.panel = this.sidebar;
-            this.streamingHandler = new StreamingHandler('ai-adviser-output');
+            if (typeof StreamingHandler !== 'undefined') {
+                this.streamingHandler = new StreamingHandler('ai-adviser-output');
+            } else {
+                console.warn('StreamingHandler not available. Make sure streaming.js is loaded before ai_adviser.js');
+            }
         } else {
             this.panel = document.getElementById('ai-panel');
-            this.streamingHandler = new StreamingHandler('ai-messages');
+            if (typeof StreamingHandler !== 'undefined') {
+                this.streamingHandler = new StreamingHandler('ai-messages');
+            } else {
+                console.warn('StreamingHandler not available. Make sure streaming.js is loaded before ai_adviser.js');
+            }
         }
 
         // Bind events
@@ -561,6 +569,333 @@ document.addEventListener('DOMContentLoaded', () => {
                 sendPopupMessage();
             }
         });
+    }
+});
+
+// ==================== CLIMATE DATA REAL-TIME UPDATER ====================
+document.addEventListener("DOMContentLoaded", function () {
+    const monthInput = document.getElementById("shipment-month");
+    const climateSection = document.getElementById("climate-section");
+    
+    if (!monthInput || !climateSection) {
+        console.log('⚠️ Climate data updater: monthInput or climateSection not found');
+        return;
+    }
+
+    function updateClimateData() {
+        const val = monthInput.value; // "2025-11"
+        if (!val) return;
+
+        // Load from local JSON immediately (no API call, no loading)
+        if (!window.CLIMATE_DATA_2025) {
+            console.warn('⚠️ CLIMATE_DATA_2025 not loaded yet, retrying...');
+            setTimeout(updateClimateData, 100);
+            return;
+        }
+
+        const monthIdx = parseInt(val.split("-")[1]) - 1;
+        if (monthIdx < 0 || monthIdx > 11) {
+            console.warn('⚠️ Invalid month index:', monthIdx);
+            return;
+        }
+
+        const data = window.CLIMATE_DATA_2025.climate_data_2025.months[monthIdx];
+        if (!data) {
+            console.warn('⚠️ No climate data for month index:', monthIdx);
+            return;
+        }
+
+        console.log('✅ Climate data loaded from local JSON:', data);
+
+        // Cập nhật từng chỉ số - Format chuẩn quốc tế
+        const ensoEl = document.getElementById("enso-value");
+        if (ensoEl) {
+            // Format chuẩn quốc tế: "La Niña Phase (ONI: -0.6°C)" hoặc "El Niño Phase (ONI: +1.2°C)"
+            const oniSign = data.oni >= 0 ? '+' : '';
+            const ensoPhase = data.enso === 'La Niña' ? 'La Niña Phase' : 
+                             data.enso === 'El Niño' ? 'El Niño Phase' : 'Neutral Phase';
+            ensoEl.textContent = `${ensoPhase} (ONI: ${oniSign}${data.oni}°C)`;
+        }
+
+        const stormEl = document.getElementById("storm-value");
+        if (stormEl) {
+            stormEl.textContent = `${data.storms} cơn bão dự kiến`;
+        }
+
+        const sstEl = document.getElementById("sst-value");
+        if (sstEl) {
+            sstEl.textContent = `${data.sst > 0 ? "+" : ""}${data.sst}°C`;
+        }
+
+        // Điểm áp lực khí hậu - AUTO CALCULATE & LOCK SLIDER
+        const stress = data.stress;
+        const stressSlider = document.getElementById("climate-stress-slider");
+        const stressValue = document.getElementById("climate-stress-value");
+        const stressBadge = document.getElementById("climate-stress-badge");
+
+        if (stressSlider) {
+            stressSlider.value = stress;
+            stressSlider.disabled = true; // Lock slider - auto calculated
+            stressSlider.style.opacity = '0.7';
+            stressSlider.style.cursor = 'not-allowed';
+        }
+
+        if (stressValue) {
+            stressValue.textContent = stress.toFixed(1);
+        }
+
+        if (stressBadge) {
+            stressBadge.className = 
+                stress >= 8 ? "badge critical" : 
+                stress >= 6 ? "badge warning" : "badge good";
+            stressBadge.textContent = 
+                stress >= 8 ? "Critical" : stress >= 6 ? "Cao" : "Thấp";
+        }
+
+        // AUTO-FILL RELATED CLIMATE SLIDERS (Locked)
+        const portClimateStress = document.getElementById("port_climate_stress");
+        if (portClimateStress) {
+            // Port stress = climate stress * 0.8 (slightly lower than overall)
+            const portStress = Math.min(10, stress * 0.8);
+            portClimateStress.value = portStress.toFixed(1);
+            portClimateStress.disabled = true; // Lock
+            portClimateStress.style.opacity = '0.7';
+            portClimateStress.style.cursor = 'not-allowed';
+            const portStressDisplay = document.getElementById("port_climate_stress_display");
+            if (portStressDisplay) {
+                portStressDisplay.textContent = `${portStress.toFixed(1)}/10`;
+            }
+        }
+
+        const climateVolatility = document.getElementById("climate_volatility_index");
+        if (climateVolatility) {
+            // Volatility = stress * 10 (convert to 0-100 scale)
+            const volatility = Math.min(100, stress * 10);
+            climateVolatility.value = Math.round(volatility);
+            climateVolatility.disabled = true; // Lock
+            climateVolatility.style.opacity = '0.7';
+            climateVolatility.style.cursor = 'not-allowed';
+            const volatilityDisplay = document.getElementById("climate_volatility_index_display");
+            if (volatilityDisplay) {
+                volatilityDisplay.textContent = `${Math.round(volatility)}/100`;
+            }
+        }
+
+        const climateResilience = document.getElementById("climate_resilience");
+        if (climateResilience) {
+            // Resilience = inverse of stress (higher stress = lower resilience)
+            const resilience = Math.max(1, 10 - stress * 0.8);
+            climateResilience.value = resilience.toFixed(1);
+            climateResilience.disabled = true; // Lock
+            climateResilience.style.opacity = '0.7';
+            climateResilience.style.cursor = 'not-allowed';
+            const resilienceDisplay = document.getElementById("climate_resilience_display");
+            if (resilienceDisplay) {
+                resilienceDisplay.textContent = `${resilience.toFixed(1)}/10`;
+            }
+        }
+
+        // Update climate preview card with detailed warning
+        updateClimatePreviewCard(data);
+    }
+
+    function updateClimatePreviewCard(data) {
+        const previewCard = document.getElementById("climate-preview");
+        const climateSection = document.getElementById("climate-section");
+        
+        if (!previewCard) return;
+
+        const stress = data.stress;
+        const ensoStatus = data.enso;
+        const storms = data.storms;
+        const oni = data.oni;
+        const sst = data.sst;
+
+        // Get month info
+        const monthNames = ['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 
+                           'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'];
+        const monthIdx = parseInt(document.getElementById('shipment-month')?.value?.split('-')[1]) - 1;
+        const monthName = monthIdx >= 0 ? monthNames[monthIdx] : '';
+        const monthNumber = monthIdx + 1;
+
+        // Calculate risk increase for La Niña
+        const riskIncrease = ensoStatus === 'La Niña' && stress >= 8 ? Math.round((stress - 5) * 8) : 0;
+        const delayRecommendation = stress >= 8 && storms >= 3 ? '3–5 ngày' : stress >= 8 ? '2–3 ngày' : '';
+
+        // Update status badge
+        let statusText = '';
+        let statusIcon = '🌊';
+        let badgeStyle = '';
+        
+        // Format chuẩn quốc tế với ONI
+        const oniSign = oni >= 0 ? '+' : '';
+        if (ensoStatus === 'La Niña') {
+            const intensity = Math.abs(oni) >= 1.0 ? 'Strong' : Math.abs(oni) >= 0.5 ? 'Moderate' : 'Weak';
+            statusIcon = '🌊';
+            statusText = `${intensity} La Niña Phase (ONI: ${oniSign}${oni}°C)`;
+            badgeStyle = stress >= 8 
+                ? 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.4)); border-color: rgba(239, 68, 68, 0.6);'
+                : 'background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.4)); border-color: rgba(251, 191, 36, 0.6);';
+        } else if (ensoStatus === 'El Niño') {
+            const intensity = Math.abs(oni) >= 1.0 ? 'Strong' : Math.abs(oni) >= 0.5 ? 'Moderate' : 'Weak';
+            statusIcon = '🔥';
+            statusText = `${intensity} El Niño Phase (ONI: ${oniSign}${oni}°C)`;
+            badgeStyle = 'background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.4)); border-color: rgba(239, 68, 68, 0.6);';
+        } else {
+            statusIcon = '✅';
+            statusText = `Neutral Phase (ONI: ${oniSign}${oni}°C)`;
+            badgeStyle = 'background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.4)); border-color: rgba(16, 185, 129, 0.6);';
+        }
+
+        // Update stress display
+        const stressClass = stress >= 8 ? 'critical' : stress >= 6 ? 'warning' : 'good';
+        const stressText = stress >= 8 ? 'Critical' : stress >= 6 ? 'Cao' : 'Thấp';
+        const stressColor = stressClass === 'critical' ? '#EF4444' : stressClass === 'warning' ? '#FBBF24' : '#10B981';
+
+        // Get best carrier recommendation based on ESG
+        let carrierRecommendation = '';
+        if (stress >= 8) {
+            const routeValue = document.getElementById('route_input')?.value || '';
+            if (routeValue && window.LOGISTICS_DATA) {
+                const carriers = window.LOGISTICS_DATA.getCarriersByRoute(routeValue);
+                if (carriers && carriers.length > 0) {
+                    const bestCarrier = carriers.reduce((prev, curr) => 
+                        (curr.rating > prev.rating) ? curr : prev
+                    );
+                    carrierRecommendation = `Chọn ${bestCarrier.name} (${bestCarrier.rating.toFixed(1)}⭐, on-time ${bestCarrier.ontime}%)`;
+                } else {
+                    carrierRecommendation = 'Chọn hãng tàu có ESG cao (Maersk, MSC)';
+                }
+            } else {
+                carrierRecommendation = 'Chọn hãng tàu có ESG cao (Maersk, MSC)';
+            }
+        }
+
+        // Month-specific messages
+        const monthMessages = {
+            1: 'Tháng này thường có mưa lớn và gió mạnh ở khu vực Đông Nam Á',
+            2: 'Thời tiết ổn định hơn, nhưng vẫn cần theo dõi ENSO',
+            3: 'Bắt đầu mùa mưa, rủi ro bão tăng dần',
+            4: 'Mùa mưa chính, rủi ro cao nhất trong năm',
+            5: 'Mùa mưa tiếp tục, cần cẩn thận với bão',
+            6: 'Chuyển giao mùa, thời tiết biến động',
+            7: 'Mùa khô bắt đầu, rủi ro thấp hơn',
+            8: 'Mùa khô, điều kiện tốt cho vận chuyển',
+            9: 'Thời tiết ổn định, rủi ro thấp',
+            10: 'Bắt đầu mùa mưa, cần theo dõi',
+            11: 'Mùa mưa, rủi ro bão cao',
+            12: 'Cuối năm, thời tiết biến động'
+        };
+
+        const monthSpecificMessage = monthMessages[monthNumber] || '';
+
+        // Build warning list - Format chuẩn quốc tế
+        const warningList = [];
+        if (ensoStatus === 'La Niña' && stress >= 8) {
+            const oniSign = oni >= 0 ? '+' : '';
+            warningList.push(`Strong La Niña Phase (ONI: ${oniSign}${oni}°C) → ${riskIncrease > 0 ? `+${riskIncrease}%` : 'tăng'} rủi ro bão`);
+        }
+        if (storms > 0) {
+            warningList.push(`${storms} bão dự kiến trong ${monthName}`);
+        }
+        if (delayRecommendation) {
+            warningList.push(`<strong>Khuyên delay ${delayRecommendation}</strong>`);
+        }
+        if (carrierRecommendation) {
+            warningList.push(carrierRecommendation);
+        }
+        if (monthSpecificMessage) {
+            warningList.push(monthSpecificMessage);
+        }
+
+        // Update HTML elements
+        const statusBadge = previewCard.querySelector('#climate-status-badge');
+        const statusTextEl = previewCard.querySelector('#climate-status-text');
+        const stressDisplay = previewCard.querySelector('#climate-stress-display');
+        const stressBadgeDisplay = previewCard.querySelector('#climate-stress-badge-display');
+        const recText = previewCard.querySelector('#climate-rec-text');
+        const warningListEl = previewCard.querySelector('#climate-warning-list');
+        const warningSection = previewCard.querySelector('#climate-warning-section');
+
+        if (statusBadge) {
+            statusBadge.style.cssText = badgeStyle;
+        }
+        if (statusTextEl) {
+            statusTextEl.innerHTML = `<span class="status-icon">${statusIcon}</span> ${statusText}`;
+        }
+        if (stressDisplay) {
+            stressDisplay.textContent = `${stress.toFixed(1)}/10`;
+            stressDisplay.style.color = stressColor;
+        }
+        if (stressBadgeDisplay) {
+            stressBadgeDisplay.textContent = stressText;
+            stressBadgeDisplay.className = `badge ${stressClass}`;
+        }
+        if (recText) {
+            recText.textContent = carrierRecommendation || 'Điều kiện khí hậu ổn định';
+        }
+        if (warningListEl) {
+            warningListEl.innerHTML = warningList.map(item => `<li>${item}</li>`).join('');
+        }
+        if (warningSection) {
+            warningSection.style.display = warningList.length > 0 ? 'block' : 'none';
+        }
+        
+        // Show preview card and climate section
+        previewCard.style.display = 'block';
+        if (climateSection) {
+            climateSection.style.display = 'block';
+        }
+    }
+
+    // Lock all climate sliders immediately (before any data is loaded)
+    function lockClimateSliders() {
+        const sliders = [
+            { id: 'climate-stress-slider', style: 'opacity: 0.7; cursor: not-allowed;' },
+            { id: 'port_climate_stress', style: 'opacity: 0.7; cursor: not-allowed; background: rgba(0,255,136,0.05);' },
+            { id: 'climate_volatility_index', style: 'opacity: 0.7; cursor: not-allowed; background: rgba(0,255,136,0.05);' },
+            { id: 'climate_resilience', style: 'opacity: 0.7; cursor: not-allowed;' }
+        ];
+        
+        sliders.forEach(slider => {
+            const el = document.getElementById(slider.id);
+            if (el) {
+                el.disabled = true;
+                el.setAttribute('readonly', 'readonly');
+                if (slider.style) {
+                    el.style.cssText += slider.style;
+                }
+            }
+        });
+    }
+
+    // Lock sliders on page load
+    lockClimateSliders();
+
+    monthInput.addEventListener('change', () => {
+        updateClimateData();
+        lockClimateSliders(); // Re-lock after update
+    });
+    monthInput.addEventListener('input', () => {
+        updateClimateData();
+        lockClimateSliders(); // Re-lock after update
+    });
+
+    // Tự động chạy lần đầu nếu đã có giá trị (load from local JSON immediately)
+    if (monthInput.value) {
+        // Try immediately, then retry if CLIMATE_DATA_2025 not loaded yet
+        updateClimateData();
+        if (!window.CLIMATE_DATA_2025) {
+            const checkInterval = setInterval(() => {
+                if (window.CLIMATE_DATA_2025) {
+                    clearInterval(checkInterval);
+                    updateClimateData();
+                    lockClimateSliders();
+                }
+            }, 100);
+            // Stop checking after 2 seconds
+            setTimeout(() => clearInterval(checkInterval), 2000);
+        }
     }
 });
 

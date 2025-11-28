@@ -1,8 +1,8 @@
 # app/core/risk_service_v14.py
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 # Import risk engine using absolute import
-from app.core.risk_engine_v14 import calculate_enterprise_risk
+from app.core.risk_engine_v16 import calculate_enterprise_risk
 
 def _map_shipment_to_engine(shipment: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -147,6 +147,17 @@ def _transform_engine_output(engine_result: Dict[str, Any], original_payload: Di
         "climate_var_metrics": {...}
     }
     """
+    def _payload_float(key: str, default: Optional[float] = None) -> Optional[float]:
+        if not original_payload:
+            return default
+        value = original_payload.get(key, default)
+        if value in (None, ""):
+            return default
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
+
     # Extract layers from risk_factors
     layers = []
     layer_names_map = {
@@ -232,6 +243,16 @@ def _transform_engine_output(engine_result: Dict[str, Any], original_payload: Di
     elif 'ESG_score' in engine_result:
         esg_raw = float(engine_result.get('ESG_score', 50.0))
     esg = round(esg_raw / 100.0, 2)  # Convert 0-100 to 0-1
+    green_pack_raw = original_payload.get('green_packaging', 50.0) if original_payload else 50.0
+    climate_resilience_raw = original_payload.get('climate_resilience', 5.0) if original_payload else 5.0
+    
+    # Ensure advanced metrics include ESG & sustainability inputs for frontend use
+    if 'esg_score' not in advanced_metrics:
+        advanced_metrics['esg_score'] = esg_raw
+    if 'green_packaging' not in advanced_metrics:
+        advanced_metrics['green_packaging'] = green_pack_raw
+    if 'climate_resilience' not in advanced_metrics:
+        advanced_metrics['climate_resilience'] = climate_resilience_raw
     
     # Extract climate metrics
     climate_hazard_index = advanced_metrics.get('climate_hazard_index', 5.0)
@@ -242,18 +263,76 @@ def _transform_engine_output(engine_result: Dict[str, Any], original_payload: Di
     # Extract forecast (required by frontend)
     forecast = engine_result.get('forecast', {})
     
+    # Advanced parameters derived from original payload
+    advanced_parameters: Dict[str, Any] = {}
+    if original_payload:
+        distance_val = _payload_float('distance')
+        if distance_val is not None:
+            advanced_parameters['distance'] = distance_val
+        route_type_val = original_payload.get('route_type')
+        if route_type_val:
+            advanced_parameters['route_type'] = route_type_val
+        carrier_rating_val = _payload_float('carrier_rating')
+        if carrier_rating_val is not None:
+            advanced_parameters['carrier_rating'] = carrier_rating_val
+        weather_risk_val = _payload_float('weather_risk')
+        if weather_risk_val is not None:
+            advanced_parameters['weather_risk'] = weather_risk_val
+        port_risk_val = _payload_float('port_risk')
+        if port_risk_val is not None:
+            advanced_parameters['port_risk'] = port_risk_val
+        container_match_val = _payload_float('container_match')
+        if container_match_val is not None:
+            advanced_parameters['container_match'] = container_match_val
+        shipment_value_val = _payload_float('shipment_value')
+        if shipment_value_val is not None:
+            advanced_parameters['shipment_value'] = shipment_value_val
+    
+    # Climate input snapshot for frontend visualizations
+    climate_inputs: Dict[str, Any] = {
+        "climate_hazard_index": float(climate_hazard_index)
+    }
+    enso_val = _payload_float('ENSO_index')
+    if enso_val is not None:
+        climate_inputs['ENSO_index'] = enso_val
+    typhoon_val = _payload_float('typhoon_frequency')
+    if typhoon_val is not None:
+        climate_inputs['typhoon_frequency'] = typhoon_val
+    sst_val = _payload_float('sst_anomaly')
+    if sst_val is not None:
+        climate_inputs['sst_anomaly'] = sst_val
+    port_climate_val = _payload_float('port_climate_stress')
+    if port_climate_val is not None:
+        climate_inputs['port_climate_stress'] = port_climate_val
+    climate_vol_val = _payload_float('climate_volatility_index')
+    if climate_vol_val is not None:
+        climate_inputs['climate_volatility_index'] = climate_vol_val
+    tail_prob_val = _payload_float('climate_tail_event_probability')
+    if tail_prob_val is not None:
+        climate_inputs['climate_tail_event_probability'] = tail_prob_val
+    esg_input_val = _payload_float('ESG_score')
+    if esg_input_val is not None:
+        climate_inputs['ESG_score'] = esg_input_val
+    climate_resilience_val = _payload_float('climate_resilience')
+    if climate_resilience_val is not None:
+        climate_inputs['climate_resilience'] = climate_resilience_val
+    green_pack_val = _payload_float('green_packaging')
+    if green_pack_val is not None:
+        climate_inputs['green_packaging'] = green_pack_val
+    
     # Extract priority_profile and priority_weights from original payload
     priority_profile = original_payload.get('priority_profile', 'standard') if original_payload else 'standard'
     priority_weights = original_payload.get('priority_weights', {'speed': 40, 'cost': 40, 'risk': 20}) if original_payload else {'speed': 40, 'cost': 40, 'risk': 20}
     
     # Ensure all required fields exist, even if empty
-    return {
+    result = {
         "risk_score": risk_score,
         "risk_level": engine_result.get('risk_level', 'MODERATE'),
         "expected_loss": int(round(engine_result.get('expected_loss', 0))),
         "reliability": reliability,
         "esg": esg,
         "layers": layers if layers else [],
+        "risk_factors": risk_factors if risk_factors else [],
         "radar": {
             "labels": radar_labels if radar_labels else [],
             "values": radar_values if radar_values else []
@@ -261,17 +340,35 @@ def _transform_engine_output(engine_result: Dict[str, Any], original_payload: Di
         "mc_samples": mc_samples if mc_samples else [],
         "var": int(round(var_95_usd)),
         "cvar": int(round(cvar_95_usd)),
+        "financial_distribution": fin_dist if fin_dist else {},
         # === CLIMATE METRICS (v14.5) =================================
         "climate_hazard_index": float(climate_hazard_index),
         "climate_var_metrics": climate_var_metrics if climate_var_metrics else {},
         "advanced_metrics": advanced_metrics if advanced_metrics else {},
+        "climate_v14": climate_inputs,
+        "climate_tail_event_probability": climate_inputs.get('climate_tail_event_probability', 0.05),
         # === SCENARIO & FORECAST (required by frontend) ===============
         "scenario_analysis": scenario_analysis if scenario_analysis else {},
         "forecast": forecast if forecast else {},
         # === PRIORITY PROFILE & WEIGHTS (for gauge charts) ============
         "priority_profile": priority_profile,
-        "priority_weights": priority_weights
+        "priority_weights": priority_weights,
+        "advanced_parameters": advanced_parameters if advanced_parameters else {}
     }
+
+    # Mirror frequently used advanced parameters at the root level for backward compatibility
+    for key in ['distance', 'route_type', 'carrier_rating', 'weather_risk', 'port_risk', 'container_match', 'shipment_value']:
+        value = advanced_parameters.get(key)
+        if value is not None:
+            result[key] = value
+
+    # Expose climate inputs on root object as well
+    for climate_key in ['ENSO_index', 'typhoon_frequency', 'sst_anomaly', 'port_climate_stress',
+                        'climate_volatility_index', 'ESG_score', 'climate_resilience', 'green_packaging']:
+        if climate_key in climate_inputs:
+            result[climate_key] = climate_inputs[climate_key]
+
+    return result
 
 
 def run_risk_engine_v14(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -331,5 +428,10 @@ def run_risk_engine_v14(payload: Dict[str, Any]) -> Dict[str, Any]:
             "forecast": {},
             "climate_hazard_index": 5.0,
             "climate_var_metrics": {},
-            "advanced_metrics": {}
+            "advanced_metrics": {},
+            "priority_profile": "standard",
+            "priority_weights": {"speed": 40, "cost": 40, "risk": 20},
+            "layer_interactions": {},
+            "buyer_seller_analysis": {},
+            "financial_distribution": {}
         }

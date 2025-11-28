@@ -1,0 +1,897 @@
+/**
+ * ============================================================
+ * RISKCAST v16.0 COMPONENT STYLES
+ * ============================================================
+ */
+
+/* === CARRIER INTELLIGENCE SECTION === */
+.carrier-intelligence-section .carrier-dashboard {
+    padding: 24px;
+}
+
+.carrier-hero-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    margin-bottom: 32px;
+}
+
+.carrier-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.carrier-meta h3 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.carrier-tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #00ff88;
+}
+
+.tier-icon {
+    font-size: 16px;
+}
+
+.carrier-metric-card {
+    background: rgba(5, 10, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.carrier-metric-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+.carrier-metric-card.risk {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.carrier-metric-card .metric-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.carrier-metric-card .metric-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.carrier-metric-card .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.carrier-metric-card .metric-value.grade {
+    font-size: 48px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.carrier-metric-card .metric-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.carrier-metric-card .metric-progress {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.carrier-metric-card .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff88 0%, #00d4ff 100%);
+    transition: width 0.6s ease;
+}
+
+.strength-factors-card,
+.risk-factors-card {
+    background: rgba(5, 10, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.section-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+.icon-badge {
+    font-size: 20px;
+}
+
+.factor-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+}
+
+.factor-list .factor-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.factor-list .factor-item.strength {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 3px solid #10b981;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.factor-list .factor-item.risk {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid #ef4444;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.factor-list .factor-item .icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.alternatives-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.alternative-carrier-card {
+    background: rgba(5, 10, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.alternative-carrier-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+.alternative-carrier-card.recommended {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.alt-carrier-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.carrier-name {
+    font-weight: 600;
+    color: #fff;
+}
+
+.carrier-grade {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00ff88;
+}
+
+.alt-metrics {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+}
+
+.alt-reason {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+}
+
+.recommended-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 8px;
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid #10b981;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #10b981;
+    text-transform: uppercase;
+}
+
+/* === PORT ANALYSIS SECTION === */
+.port-risk-card {
+    background: rgba(5, 10, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.port-risk-card.pol-card {
+    border-top: 3px solid #3b82f6;
+}
+
+.port-risk-card.pod-card {
+    border-top: 3px solid #8b5cf6;
+}
+
+.port-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.port-icon {
+    font-size: 48px;
+}
+
+.port-header h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.port-code {
+    font-size: 24px;
+    font-weight: 700;
+    color: #00ff88;
+    margin-bottom: 4px;
+}
+
+.port-name {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.port-risk-score {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.risk-gauge {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.risk-gauge .gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+    transition: width 0.6s ease;
+}
+
+.risk-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.risk-level-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.risk-level-badge.low {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.risk-level-badge.moderate {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.risk-level-badge.high {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.risk-level-badge.critical {
+    background: rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+}
+
+.port-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.port-metric {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.port-metric.highlight {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.port-metric .metric-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+.port-metric .metric-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.port-recommendations {
+    margin-top: 24px;
+}
+
+.port-recommendations h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.port-recommendations ul {
+    list-style: none;
+    padding: 0;
+}
+
+.port-recommendations li {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid #3b82f6;
+    border-radius: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+}
+
+.rec-icon {
+    margin-right: 8px;
+}
+
+/* === PACKING EFFICIENCY SECTION === */
+.packing-hero-card {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 32px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 16px;
+    margin-bottom: 32px;
+}
+
+.efficiency-grade-display {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.grade-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    border: 4px solid;
+}
+
+.grade-circle.grade-excellent {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.grade-circle.grade-good {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.grade-circle.grade-fair {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.grade-circle.grade-poor {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.grade-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.grade-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.grade-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.efficiency-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    flex: 1;
+}
+
+.stat-item {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-item.highlight {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.inefficiencies-card,
+.optimization-card {
+    background: rgba(5, 10, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.inefficiency-item {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.inefficiency-item.critical {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid #ef4444;
+}
+
+.inefficiency-item.warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 4px solid #f59e0b;
+}
+
+.ineff-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.ineff-type {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.ineff-type.critical {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.ineff-type.warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.ineff-category {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ineff-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 4px;
+}
+
+.ineff-impact {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+.optimization-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.optimization-card li {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid #3b82f6;
+    border-radius: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+}
+
+.sug-icon {
+    margin-right: 8px;
+}
+
+.savings-potential-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 78, 59, 0.1) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.savings-metric {
+    text-align: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.savings-metric.highlight {
+    background: rgba(16, 185, 129, 0.2);
+    border: 2px solid rgba(16, 185, 129, 0.4);
+    padding: 24px;
+    border-radius: 12px;
+}
+
+.savings-metric .metric-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.savings-metric .metric-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.savings-metric .metric-value.success {
+    color: #10b981;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.savings-metric .metric-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
+}
+
+/* === PRIORITY OPTIMIZATION ENHANCEMENTS === */
+.priority-alignment-card {
+    background: rgba(5, 10, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.alignment-score-display {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.score-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 6px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-circle.score-good {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.score-circle.score-medium {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.score-circle.score-low {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.score-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: #00ff88;
+}
+
+.score-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.score-meta {
+    flex: 1;
+}
+
+.score-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.score-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.distribution-comparison {
+    margin-top: 24px;
+}
+
+.distribution-comparison h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+.comparison-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.comparison-item {
+    margin-bottom: 24px;
+}
+
+.comparison-item .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.comparison-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.comparison-bars .bar {
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: width 0.6s ease;
+}
+
+.comparison-bars .bar.current {
+    background: rgba(59, 130, 246, 0.6);
+    color: #fff;
+}
+
+.comparison-bars .bar.target {
+    background: rgba(16, 185, 129, 0.3);
+    border: 2px dashed rgba(16, 185, 129, 0.6);
+    color: #10b981;
+}
+
+.delta {
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.misalignments-alert {
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+}
+
+.misalignments-alert h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f59e0b;
+    margin-bottom: 12px;
+}
+
+.misalignments-alert ul {
+    list-style: none;
+    padding: 0;
+}
+
+.misalignments-alert li {
+    padding: 8px 0;
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.misalignments-alert li:last-child {
+    border-bottom: none;
+}
+
+.alignment-suggestions {
+    margin-top: 24px;
+}
+
+.alignment-suggestions h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.alignment-suggestions ul {
+    list-style: none;
+    padding: 0;
+}
+
+.alignment-suggestions li {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid #3b82f6;
+    border-radius: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+}
+
+.alignment-suggestions .icon {
+    margin-right: 8px;
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+@media (max-width: 1200px) {
+    .efficiency-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .carrier-hero-card,
+    .packing-hero-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .efficiency-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+    
+    .alternatives-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .port-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+

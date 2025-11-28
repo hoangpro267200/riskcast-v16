@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, Request, Body
 from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional
-from pydantic import Field
+from datetime import datetime
 
 from app.core.risk_service_v14 import run_risk_engine_v14
 
@@ -10,6 +10,38 @@ router = APIRouter()
 
 # Store last result
 LAST_RESULT: Optional[Dict[str, Any]] = None
+
+def extract_origin_from_route(route: str) -> str:
+    """Extract origin port code from route string"""
+    if not route:
+        return 'LAX'
+    parts = route.split('_')
+    if len(parts) >= 2:
+        origin_part = parts[0]
+        port_map = {
+            'VN': 'SGN', 'VNSGN': 'SGN', 'VNHPH': 'HPH',
+            'US': 'LAX', 'USLAX': 'LAX', 'USNYC': 'NYC', 'USJFK': 'JFK',
+            'CN': 'SHA', 'CNSHA': 'SHA', 'CNPEK': 'PEK',
+            'EU': 'DEP', 'EUDEP': 'DEP', 'EULON': 'LON'
+        }
+        return port_map.get(origin_part, origin_part[-3:] if len(origin_part) >= 3 else 'LAX')
+    return 'LAX'
+
+def extract_destination_from_route(route: str) -> str:
+    """Extract destination port code from route string"""
+    if not route:
+        return 'JFK'
+    parts = route.split('_')
+    if len(parts) >= 2:
+        dest_part = parts[1]
+        port_map = {
+            'VN': 'SGN', 'VNSGN': 'SGN', 'VNHPH': 'HPH',
+            'US': 'JFK', 'USLAX': 'LAX', 'USNYC': 'NYC', 'USJFK': 'JFK',
+            'CN': 'SHA', 'CNSHA': 'SHA', 'CNPEK': 'PEK',
+            'EU': 'DEP', 'EUDEP': 'DEP', 'EULON': 'LON'
+        }
+        return port_map.get(dest_part, dest_part[-3:] if len(dest_part) >= 3 else 'JFK')
+    return 'JFK'
 
 
 class Shipment(BaseModel):
@@ -26,6 +58,13 @@ class Shipment(BaseModel):
     eta: str
     transit_time: float
     cargo_value: float
+    distance: Optional[float] = Field(default=None)
+    route_type: Optional[str] = Field(default=None)
+    carrier_rating: Optional[float] = Field(default=None)
+    weather_risk: Optional[float] = Field(default=None)
+    port_risk: Optional[float] = Field(default=None)
+    container_match: Optional[float] = Field(default=None)
+    shipment_value: Optional[float] = Field(default=None)
     use_fuzzy: bool
     use_forecast: bool
     use_mc: bool
@@ -65,19 +104,56 @@ async def analyze(shipment: Shipment):
         # Run risk engine with climate v14.5 upgrade
         result = run_risk_engine_v14(shipment_dict)
         
+        # Add shipment data to result for dashboard display
+        result['shipment'] = {
+            'route': shipment_dict.get('route', ''),
+            'origin': extract_origin_from_route(shipment_dict.get('route', '')),
+            'destination': extract_destination_from_route(shipment_dict.get('route', '')),
+            'eta': shipment_dict.get('eta', ''),
+            'etd': shipment_dict.get('etd', ''),
+            'transport_mode': shipment_dict.get('transport_mode', ''),
+            'cargo_type': shipment_dict.get('cargo_type', ''),
+            'cargo_value': shipment_dict.get('cargo_value', 0),
+            'shipment_id': f"FX-{datetime.now().year}-{abs(hash(str(shipment_dict))) % 10000}"
+        }
+        
         # Store result for retrieval
         LAST_RESULT = result
         
-        # Return success response
-        return {
+        # Build enriched response payload
+        advanced_metrics = result.get('advanced_metrics', {})
+        response_payload = {
             "status": "ok",
             "redirect_url": "/results",
-            "result": {
-                "risk_score": result.get("risk_score", 0.5),
-                "risk_level": result.get("risk_level", "MODERATE"),
-                "expected_loss": result.get("expected_loss", 0)
-            }
+            "result": result,
+            "overall_risk": result.get("overall_risk", result.get("risk_score", 0.5) * 100),
+            "risk_level": result.get("risk_level", "MODERATE"),
+            "expected_loss": result.get("expected_loss", 0),
+            "expected_loss_usd": result.get("expected_loss_usd", result.get("expected_loss", 0)),
+            "delay_probability": result.get("delay_probability", 0.0),
+            "delay_days_estimate": result.get("delay_days_estimate", 0),
+            "risk_factors": result.get("risk_factors", []),
+            "dynamic_weights": result.get("dynamic_weights", {}),
+            "radar_data": result.get("radar", {}),
+            "scenario_analysis": result.get("scenario_analysis", {}),
+            "financial_distribution": result.get("financial_distribution", {}),
+            "advanced_metrics": {
+                **advanced_metrics,
+                "climate_var_metrics": advanced_metrics.get("climate_var_metrics", {}),
+                "climate_hazard_index": result.get("climate_hazard_index", 5.0),
+                "esg_score": advanced_metrics.get("esg_score", 50),
+                "green_packaging": advanced_metrics.get("green_packaging", 50),
+                "climate_resilience": advanced_metrics.get("climate_resilience", 5.0)
+            },
+            "layer_interactions": result.get("layer_interactions", {}),
+            "ai_summary": result.get("ai_summary", {}),
+            "forecast": result.get("forecast", {}),
+            "buyer_seller_analysis": result.get("buyer_seller_analysis", {}),
+            "priority_profile": result.get("priority_profile", "standard"),
+            "priority_weights": result.get("priority_weights", {'speed': 40, 'cost': 40, 'risk': 20})
         }
+
+        return response_payload
     except Exception as e:
         print(f"[API ERROR] Analysis failed: {e}")
         import traceback
@@ -113,6 +189,15 @@ async def run_analysis(request: Request):
         # Get JSON body from request
         payload = await request.json()
         
+        def _to_float(key: str) -> Optional[float]:
+            value = payload.get(key)
+            if value in (None, ""):
+                return None
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return None
+        
         # Transform payload to Shipment format
         shipment_dict = {
             "transport_mode": payload.get("transport_mode", ""),
@@ -127,6 +212,13 @@ async def run_analysis(request: Request):
             "eta": payload.get("eta", ""),
             "transit_time": float(payload.get("transit_time", 0)) if payload.get("transit_time") else 0.0,
             "cargo_value": float(payload.get("cargo_value", 0)) if payload.get("cargo_value") else 0.0,
+            "distance": _to_float("distance"),
+            "route_type": payload.get("route_type"),
+            "carrier_rating": _to_float("carrier_rating"),
+            "weather_risk": _to_float("weather_risk"),
+            "port_risk": _to_float("port_risk"),
+            "container_match": _to_float("container_match"),
+            "shipment_value": _to_float("shipment_value"),
             "use_fuzzy": payload.get("use_fuzzy", False),
             "use_forecast": payload.get("use_forecast", False),
             "use_mc": payload.get("use_mc", False),

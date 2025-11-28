@@ -157,6 +157,7 @@
         <div class="nav-right">
             <a href="/" class="nav-link">Home</a>
             <a href="/input" class="nav-link">Input</a>
+            <a href="/overview" class="nav-link">Overview</a>
             <a href="/results" class="nav-link">Results</a>
             <a href="/research" class="nav-link">Research</a>
         </div>
@@ -751,28 +752,8 @@
 
     <!-- HTML STRUCTURE -->
     <div class="ai-widget-container">
-        <!-- 3D Bot Character -->
-        <div class="ai-bot-3d" id="aiBot">
-            <div class="bot-head">
-                <div class="bot-antenna"></div>
-                <div class="bot-eyes">
-                    <div class="bot-eye"></div>
-                    <div class="bot-eye"></div>
-                </div>
-                <div class="bot-mouth"></div>
-                <div class="bot-body">
-                    <div class="bot-arm left"></div>
-                    <div class="bot-arm right"></div>
-                </div>
-            </div>
-            <div class="bot-legs">
-                <div class="bot-leg"></div>
-                <div class="bot-leg"></div>
-            </div>
-        </div>
-
         <!-- Floating Chat Button -->
-        <button class="ai-chat-button" id="chatButton">
+        <button class="ai-chat-button" id="chatButton" aria-label="Mở trợ lý AI">
             🤖
             <span class="notification-badge" id="notificationBadge" style="display: none;">3</span>
         </button>
@@ -783,7 +764,6 @@
         <!-- Header -->
         <div class="chat-header">
             <div class="chat-header-info">
-                <div class="chat-avatar">🤖</div>
                 <div class="chat-title">
                     <h3>RISKCAST AI Assistant</h3>
                     <div class="chat-status">
@@ -831,7 +811,6 @@
         // DOM ELEMENTS
         // ========================================
         const chatButton = document.getElementById('chatButton');
-        const aiBot = document.getElementById('aiBot');
         const chatPopup = document.getElementById('chatPopup');
         const chatClose = document.getElementById('chatClose');
         const chatInput = document.getElementById('chatInput');
@@ -843,12 +822,32 @@
         // OPEN/CLOSE CHAT POPUP
         // ========================================
         function openChat() {
+            if (!chatPopup) {
+                console.error('[AI Chat] chatPopup is null!');
+                return;
+            }
+            
+            // Force display and visibility
+            chatPopup.style.display = 'flex';
+            chatPopup.style.visibility = 'visible';
+            chatPopup.style.opacity = '1';
+            chatPopup.style.transform = 'translateY(0) scale(1)';
             chatPopup.classList.add('active');
-            chatInput.focus();
-            // Remove notification badge
+            
+            // Small delay to ensure CSS transitions work
+            setTimeout(() => {
+                chatPopup.style.opacity = '1';
+                chatPopup.style.transform = 'translateY(0) scale(1)';
+            }, 10);
+            
+            if (chatInput) {
+                setTimeout(() => chatInput.focus(), 100);
+            }
             if (notificationBadge) {
                 notificationBadge.style.display = 'none';
             }
+            
+            console.log('[AI Chat] Chat popup opened successfully');
         }
 
         function closeChat() {
@@ -856,38 +855,14 @@
         }
 
         // Event Listeners
-        if (chatButton) chatButton.addEventListener('click', openChat);
-        if (aiBot) aiBot.addEventListener('click', openChat);
-        if (chatClose) chatClose.addEventListener('click', closeChat);
-
-        // ========================================
-        // BOT HOVER EFFECT (Follow Mouse)
-        // ========================================
-        if (aiBot) {
-            aiBot.addEventListener('mousemove', (e) => {
-                const rect = aiBot.getBoundingClientRect();
-                const botCenterX = rect.left + rect.width / 2;
-                const botCenterY = rect.top + rect.height / 2;
-                
-                const deltaX = e.clientX - botCenterX;
-                const deltaY = e.clientY - botCenterY;
-                
-                const angle = Math.atan2(deltaY, deltaX);
-                const rotation = (angle * 180 / Math.PI) / 10;
-                
-                const head = aiBot.querySelector('.bot-head');
-                if (head) {
-                    head.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
-                }
-            });
-
-            aiBot.addEventListener('mouseleave', () => {
-                const head = aiBot.querySelector('.bot-head');
-                if (head) {
-                    head.style.transform = 'translateX(-50%) rotate(0deg)';
-                }
+        if (chatButton) {
+            chatButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openChat();
             });
         }
+        if (chatClose) chatClose.addEventListener('click', closeChat);
+
 
         // ========================================
         // SEND MESSAGE FUNCTION (Connected to Real API)

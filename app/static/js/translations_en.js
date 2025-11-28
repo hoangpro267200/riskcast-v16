@@ -146,7 +146,7 @@ window.TRANSLATIONS_EN = {
     
     // Input Page Sections
     section1_title: "Cargo Configuration",
-    section1_subtitle: "Define shipment parameters and specifications",
+    section1_subtitle: "Background data for AI to optimize routes, time and risks by shipping region.",
     section2_title: "Shipping Information",
     section2_subtitle: "Route details and delivery conditions",
     section3_title: "Additional Parameters",
@@ -276,6 +276,9 @@ window.TRANSLATIONS_EN = {
     opt_pk_medium: "Medium",
     opt_pk_good: "Good",
     opt_pk_excellent: "Excellent",
+    
+    // Climate Inputs
+    label_climate_tail_prob: "Climate Tail Event Probability",
     
     // Priority Profile Options
     opt_pr_economy: "Economy",

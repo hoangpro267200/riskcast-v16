@@ -166,7 +166,7 @@ window.TRANSLATIONS_VI = {
     
     // Input Page Sections
     section1_title: "Cấu Hình Hàng Hóa",
-    section1_subtitle: "Xác định thông số và đặc tả lô hàng",
+    section1_subtitle: "Dữ liệu nền để AI tối ưu lộ trình, thời gian và rủi ro theo từng khu vực vận chuyển.",
     section2_title: "Thông Tin Vận Chuyển",
     section2_subtitle: "Chi tiết tuyến đường và điều kiện giao hàng",
     section3_title: "Thông Số Bổ Sung",
@@ -283,6 +283,9 @@ window.TRANSLATIONS_VI = {
     opt_pk_medium: "Trung Bình",
     opt_pk_good: "Tốt",
     opt_pk_excellent: "Xuất Sắc",
+    
+    // Climate Inputs
+    label_climate_tail_prob: "Xác Suất Sự Kiện Khí Hậu Cực Đoan",
     
     // Priority Profile Options
     opt_pr_economy: "Tiết Kiệm (Economy)",
