@@ -1,0 +1,74 @@
+{
+  "version": "20251201113730",
+  "build_date": "2025-12-01T11:37:30.838685",
+  "js_bundles": {
+    "core": {
+      "hash": "2a426957",
+      "path": "js/core.bundle.min.2a426957.js",
+      "size": 35139
+    },
+    "modules": {
+      "hash": "1781f664",
+      "path": "js/modules.bundle.min.1781f664.js",
+      "size": 152376
+    },
+    "input": {
+      "hash": "e61c697e",
+      "path": "js/input.bundle.min.e61c697e.js",
+      "size": 4107
+    },
+    "results": {
+      "hash": "8d895c1b",
+      "path": "js/results.bundle.min.8d895c1b.js",
+      "size": 6595
+    },
+    "dashboard": {
+      "hash": "14eefff3",
+      "path": "js/dashboard.bundle.min.14eefff3.js",
+      "size": 13850
+    },
+    "overview": {
+      "hash": "478ff70e",
+      "path": "js/overview.bundle.min.478ff70e.js",
+      "size": 21342
+    },
+    "booking_summary": {
+      "hash": "cc1e489a",
+      "path": "js/booking_summary.bundle.min.cc1e489a.js",
+      "size": 19430
+    }
+  },
+  "css_bundles": {
+    "core": {
+      "hash": "8b94fc4e",
+      "path": "css/core.bundle.min.8b94fc4e.css",
+      "size": 47397
+    },
+    "home": {
+      "hash": "00ace66e",
+      "path": "css/home.bundle.min.00ace66e.css",
+      "size": 23518
+    },
+    "input": {
+      "hash": "223d1564",
+      "path": "css/input.bundle.min.223d1564.css",
+      "size": 98187
+    },
+    "results": {
+      "hash": "f10e6592",
+      "path": "css/results.bundle.min.f10e6592.css",
+      "size": 59344
+    },
+    "dashboard": {
+      "hash": "9fff3eb0",
+      "path": "css/dashboard.bundle.min.9fff3eb0.css",
+      "size": 10281
+    },
+    "overview": {
+      "hash": "91f09fcc",
+      "path": "css/overview.bundle.min.91f09fcc.css",
+      "size": 26244
+    }
+  },
+  "cdn_url": "/dist"
+}

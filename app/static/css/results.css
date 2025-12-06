@@ -211,6 +211,48 @@ body {
     margin-top: 2px;
 }
 
+/* PDF Export Button */
+.btn-export-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+}
+
+.btn-export-pdf:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
+}
+
+.btn-export-pdf:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-export-pdf.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.btn-export-pdf svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+}
+
 .header-meta {
     display: flex;
     gap: 12px;
@@ -2155,8 +2197,6 @@ svg {
 .weather-card .param-value { color: #60a5fa; }
 .port-card .param-value { color: #f59e0b; }
 .container-card .param-value { color: #10b981; }
-
-/* ==================== SECTION 3: CLIMATE v14.5 ==================== */
 .climate-section .card {
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
     border: 1px solid rgba(59, 130, 246, 0.3);

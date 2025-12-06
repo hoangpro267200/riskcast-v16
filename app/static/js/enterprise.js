@@ -1,5 +1,4 @@
 // ===============================================================
-// RISKCAST v12.5 — Enterprise JS
 // KPI handler • Chart Render • Auto-update
 // Author: Kai × Hoàng
 // ===============================================================
@@ -79,7 +78,6 @@ function loadEnterprise(data) {
 
 // ------------- RUN BUTTON HANDLER -------------
 async function runEnterprise() {
-    // Legacy function - redirect to input page for new analysis
     window.location.href = "/input";
 }
 

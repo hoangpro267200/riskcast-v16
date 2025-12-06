@@ -38,7 +38,9 @@ class MemorySystem:
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(exist_ok=True)
         self.history_file = self.data_dir / "history.json"
+        self.kv_store_file = self.data_dir / "kv_store.json"
         self._load_history()
+        self._load_kv_store()
     
     def _load_history(self) -> None:
         """Load history from file"""
@@ -51,6 +53,17 @@ class MemorySystem:
         else:
             self.history = {}
     
+    def _load_kv_store(self) -> None:
+        """Load key-value store from file"""
+        if self.kv_store_file.exists():
+            try:
+                with open(self.kv_store_file, 'r', encoding='utf-8') as f:
+                    self.kv_store = json.load(f)
+            except (json.JSONDecodeError, IOError):
+                self.kv_store = {}
+        else:
+            self.kv_store = {}
+    
     def _save_history(self) -> None:
         """Save history to file"""
         try:
@@ -58,6 +71,14 @@ class MemorySystem:
                 json.dump(self.history, f, indent=2, ensure_ascii=False)
         except IOError as e:
             print(f"Error saving history: {e}")
+    
+    def _save_kv_store(self) -> None:
+        """Save key-value store to file"""
+        try:
+            with open(self.kv_store_file, 'w', encoding='utf-8') as f:
+                json.dump(self.kv_store, f, indent=2, ensure_ascii=False)
+        except IOError as e:
+            print(f"Error saving kv_store: {e}")
     
     def save_shipment(self, shipment_data: Dict, risk_analysis: Dict, summary: str = "") -> str:
         """
@@ -214,6 +235,30 @@ class MemorySystem:
             "recent_risk_scores": [round(r, 2) for r in risk_scores],
             "timestamps": timestamps
         }
+    
+    def set(self, key: str, value: Any) -> None:
+        """
+        Set a key-value pair in the store
+        
+        Args:
+            key: Storage key
+            value: Value to store (must be JSON serializable)
+        """
+        self.kv_store[key] = value
+        self._save_kv_store()
+    
+    def get(self, key: str, default: Any = None) -> Any:
+        """
+        Get a value from the store
+        
+        Args:
+            key: Storage key
+            default: Default value if key not found
+        
+        Returns:
+            Stored value or default
+        """
+        return self.kv_store.get(key, default)
 
 
 def _generate_comparison_insights(shipment_1: Dict, shipment_2: Dict, risk_change: float) -> List[str]:

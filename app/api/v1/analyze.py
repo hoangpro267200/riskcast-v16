@@ -19,7 +19,6 @@ def analyze(request: AnalyzeRequest):
     
     Returns risk score, expected loss, VaR/CVaR, and recommendations.
     """
-    # TODO: Hoàng replace bằng risk_engine_v14 sau
     result = {
         "risk_score": 76,
         "risk_level": "medium",

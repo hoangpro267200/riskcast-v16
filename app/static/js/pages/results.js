@@ -1,0 +1,336 @@
+// ======================================================
+// ======================================================
+
+// Initialize on DOM Load
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("🔥 RISKCAST v12.5 loaded");
+
+    // Initialize ResultsCore if available
+    if (window.ResultsCore) {
+        console.log("🔥 ResultsCore found → INIT()");
+        window.ResultsCore.init();
+    } else {
+        console.error("ResultsCore missing!");
+    }
+});
+
+// ======================================================
+// AI CHAT SIDEBAR - Streaming Chat Handler
+// ======================================================
+function appendChatMessage(role, text) {
+    const box = document.createElement("div");
+    box.className = "ai-message " + role;
+    
+    if (role === "user") {
+        box.innerText = text;
+    } else {
+        const strong = document.createElement("strong");
+        strong.textContent = "RISKCAST AI: ";
+        box.appendChild(strong);
+        box.appendChild(document.createTextNode(text));
+    }
+    
+    const messagesContainer = document.getElementById("aiChatMessages");
+    messagesContainer.appendChild(box);
+    box.scrollIntoView({ behavior: "smooth", block: "end" });
+    
+    return box;
+}
+
+async function sendChat() {
+    const input = document.getElementById("aiChatInput");
+    const text = input.value.trim();
+    if (!text) return;
+    
+    appendChatMessage("user", text);
+    input.value = "";
+
+    const loadingMsg = appendChatMessage("ai", "Đang xử lý…");
+
+    try {
+        const res = await fetch("/api/ai/stream", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: text })
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const reader = res.body.getReader();
+        let full = "";
+        const decoder = new TextDecoder();
+
+        // Remove loading message
+        loadingMsg.remove();
+        const aiMsg = appendChatMessage("ai", "");
+
+        // Helper function to update AI message
+        function updateAIMessage(msgElement, text) {
+            // Update only the text content, preserving the "RISKCAST AI:" prefix
+            const textNode = msgElement.childNodes[1];
+            if (textNode) {
+                textNode.textContent = text;
+            } else {
+                // If no text node, update innerHTML
+                msgElement.innerHTML = '<strong>RISKCAST AI: </strong>' + text;
+            }
+            msgElement.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value, { stream: true });
+            
+            // Handle both SSE format (data: ...) and plain text
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+                if (!line.trim()) continue;
+                
+                if (line.startsWith('data: ')) {
+                    // SSE format
+                    const data = line.slice(6);
+                    
+                    if (data === '[DONE]') {
+                        return;
+                    }
+
+                    try {
+                        const parsed = JSON.parse(data);
+                        if (parsed.text) {
+                            full += parsed.text;
+                            updateAIMessage(aiMsg, full);
+                        }
+                    } catch (e) {
+                        // If not JSON, treat as plain text
+                        full += data;
+                        updateAIMessage(aiMsg, full);
+                    }
+                } else {
+                    // Plain text streaming
+                    full += line;
+                    updateAIMessage(aiMsg, full);
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Chat error:", error);
+        loadingMsg.remove();
+        appendChatMessage("ai", "Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại.");
+    }
+}
+
+// Bind chat events when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+    const sendBtn = document.getElementById("aiChatSend");
+    const input = document.getElementById("aiChatInput");
+
+    if (sendBtn) {
+        sendBtn.onclick = sendChat;
+    }
+
+    if (input) {
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendChat();
+            }
+        });
+    }
+});
+
+// ======================================================
+// AI ADVISER FUNCTIONS
+// ======================================================
+// Helper function to append AI message
+function appendAIMessage(role, text) {
+    const chatBox = document.getElementById("ai_chat") || document.getElementById("ai_output");
+    if (!chatBox) {
+        console.error("AI chat/output container not found");
+        return;
+    }
+    const placeholder = chatBox.querySelector(".ai-placeholder");
+    if (placeholder) {
+        placeholder.remove();
+    }
+    
+    const messageDiv = document.createElement("div");
+    messageDiv.className = `ai-message ${role} ai-report-content`;
+    messageDiv.textContent = text;
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+async function runAIAdviser() {
+    const input = document.getElementById("ai_input");
+    const prompt = input ? input.value : "Phân tích rủi ro logistics cho lô hàng này";
+    
+    // Show loading state
+    const btn = document.getElementById("ai_analyse_btn");
+    if (btn) {
+        btn.disabled = true;
+        const btnText = btn.querySelector(".btn-text");
+        if (btnText) {
+            btnText.textContent = "Đang xử lý...";
+        }
+    }
+
+    try {
+        const res = await fetch("/api/ai/adviser", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt })
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const data = await res.json();
+        appendAIMessage("assistant", data.reply || data.message || "Không có phản hồi");
+    } catch (e) {
+        console.error("AI Adviser error:", e);
+        appendAIMessage("assistant", "Lỗi hệ thống. Không thể trả lời.");
+    } finally {
+        // Restore button state
+        if (btn) {
+            btn.disabled = false;
+            const btnText = btn.querySelector(".btn-text");
+            if (btnText) {
+                btnText.textContent = "Phân tích rủi ro bằng AI";
+            }
+        }
+    }
+}
+
+function toggleAutoAI() {
+    console.log("Toggling Auto AI...");
+    const btn = document.getElementById("auto_ai_toggle");
+    if (btn) {
+        const isActive = btn.classList.contains("active");
+        if (isActive) {
+            btn.classList.remove("active");
+            btn.querySelector(".btn-text").textContent = "Auto AI: OFF";
+        } else {
+            btn.classList.add("active");
+            btn.querySelector(".btn-text").textContent = "Auto AI: ON";
+        }
+    }
+}
+
+function exportAIReportPDF() {
+    console.log("Exporting AI Report as PDF...");
+    alert("PDF Export function - Please implement");
+}
+
+// ======================================================
+// TAB SWITCHING LOGIC
+// ======================================================
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.view-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-mode');
+            document.body.setAttribute('data-view-mode', mode);
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            
+            // Hide all mode sections
+            document.querySelectorAll('.mode-section').forEach(section => {
+                section.classList.add('view-hidden');
+            });
+            
+            // Show the corresponding mode section based on data-mode
+            let targetSectionId = '';
+            if (mode === 'enterprise') {
+                targetSectionId = 'mode-enterprise';
+            } else if (mode === 'nckh') {
+                targetSectionId = 'mode-research';
+            } else if (mode === 'investor') {
+                targetSectionId = 'mode-investor';
+            }
+            
+            const targetSection = document.getElementById(targetSectionId);
+            if (targetSection) {
+                targetSection.classList.remove('view-hidden');
+            }
+        });
+    });
+    
+    // Set default view mode
+    const defaultTab = document.querySelector('.view-tab[data-mode="enterprise"]');
+    if (defaultTab) {
+        document.body.setAttribute('data-view-mode', 'enterprise');
+    }
+});
+
+// ======================================================
+// LANGUAGE SWITCHER
+// ======================================================
+document.addEventListener("DOMContentLoaded", () => {
+    const langBtns = document.querySelectorAll(".lang-btn");
+    
+    langBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            // Remove active class from all language buttons
+            langBtns.forEach(b => b.classList.remove("active"));
+            
+            // Add active class to clicked button
+            btn.classList.add("active");
+            
+            const lang = btn.getAttribute("data-lang");
+            console.log(`Language switched to: ${lang}`);
+            
+            // Here you would implement actual language switching
+            // This would typically call a translation function
+            if (window.switchLanguage) {
+                window.switchLanguage(lang);
+            }
+        });
+    });
+});
+
+// ======================================================
+// UTILITY FUNCTIONS
+// ======================================================
+
+// Format number with thousand separators
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// Format currency
+function formatCurrency(num, currency = "USD") {
+    const formatted = formatNumber(Math.round(num));
+    return `${formatted} ${currency}`;
+}
+
+// Format percentage
+function formatPercentage(num) {
+    return `${Math.round(num)}%`;
+}
+
+// Show notification
+function showNotification(message, type = "info") {
+    console.log(`[${type.toUpperCase()}] ${message}`);
+    // You can implement a toast notification here
+}
+
+// ======================================================
+// EXPORT FUNCTIONS TO GLOBAL SCOPE
+// ======================================================
+window.sendChat = sendChat;
+window.runAIAdviser = runAIAdviser;
+window.toggleAutoAI = toggleAutoAI;
+window.exportAIReportPDF = exportAIReportPDF;
+window.formatNumber = formatNumber;
+window.formatCurrency = formatCurrency;
+window.formatPercentage = formatPercentage;
+window.showNotification = showNotification;

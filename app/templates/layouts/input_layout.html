@@ -1,0 +1,102 @@
+{% set page_type = "input" %}
+{% extends "layouts/base.html" %}
+
+{% block head %}
+<!-- NAVBAR STYLES -->
+<style>
+    .global-navbar {
+        width: 100%;
+        padding: 26px 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(5, 10, 20, 0.65);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(0, 255, 200, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99999 !important;
+    }
+    .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .nav-logo {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .logo-icon {
+        height: 42px;
+        width: auto;
+        filter: drop-shadow(0 0 14px rgba(0,255,200,0.35));
+        margin-right: 8px;
+        animation: none !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .logo-icon * {
+        vector-effect: non-scaling-stroke;
+    }
+    .nav-title {
+        font-weight: 700;
+        font-size: 18px;
+        color: #00ffc6;
+    }
+    .nav-right {
+        display: flex;
+        gap: 34px;
+    }
+    .nav-link {
+        color: #9bbecf;
+        font-weight: 500;
+        font-size: 15px;
+        transition: 0.2s;
+        padding-bottom: 6px;
+    }
+    .nav-link:hover {
+        color: #ffffff;
+    }
+    .nav-link.active {
+        color: #00f5a0;
+        border-bottom: 2px solid #00f5a0;
+    }
+    main {
+        padding-top: 120px !important; /* Avoid overlap with fixed navbar - Input Page only */
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}input-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/input_form.css">
+<link rel="stylesheet" href="/static/css/smart_input_styles.css">
+<link rel="stylesheet" href="/static/css/enterprise_input_layout.css">
+<link rel="stylesheet" href="/static/css/input_inline.css">
+<link rel="stylesheet" href="/static/css/packing_list.css">
+<link rel="stylesheet" href="/static/css/navigation.css">
+{% endblock %}
+
+{% block progress_tracker %}
+<!-- Progress Bar and System Banner -->
+<div class="system-ready-banner" style="display: none;">
+    <span>Hệ thống sẵn sàng</span>
+</div>
+
+<div class="progress-bar-container" style="display: none;">
+    <!-- Progress bar content -->
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- CORE UTILITIES (Load first for debounce/throttle) -->
+<script src="/static/js/core/utils.js"></script>
+<script src="/static/js/input_form.js"></script>
+<script src="/static/js/modules/progress_tracker.js"></script>
+{% endblock %}
+

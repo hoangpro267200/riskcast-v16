@@ -10,7 +10,7 @@ from anthropic import Anthropic
 from dotenv import load_dotenv
 import os
 import json
-from typing import Dict, Optional, AsyncGenerator
+from typing import Dict, Optional, AsyncGenerator, Any
 
 from app.risk_engine import (
     compute_overall_risk,
@@ -21,55 +21,138 @@ from app.risk_engine import (
     generate_summary
 )
 from app.memory import memory_system
-from app.utils import sanitize_input, validate_shipment_data, build_ai_prompt
-
-# Load environment variables from .env file
-# Try loading from project root first, then current directory
+from app.core.utils.validators import sanitize_input, validate_shipment_data, build_ai_prompt
 from pathlib import Path
-project_root = Path(__file__).parent.parent
-env_path = project_root / ".env"
-env_1_path = project_root / ".env_1"
 
-# Try to load .env file
-loaded = False
-if env_path.exists():
-    try:
-        loaded = load_dotenv(dotenv_path=env_path, override=True)
-        if loaded:
-            print(f"[DEBUG] Loaded .env from: {env_path}")
-    except Exception as e:
-        print(f"[WARNING] Could not load .env: {e}")
+# ===============================
+# ENV LOADER - Load .env file
+# ===============================
+# Note: main.py loads .env first, but we load here too as fallback in case api_ai is imported standalone
+root_dir = Path(__file__).resolve().parent.parent
+env_file = root_dir / ".env"
 
-# Fallback to .env_1 if .env failed
-if not loaded and env_1_path.exists():
-    try:
-        loaded = load_dotenv(dotenv_path=env_1_path, override=True)
-        if loaded:
-            print(f"[DEBUG] Loaded .env_1 from: {env_1_path}")
-    except Exception as e:
-        print(f"[WARNING] Could not load .env_1: {e}")
+# Try multiple paths to find .env file
+env_loaded = False
+api_key_before_load = os.getenv("ANTHROPIC_API_KEY")
 
-# Final fallback to current directory
-if not loaded:
+if env_file.exists():
+    # Force reload to ensure we get the latest values
+    load_dotenv(env_file, override=True)
+    env_loaded = True
+    print(f"[API_AI] Checking .env at: {env_file}")
+    
+    # Validate .env file content and manually load if needed
     try:
-        load_dotenv(override=True)
-        print(f"[DEBUG] Tried loading .env from current directory")
+        # Try different encodings to handle BOM and encoding issues
+        encodings = ['utf-8-sig', 'utf-8', 'latin-1']
+        env_content = None
+        used_encoding = None
+        
+        for encoding in encodings:
+            try:
+                with open(env_file, 'r', encoding=encoding) as f:
+                    env_content = f.read()
+                used_encoding = encoding
+                break
+            except UnicodeDecodeError:
+                continue
+        
+        if not env_content:
+            print(f"[API_AI] [ERROR] Could not read .env file with any encoding!")
+            raise Exception("Failed to read .env file")
+        
+        if used_encoding != 'utf-8':
+            print(f"[API_AI] [INFO] Read .env file with encoding: {used_encoding}")
+        
+        has_key_line = 'ANTHROPIC_API_KEY' in env_content
+        if not has_key_line:
+            print(f"[API_AI] [ERROR] File .env exists but does not contain 'ANTHROPIC_API_KEY' line!")
+            print(f"[API_AI] [ERROR] Please add this line to .env file: ANTHROPIC_API_KEY=your_key_here")
+        else:
+            # Check if key has a value (not just the variable name)
+            lines = env_content.split('\n')
+            key_line = None
+            for line in lines:
+                stripped = line.strip()
+                # Skip comments and empty lines
+                if stripped.startswith('#') or not stripped:
+                    continue
+                if stripped.startswith('ANTHROPIC_API_KEY'):
+                    key_line = stripped
+                    break
+            
+            if key_line:
+                if '=' not in key_line:
+                    print(f"[API_AI] [ERROR] ANTHROPIC_API_KEY line exists but has no '=' sign!")
+                    print(f"[API_AI] [ERROR] Current line: {key_line[:50]}...")
+                    print(f"[API_AI] [ERROR] Format should be: ANTHROPIC_API_KEY=your_actual_key")
+                else:
+                    parts = key_line.split('=', 1)
+                    key_value = parts[1].strip() if len(parts) > 1 else ''
+                    if not key_value:
+                        print(f"[API_AI] [ERROR] ANTHROPIC_API_KEY line exists but has no value!")
+                        print(f"[API_AI] [ERROR] Current line: {key_line[:50]}...")
+                        print(f"[API_AI] [ERROR] Format should be: ANTHROPIC_API_KEY=your_actual_key")
+                    else:
+                        # Always manually set to ensure it's loaded (fallback if dotenv fails)
+                        os.environ["ANTHROPIC_API_KEY"] = key_value
+                        print(f"[API_AI] [INFO] Loaded ANTHROPIC_API_KEY from .env file (length: {len(key_value)})")
     except Exception as e:
-        print(f"[WARNING] Could not load .env from current directory: {e}")
+        print(f"[API_AI] [WARNING] Could not validate/load .env file content: {str(e)}")
+        import traceback
+        traceback.print_exc()
+else:
+    # Try loading from current directory
+    current_env = Path(".env")
+    if current_env.exists():
+        load_dotenv(".env", override=True)
+        env_loaded = True
+        print(f"[API_AI] Checking .env at current directory: {current_env.absolute()}")
+    else:
+        # Fallback: try to load from any location
+        load_dotenv(override=False)
+        print(f"[API_AI] .env file not found at expected locations. Using existing environment variables.")
 
 router = APIRouter()
 
-# Get API key from environment
+# Get API key from environment (SECURE: No logging of key)
+# Fallback to "dummy" if not set to prevent warnings
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+api_key_after_load = ANTHROPIC_API_KEY
 
-# Check if API key is configured (not placeholder)
-if ANTHROPIC_API_KEY and ANTHROPIC_API_KEY != "your_anthropic_api_key_here":
-    client = Anthropic(api_key=ANTHROPIC_API_KEY)
-    print(f"[INFO] Anthropic client initialized (API key: {ANTHROPIC_API_KEY[:15]}...)")
+if not ANTHROPIC_API_KEY:
+    ANTHROPIC_API_KEY = "dummy"
+    print(f"[API_AI] [WARNING] ANTHROPIC_API_KEY not found in environment variables")
+    print(f"[API_AI] [DEBUG] Key before load: {bool(api_key_before_load)}, after load: {bool(api_key_after_load)}")
+    print(f"[API_AI] [DEBUG] env_file.exists(): {env_file.exists() if env_file else False}")
+    print(f"[API_AI] [DEBUG] Current working directory: {os.getcwd()}")
+    if env_file.exists():
+        print(f"[API_AI] [ACTION REQUIRED] Please check your .env file and ensure it contains:")
+        print(f"[API_AI] [ACTION REQUIRED] ANTHROPIC_API_KEY=sk-ant-api03-your_actual_key_here")
+        print(f"[API_AI] [ACTION REQUIRED] Get key from: https://console.anthropic.com/")
+else:
+    print(f"[API_AI] [INFO] ANTHROPIC_API_KEY found (length: {len(ANTHROPIC_API_KEY)})")
+
+# Validate and initialize client
+if (ANTHROPIC_API_KEY and 
+    ANTHROPIC_API_KEY != "your_anthropic_api_key_here" and 
+    ANTHROPIC_API_KEY != "dummy" and 
+    len(ANTHROPIC_API_KEY) > 20):
+    try:
+        client = Anthropic(api_key=ANTHROPIC_API_KEY)
+        print(f"[INFO] Anthropic client initialized (API key configured, length: {len(ANTHROPIC_API_KEY)})")
+    except Exception as e:
+        client = None
+        print(f"[ERROR] Failed to initialize Anthropic client: {str(e)}")
+        print("[WARNING] AI features will not work.")
 else:
     client = None
-    print("[WARNING] ANTHROPIC_API_KEY not configured. AI features will not work.")
-    print("[WARNING] Please set ANTHROPIC_API_KEY in .env file")
+    if ANTHROPIC_API_KEY != "dummy":
+        print(f"[WARNING] ANTHROPIC_API_KEY not configured properly. Current value: '{ANTHROPIC_API_KEY[:20] if len(ANTHROPIC_API_KEY) > 20 else ANTHROPIC_API_KEY}...'")
+        print("[WARNING] Please set ANTHROPIC_API_KEY in .env file with a valid key (length > 20)")
+    else:
+        print("[WARNING] ANTHROPIC_API_KEY not set. AI features will not work.")
+        print("[WARNING] Please set ANTHROPIC_API_KEY in .env file")
 
 
 # ==================== PROMPT TEMPLATES ====================
@@ -201,12 +284,30 @@ Format as comparative analysis."""
 
 # ==================== HELPER FUNCTIONS ====================
 
-async def _call_claude(prompt: str, stream: bool = False, user_question: str = None) -> str:
+def _check_api_key_configured():
+    """Check if API key is properly configured and return error message if not"""
+    if not client:
+        error_msg = "ANTHROPIC_API_KEY not configured. Please set ANTHROPIC_API_KEY in your .env file at the project root."
+        if not ANTHROPIC_API_KEY or ANTHROPIC_API_KEY == "dummy":
+            error_msg += " The API key was not found in environment variables."
+        elif ANTHROPIC_API_KEY == "your_anthropic_api_key_here":
+            error_msg += " The API key is still set to placeholder value."
+        elif len(ANTHROPIC_API_KEY) <= 20:
+            error_msg += f" The API key appears to be invalid (length: {len(ANTHROPIC_API_KEY)})."
+        return False, error_msg
+    return True, None
+
+
+async def _call_claude(
+    prompt: str,
+    stream: bool = False,
+    user_question: Optional[str] = None
+) -> Any:
     """Call Claude API with question-focused system prompt"""
     if not client:
         raise HTTPException(
             status_code=500,
-            detail="ANTHROPIC_API_KEY not configured"
+            detail="AI service is not available. Please contact support."
         )
     
     # Founder Context
@@ -383,7 +484,7 @@ class StreamRequest(BaseModel):
 @router.get("/health")
 async def health():
     """Health check endpoint"""
-    if not ANTHROPIC_API_KEY:
+    if not ANTHROPIC_API_KEY or ANTHROPIC_API_KEY in ("dummy", "your_anthropic_api_key_here"):
         return {
             "status": "error",
             "message": "ANTHROPIC_API_KEY not configured"
@@ -415,9 +516,7 @@ async def stream(request: StreamRequest):
                 status_code=500,
                 detail="ANTHROPIC_API_KEY not configured. Please set ANTHROPIC_API_KEY in your .env file."
             )
-        
-        # Verify API key is valid (not placeholder)
-        if not ANTHROPIC_API_KEY or ANTHROPIC_API_KEY == "your_anthropic_api_key_here":
+        if not ANTHROPIC_API_KEY or ANTHROPIC_API_KEY in ("your_anthropic_api_key_here", "dummy"):
             raise HTTPException(
                 status_code=500,
                 detail="ANTHROPIC_API_KEY is not set or is still a placeholder. Please set a valid API key in .env file."
@@ -451,7 +550,7 @@ INSTRUCTIONS:
         
         try:
             # Verify client is initialized with valid API key
-            if not client or not hasattr(client, 'api_key') or not client.api_key:
+            if not client or not hasattr(client, 'api_key') or not client.api_key or ANTHROPIC_API_KEY in ("dummy", "your_anthropic_api_key_here"):
                 raise HTTPException(
                     status_code=500,
                     detail="Anthropic client not properly initialized. Please check ANTHROPIC_API_KEY in .env file."
@@ -587,7 +686,7 @@ async def analyze(payload: dict):
         raise HTTPException(status_code=400, detail=error)
     
     # Calculate risk
-    from app.core.risk_engine_v16 import calculate_enterprise_risk
+    from app.core.engine.risk_engine_v16 import calculate_enterprise_risk
     risk_result = calculate_enterprise_risk(shipment_data)
     
     # Build prompt
@@ -850,11 +949,11 @@ async def ai_chat(request: ChatRequest):
     """
     try:
         from anthropic import APIError
-        if not client:
-            raise HTTPException(
-                status_code=500,
-                detail="ANTHROPIC_API_KEY not configured"
-            )
+        
+        # Check API key configuration
+        is_configured, error_msg = _check_api_key_configured()
+        if not is_configured:
+            raise HTTPException(status_code=500, detail=error_msg)
         
         # Founder Context
         founder_context = """
@@ -870,7 +969,7 @@ Tầm nhìn RISKCAST: tạo ra nền tảng dự báo rủi ro logistics & ESG t
 Sứ mệnh: đưa ra đánh giá rủi ro minh bạch, chính xác, giúp doanh nghiệp ra quyết định tốt hơn.
 
 Nếu người dùng hỏi:
-- "Ai tạo ra hệ thống này?" → trả lời rằng người tạo ra là Bùi Xuân Hoàng.
+- "Ai tạo ra hệ thống này?" → trả lời rằng người tạo ra là Bùi Xuân Hoàng....
 - "Founder là ai?" → mô tả đúng vai trò Founder AI-first developer (Bùi Xuân Hoàng).
 - "Tầm nhìn dự án?" → trả lời theo tầm nhìn ở trên.
 - "Sứ mệnh dự án?" → trả lời theo nội dung đã mô tả.
@@ -925,11 +1024,11 @@ async def ai_adviser(data: PromptData):
     """
     try:
         from anthropic import APIError
-        if not client:
-            raise HTTPException(
-                status_code=500,
-                detail="ANTHROPIC_API_KEY not configured"
-            )
+        
+        # Check API key configuration
+        is_configured, error_msg = _check_api_key_configured()
+        if not is_configured:
+            raise HTTPException(status_code=500, detail=error_msg)
         
         # Founder Context
         founder_context = """

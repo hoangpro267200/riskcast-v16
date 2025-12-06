@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional
 from datetime import datetime
 
-from app.core.risk_service_v14 import run_risk_engine_v14
+from app.core.services.risk_service import run_risk_engine_v14
 
 router = APIRouter()
 
@@ -69,7 +69,6 @@ class Shipment(BaseModel):
     use_forecast: bool
     use_mc: bool
     use_var: bool
-    # === CLIMATE FIELDS (v14.5) =================================
     ENSO_index: float = 0.0
     typhoon_frequency: float = 0.5
     sst_anomaly: float = 0.0
@@ -100,8 +99,6 @@ async def analyze(shipment: Shipment):
     try:
         # Convert Shipment to dict for engine
         shipment_dict = shipment.model_dump()
-        
-        # Run risk engine with climate v14.5 upgrade
         result = run_risk_engine_v14(shipment_dict)
         
         # Add shipment data to result for dashboard display
@@ -119,6 +116,17 @@ async def analyze(shipment: Shipment):
         
         # Store result for retrieval
         LAST_RESULT = result
+        
+        # Save to memory_system for overview page
+        from app.memory import memory_system
+        # Store shipment data for overview
+        memory_system.set("latest_shipment", {
+            **shipment_dict,
+            "pol_code": shipment_dict.get("pol_code", extract_origin_from_route(shipment_dict.get('route', ''))),
+            "pod_code": shipment_dict.get("pod_code", extract_destination_from_route(shipment_dict.get('route', ''))),
+            "risk_score": result.get("overall_risk", result.get("risk_score", 0.5)),
+            "risk_level": result.get("risk_level", "MODERATE")
+        })
         
         # Build enriched response payload
         advanced_metrics = result.get('advanced_metrics', {})
@@ -239,6 +247,9 @@ async def run_analysis(request: Request):
             "priority_profile": payload.get("priority_profile"),
             "priority_weights": payload.get("priority_weights")
         }
+        
+        # Save to session for overview page
+        request.session["shipment_data"] = shipment_dict
         
         # Create Shipment model instance
         shipment = Shipment(**shipment_dict)

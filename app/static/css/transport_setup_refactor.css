@@ -188,8 +188,6 @@
     color: #ffffff !important;
     opacity: 1 !important;
 }
-
-#section-transport .custom-dropdown .dropdown-value.placeholder {
     color: rgba(255, 255, 255, 0.6) !important;
     opacity: 1 !important;
 }
@@ -238,8 +236,6 @@
     border-color: #00ff88;
     box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
 }
-
-#section-transport .form-input::placeholder {
     color: rgba(255, 255, 255, 0.4);
 }
 
@@ -475,7 +471,6 @@
 
 /* Force all text to be visible */
 #section-transport .dropdown-value,
-#section-transport .dropdown-value.placeholder,
 #section-transport .transport-label,
 #section-transport .transport-description,
 #section-transport .transport-meta,

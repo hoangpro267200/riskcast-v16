@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="en" class="rc-theme-dark">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>RISKCAST v19 — VisionOS Edition | Smart Logistics Risk Input</title>
+
+    
+
+    <!-- Fonts -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    
+
+    <!-- Stylesheet -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/input/input_v19.css') }}">
+
+    
+
+    <!-- Lucide Icons (CDN for icons) -->
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+    <!-- Neon Particle Background Canvas -->
+
+    <canvas id="rc-neon-canvas" class="rc-neon-canvas"></canvas>
+
+    
+
+    <!-- Top Progress Bar -->
+
+    <div class="rc-top-progress">
+
+        <div class="rc-top-progress-bar" id="rc-top-progress-bar"></div>
+
+    </div>
+
+    
+
+    <!-- Header -->
+
+    <header class="rc-header">
+
+        <div class="rc-header-content">
+
+            <div class="rc-header-left">
+
+                <!-- Logo -->
+
+                <div class="rc-logo">
+
+                    <span class="rc-logo-icon">⚡</span>
+
+                    <span class="rc-logo-text">RISKCAST</span>
+
+                    <span class="rc-logo-version">v19</span>
+
+                </div>
+
+                
+
+                <!-- Status Indicator -->
+
+                <div class="rc-header-status">
+
+                    <span class="rc-status-dot"></span>
+
+                    <span>All Systems Operational</span>
+
+                </div>
+
+            </div>
+
+            
+
+            <div class="rc-header-right">
+
+                <!-- AI Assist Toggle -->
+
+                <button class="rc-header-btn" id="rc-ai-assist-toggle" aria-label="Toggle AI Assist">
+
+                    <i data-lucide="sparkles" width="18" height="18"></i>
+
+                    <span>AI Assist</span>
+
+                </button>
+
+                
+
+                <!-- Theme Toggle -->
+
+                <button class="rc-header-btn rc-theme-toggle" id="rc-theme-toggle" aria-label="Toggle Theme">
+
+                    <i data-lucide="sun" class="rc-theme-icon-sun" width="18" height="18"></i>
+
+                    <i data-lucide="moon" class="rc-theme-icon-moon" width="18" height="18"></i>
+
+                </button>
+
+                
+
+                <!-- User Avatar -->
+
+                <div class="rc-user-avatar" title="User Profile">
+
+                    RC
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    
+
+    <!-- Main Layout -->
+
+    <div class="rc-main-layout">
+
+        <!-- Sidebar Navigation -->
+
+        <nav class="rc-sidebar" id="rc-sidebar">
+
+            <div class="rc-nav">
+
+                <a href="#rc-section-transport" class="rc-nav-item active" data-nav-target="transport">
+
+                    <i data-lucide="ship" class="rc-nav-icon" width="20" height="20"></i>
+
+                    <span class="rc-nav-text">Transport</span>
+
+                </a>
+
+                <a href="#rc-section-cargo" class="rc-nav-item" data-nav-target="cargo">
+
+                    <i data-lucide="package" class="rc-nav-icon" width="20" height="20"></i>
+
+                    <span class="rc-nav-text">Cargo</span>
+
+                </a>
+
+                <a href="#rc-section-seller" class="rc-nav-item" data-nav-target="seller">
+
+                    <i data-lucide="building-2" class="rc-nav-icon" width="20" height="20"></i>
+
+                    <span class="rc-nav-text">Seller</span>
+
+                </a>
+
+                <a href="#rc-section-buyer" class="rc-nav-item" data-nav-target="buyer">
+
+                    <i data-lucide="users" class="rc-nav-icon" width="20" height="20"></i>
+
+                    <span class="rc-nav-text">Buyer</span>
+
+                </a>
+
+                <a href="#rc-section-modules" class="rc-nav-item" data-nav-target="modules">
+
+                    <i data-lucide="cpu" class="rc-nav-icon" width="20" height="20"></i>
+
+                    <span class="rc-nav-text">Modules</span>
+
+                </a>
+
+                <a href="#rc-section-summary" class="rc-nav-item" data-nav-target="summary">
+
+                    <i data-lucide="bar-chart-3" class="rc-nav-icon" width="20" height="20"></i>
+
+                    <span class="rc-nav-text">Summary</span>
+
+                </a>
+
+                <a href="#rc-section-packing-upload" class="rc-nav-item" data-nav-target="packing-upload">
+
+                    <i data-lucide="upload" class="rc-nav-icon" width="20" height="20"></i>
+
+                    <span class="rc-nav-text">Upload</span>
+
+                </a>
+
+            </div>
+
+        </nav>
+
+        
+
+        <!-- Main Content Area -->
+
+        <main class="rc-content" id="rc-content">
+
+            {% include 'input/partials/_v19_content.html' %}
+
+        </main>
+
+        
+
+        <!-- Smart AI Assist Panel -->
+
+        <aside class="rc-ai-panel" id="rc-ai-panel">
+
+            <!-- AI Panel Header -->
+
+            <div class="rc-ai-panel-header">
+
+                <div class="rc-ai-panel-title">
+
+                    <i data-lucide="sparkles" width="24" height="24"></i>
+
+                    <div>
+
+                        <h3>Smart AI Assist</h3>
+
+                        <p>Ask about this shipment configuration</p>
+
+                    </div>
+
+                </div>
+
+                <button class="rc-ai-panel-close" id="rc-ai-panel-close" aria-label="Close AI Panel">
+
+                    <i data-lucide="x" width="20" height="20"></i>
+
+                </button>
+
+            </div>
+
+            
+
+            <!-- AI Conversation Area -->
+
+            <div class="rc-ai-conversation" id="rc-ai-conversation">
+
+                <!-- Initial AI Message -->
+
+                <div class="rc-ai-message rc-ai-message-ai">
+
+                    <div class="rc-ai-message-avatar">AI</div>
+
+                    <div class="rc-ai-message-content">
+
+                        Hello! I'm your AI assistant for this shipment. I can help you understand risk factors, suggest optimizations, and answer questions about your configuration. What would you like to know?
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            
+
+            <!-- AI Input Area -->
+
+            <div class="rc-ai-input-area">
+
+                <textarea 
+
+                    class="rc-ai-input" 
+
+                    id="rc-ai-input" 
+
+                    placeholder="Ask about risks, routes, timing..." 
+
+                    rows="2"
+
+                    maxlength="500"
+
+                ></textarea>
+
+                <button class="rc-ai-send" id="rc-ai-send" aria-label="Send Message">
+
+                    <i data-lucide="send" width="20" height="20"></i>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+    
+
+    <!-- Toast Notification -->
+
+    <div class="rc-toast" id="rc-toast">
+
+        <div class="rc-toast-content">
+
+            <i data-lucide="check-circle" class="rc-toast-icon" width="20" height="20"></i>
+
+            <span class="rc-toast-message" id="rc-toast-message">Action completed</span>
+
+        </div>
+
+    </div>
+
+    
+
+    <!-- JS: Logistics database -->
+
+    <script src="{{ url_for('static', filename='js/data/logistics_data.js') }}"></script>
+
+    
+
+    <!-- JS: Container types by mode -->
+
+    <script src="{{ url_for('static', filename='js/data/container_types.js') }}"></script>
+
+    
+
+    <!-- JS: Input controller -->
+
+    <script src="{{ url_for('static', filename='js/pages/input/input_controller_v19.js') }}"></script>
+
+    
+
+    <!-- JS: Page initialization -->
+
+    <script src="{{ url_for('static', filename='js/pages/input/init_page_v19.js') }}"></script>
+
+    
+
+    <!-- Initialize Lucide Icons -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            if (typeof lucide !== 'undefined') {
+
+                lucide.createIcons();
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

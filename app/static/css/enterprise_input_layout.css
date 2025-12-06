@@ -17,18 +17,18 @@
 
 /* Left Sidebar - Fixed Navigation */
 .enterprise-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
+    /* Allow input.css to control positioning - only style if not using grid layout */
+    position: sticky;
+    top: var(--nav-height, 70px);
     width: 280px;
-    height: 100vh;
+    height: calc(100vh - var(--nav-height, 70px));
     background: linear-gradient(180deg, rgba(15, 25, 35, 0.98), rgba(10, 15, 25, 0.98));
     backdrop-filter: blur(20px);
     border-right: 1px solid rgba(0, 255, 136, 0.15);
     padding: 24px 0;
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 150; /* Higher than header to ensure sidebar is always visible */
+    z-index: 10;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -166,35 +166,31 @@
 
 /* Main Content Area */
 .enterprise-content {
-    margin-left: 280px !important;
-    margin-right: 320px !important;
-    padding: 0 48px 32px 48px !important; /* Removed top padding - content should align under header */
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+    /* Removed !important overrides to allow input.css to control layout */
+    padding: 0 48px 32px 48px;
     min-height: 100vh;
     position: relative;
     z-index: 1;
-    width: calc(100% - 600px) !important; /* 280px sidebar + 320px AI panel */
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    overflow-x: hidden !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
     scroll-padding-top: 80px; /* Account for fixed header height */
 }
 
 /* Right AI Completion Panel */
 .enterprise-ai-panel {
-    position: fixed;
-    right: 0;
-    top: 0;
+    /* Allow input.css to control positioning - only style if not using grid layout */
+    position: sticky;
+    top: var(--nav-height, 70px);
     width: 320px;
-    height: 100vh;
+    height: calc(100vh - var(--nav-height, 70px));
     background: linear-gradient(180deg, rgba(15, 25, 35, 0.98), rgba(10, 15, 25, 0.98));
     backdrop-filter: blur(20px);
     border-left: 1px solid rgba(0, 255, 136, 0.15);
     padding: 24px;
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 150; /* Higher than header to ensure panel is always visible */
+    z-index: 10;
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
 }
 

@@ -13,40 +13,6 @@
     position: relative;
 }
 
-/* ===== PREMIUM LAYOUT WRAPPER ===== */
-.layout-wrapper {
-    display: flex;
-    flex: 1;
-    gap: 0;
-    position: relative;
-    overflow: hidden;
-    transition: gap 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    /* Prevent layout jumps */
-    will-change: gap;
-    contain: layout style;
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-}
-
-/* ===== MAIN CONTENT - PREMIUM EXPANSION ===== */
-.main-content,
-.enterprise-content.main-content {
-    flex: 1;
-    min-width: 0;
-    transition: flex 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                width 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    /* Prevent layout jumps during transition */
-    will-change: flex, width, max-width;
-}
-
-/* When AI panel is hidden, main content expands to full width */
-.body--ai-panel-hidden .main-content {
-    flex: 1 1 100%;
-    width: 100%;
-    max-width: 100%;
-}
-
 /* ===== GLASS EFFECT ===== */
 .glass,
 .enterprise-sidebar,
@@ -92,49 +58,33 @@
 .toggle-btn-left {
     position: absolute;
     top: 10px;
-    right: -5px;
-    width: 36px;
-    height: 36px;
+    right: -15px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid #00ffbf;
-    background: rgba(8, 20, 22, 0.95);
+    border: 1px solid #00ffbf;
+    background: #081416;
     color: #00ffbf;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 16px;
     z-index: 200;
-    box-shadow: 
-        0 0 15px rgba(0, 255, 191, 0.6),
-        0 0 30px rgba(0, 255, 191, 0.3),
-        inset 0 0 10px rgba(0, 255, 191, 0.1);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 0 8px rgba(0, 255, 191, 0.3);
 }
 
 .toggle-btn:hover,
 .toggle-btn-left:hover {
-    box-shadow: 
-        0 0 20px rgba(0, 255, 191, 0.8),
-        0 0 40px rgba(0, 255, 191, 0.5),
-        inset 0 0 15px rgba(0, 255, 191, 0.2);
-    background: rgba(0, 255, 191, 0.15);
-    transform: scale(1.15);
-    border-color: #00ffc3;
-}
-
-.toggle-btn:active,
-.toggle-btn-left:active {
-    transform: scale(1.05);
-    box-shadow: 
-        0 0 15px rgba(0, 255, 191, 0.7),
-        0 0 30px rgba(0, 255, 191, 0.4);
+    box-shadow: 0 0 12px #00ffbf;
+    background: rgba(0, 255, 191, 0.1);
+    transform: scale(1.1);
 }
 
 .sidebar.collapsed .toggle-btn,
 .enterprise-sidebar.collapsed .toggle-btn {
-    right: 5px;
+    right: 10px;
 }
 
 /* Sidebar Header */
@@ -354,155 +304,63 @@
     transform: translateY(-2px);
 }
 
-/* ===== RIGHT AI SIDEBAR - PREMIUM COLLAPSE SYSTEM ===== */
+/* ===== RIGHT AI SIDEBAR ===== */
 .sidebar.right,
-.enterprise-ai-panel,
-#aiSmartPanel {
+.enterprise-ai-panel {
     width: 300px;
-    max-width: 300px;
-    min-width: 0;
     padding: 20px;
     color: #c8fff2;
+    transition: width 0.2s ease, transform 0.2s ease;
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
-    
-    /* Premium transitions with cubic-bezier */
-    transition: 
-        width 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-        max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-        opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-        padding 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-        margin 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    
-    /* Initial state - visible */
-    opacity: 1;
-    transform: translateX(0);
-    
-    /* Prevent layout jumps */
-    will-change: width, max-width, opacity, transform;
 }
 
-/* Collapsed state - premium animations */
 .sidebar.right.collapsed,
-.enterprise-ai-panel.collapsed,
-#aiSmartPanel.collapsed,
-.body--ai-panel-hidden #aiSmartPanel {
-    width: 0 !important;
-    max-width: 0 !important;
-    min-width: 0 !important;
-    padding-left: 0;
-    padding-right: 0;
-    margin-right: 0;
-    
-    /* Fade out and slide right by 40px */
-    opacity: 0;
-    transform: translateX(40px);
-    
-    /* Hide content overflow */
-    overflow: hidden;
-    pointer-events: none;
+.enterprise-ai-panel.collapsed {
+    width: 70px;
 }
 
-/* Ghost spacing - maintain layout during transition */
-.body--ai-panel-hidden .layout-wrapper {
-    gap: 0;
-}
-
-/* Hide panel content when collapsed - smooth fade */
 .sidebar.right.collapsed .ai-title,
 .enterprise-ai-panel.collapsed .ai-panel-title,
 .sidebar.right.collapsed .progress-card,
-.enterprise-ai-panel.collapsed .ai-section-item,
-#aiSmartPanel.collapsed .ai-panel-title,
-#aiSmartPanel.collapsed .ai-panel-subtitle,
-#aiSmartPanel.collapsed .ai-panel-section,
-#aiSmartPanel.collapsed .ai-section-item {
+.enterprise-ai-panel.collapsed .ai-section-item {
     opacity: 0;
+    width: 0;
     overflow: hidden;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    pointer-events: none;
+    padding: 0;
+    margin: 0;
 }
 
 .toggle-btn-right {
     position: absolute;
     top: 10px;
-    left: -5px;
-    width: 36px;
-    height: 36px;
+    left: -15px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid #00ffbf;
-    background: rgba(8, 20, 22, 0.95);
+    border: 1px solid #00ffbf;
+    background: #081416;
     color: #00ffbf;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    z-index: 201;
-    box-shadow: 
-        0 0 15px rgba(0, 255, 191, 0.6),
-        0 0 30px rgba(0, 255, 191, 0.3),
-        inset 0 0 10px rgba(0, 255, 191, 0.1);
-    pointer-events: auto;
-    backdrop-filter: blur(10px);
+    font-size: 16px;
+    z-index: 200;
+    box-shadow: 0 0 8px rgba(0, 255, 191, 0.3);
 }
 
 .toggle-btn-right:hover {
-    box-shadow: 
-        0 0 20px rgba(0, 255, 191, 0.8),
-        0 0 40px rgba(0, 255, 191, 0.5),
-        inset 0 0 15px rgba(0, 255, 191, 0.2);
-    background: rgba(0, 255, 191, 0.15);
-    transform: scale(1.15);
-    border-color: #00ffc3;
+    box-shadow: 0 0 12px #00ffbf;
+    background: rgba(0, 255, 191, 0.1);
+    transform: scale(1.1);
 }
 
-.toggle-btn-right:active {
-    transform: scale(1.05);
-    box-shadow: 
-        0 0 15px rgba(0, 255, 191, 0.7),
-        0 0 30px rgba(0, 255, 191, 0.4);
-}
-
-/* Keep toggle button accessible when panel is collapsed */
 .sidebar.right.collapsed .toggle-btn-right,
-.enterprise-ai-panel.collapsed .toggle-btn-right,
-#aiSmartPanel.collapsed .toggle-btn-right {
-    left: 5px;
-    opacity: 1;
-    pointer-events: auto;
-    z-index: 201;
-    /* Ensure button remains highly visible when panel is collapsed */
-    box-shadow: 
-        0 0 20px rgba(0, 255, 191, 0.8),
-        0 0 40px rgba(0, 255, 191, 0.5),
-        inset 0 0 15px rgba(0, 255, 191, 0.2);
-    background: rgba(0, 255, 191, 0.2);
-    border-width: 2px;
-}
-
-/* Rotate toggle button icon when collapsed */
-#aiSmartPanel.collapsed .toggle-btn-right svg {
-    transform: rotate(180deg);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Enhance SVG icon visibility inside toggle buttons */
-.toggle-btn-right svg,
-.toggle-btn svg,
-.toggle-btn-left svg {
-    filter: drop-shadow(0 0 4px rgba(0, 255, 191, 0.8));
-    stroke-width: 2.5;
-    transition: filter 0.3s ease;
-}
-
-.toggle-btn-right:hover svg,
-.toggle-btn:hover svg,
-.toggle-btn-left:hover svg {
-    filter: drop-shadow(0 0 8px rgba(0, 255, 191, 1));
+.enterprise-ai-panel.collapsed .toggle-btn-right {
+    left: 10px;
 }
 
 .ai-title,
@@ -619,526 +477,16 @@
         transform: translateX(-100%);
     }
     
-    /* On mobile, keep the premium collapse behavior but ensure it doesn't break layout */
     .sidebar.right.collapsed,
-    .enterprise-ai-panel.collapsed,
-    #aiSmartPanel.collapsed {
-        /* Maintain the slide-right animation but ensure it doesn't overflow */
-        transform: translateX(40px);
-        width: 0 !important;
-        max-width: 0 !important;
-    }
-    
-    .content,
-    .enterprise-content,
-    .main-content {
-        padding: 24px;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-    
-    /* Ensure layout wrapper maintains flex behavior on mobile */
-    .layout-wrapper {
-        flex-direction: column;
-    }
-    
-    /* On mobile, when collapsed, panel should be completely hidden */
-    @media (max-width: 768px) {
-        #aiSmartPanel.collapsed,
-        .body--ai-panel-hidden #aiSmartPanel {
-            transform: translateX(100%);
-            width: 0 !important;
-            max-width: 0 !important;
-        }
-    }
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-.content::-webkit-scrollbar,
-.enterprise-content::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar,
-.enterprise-sidebar::-webkit-scrollbar,
-.enterprise-ai-panel::-webkit-scrollbar {
-    width: 6px;
-}
-
-.content::-webkit-scrollbar-track,
-.enterprise-content::-webkit-scrollbar-track,
-.sidebar::-webkit-scrollbar-track,
-.enterprise-sidebar::-webkit-scrollbar-track,
-.enterprise-ai-panel::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 3px;
-}
-
-.content::-webkit-scrollbar-thumb,
-.enterprise-content::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb,
-.enterprise-sidebar::-webkit-scrollbar-thumb,
-.enterprise-ai-panel::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 191, 0.3);
-    border-radius: 3px;
-}
-
-.content::-webkit-scrollbar-thumb:hover,
-.enterprise-content::-webkit-scrollbar-thumb:hover,
-.sidebar::-webkit-scrollbar-thumb:hover,
-.enterprise-sidebar::-webkit-scrollbar-thumb:hover,
-.enterprise-ai-panel::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 191, 0.5);
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes slideInFromRight {
-    from {
+    .enterprise-ai-panel.collapsed {
         transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideInFromLeft {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes glow {
-    0%, 100% {
-        box-shadow: 0 0 18px rgba(0, 255, 170, 0.08);
-    }
-    50% {
-        box-shadow: 0 0 24px rgba(0, 255, 170, 0.15);
-    }
-}
-
-.enterprise-section-card {
-    animation: glow 3s ease-in-out infinite;
-}
-
-/* ===== OVERRIDE FOR EXISTING STRUCTURE ===== */
-.enterprise-input-container {
-    display: flex !important;
-    height: 100vh !important;
-    background: linear-gradient(140deg, #020b0e, #061315, #01090e) !important;
-}
-
-.enterprise-sidebar {
-    width: 260px !important;
-    padding: 20px !important;
-}
-
-.enterprise-content {
-    flex: 1 !important;
-    padding: 160px 35px 35px 35px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    width: auto !important;
-}
-
-.enterprise-ai-panel {
-    width: 300px !important;
-    padding: 20px !important;
-}
-
-/* Ensure section titles are horizontal */
-.enterprise-section-card h2,
-.enterprise-section-card .section-title,
-#section-transport h2,
-#section-cargo h2,
-#section-seller h2,
-#section-buyer h2,
-#section-algorithms h2 {
-    writing-mode: horizontal-tb !important;
-    transform: none !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    display: block !important;
-    white-space: normal !important;
-    text-align: left !important;
-}
-
-
-        width: 280px;
     }
     
     .content,
     .enterprise-content {
-        padding: 30px;
-    }
-}
-
-@media (max-width: 1024px) {
-    .sidebar.left.collapsed,
-    .enterprise-sidebar.collapsed {
-        transform: translateX(-100%);
-    }
-    
-    /* On mobile, keep the premium collapse behavior but ensure it doesn't break layout */
-    .sidebar.right.collapsed,
-    .enterprise-ai-panel.collapsed,
-    #aiSmartPanel.collapsed {
-        /* Maintain the slide-right animation but ensure it doesn't overflow */
-        transform: translateX(40px);
-        width: 0 !important;
-        max-width: 0 !important;
-    }
-    
-    .content,
-    .enterprise-content,
-    .main-content {
         padding: 24px;
         margin-left: 0 !important;
         margin-right: 0 !important;
-    }
-    
-    /* Ensure layout wrapper maintains flex behavior on mobile */
-    .layout-wrapper {
-        flex-direction: column;
-    }
-    
-    /* On mobile, when collapsed, panel should be completely hidden */
-    @media (max-width: 768px) {
-        #aiSmartPanel.collapsed,
-        .body--ai-panel-hidden #aiSmartPanel {
-            transform: translateX(100%);
-            width: 0 !important;
-            max-width: 0 !important;
-        }
-    }
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-.content::-webkit-scrollbar,
-.enterprise-content::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar,
-.enterprise-sidebar::-webkit-scrollbar,
-.enterprise-ai-panel::-webkit-scrollbar {
-    width: 6px;
-}
-
-.content::-webkit-scrollbar-track,
-.enterprise-content::-webkit-scrollbar-track,
-.sidebar::-webkit-scrollbar-track,
-.enterprise-sidebar::-webkit-scrollbar-track,
-.enterprise-ai-panel::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 3px;
-}
-
-.content::-webkit-scrollbar-thumb,
-.enterprise-content::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb,
-.enterprise-sidebar::-webkit-scrollbar-thumb,
-.enterprise-ai-panel::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 191, 0.3);
-    border-radius: 3px;
-}
-
-.content::-webkit-scrollbar-thumb:hover,
-.enterprise-content::-webkit-scrollbar-thumb:hover,
-.sidebar::-webkit-scrollbar-thumb:hover,
-.enterprise-sidebar::-webkit-scrollbar-thumb:hover,
-.enterprise-ai-panel::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 191, 0.5);
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes slideInFromRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideInFromLeft {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes glow {
-    0%, 100% {
-        box-shadow: 0 0 18px rgba(0, 255, 170, 0.08);
-    }
-    50% {
-        box-shadow: 0 0 24px rgba(0, 255, 170, 0.15);
-    }
-}
-
-.enterprise-section-card {
-    animation: glow 3s ease-in-out infinite;
-}
-
-/* ===== OVERRIDE FOR EXISTING STRUCTURE ===== */
-.enterprise-input-container {
-    display: flex !important;
-    height: 100vh !important;
-    background: linear-gradient(140deg, #020b0e, #061315, #01090e) !important;
-}
-
-.enterprise-sidebar {
-    width: 260px !important;
-    padding: 20px !important;
-}
-
-.enterprise-content {
-    flex: 1 !important;
-    padding: 160px 35px 35px 35px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    width: auto !important;
-}
-
-.enterprise-ai-panel {
-    width: 300px !important;
-    padding: 20px !important;
-}
-
-/* Ensure section titles are horizontal */
-.enterprise-section-card h2,
-.enterprise-section-card .section-title,
-#section-transport h2,
-#section-cargo h2,
-#section-seller h2,
-#section-buyer h2,
-#section-algorithms h2 {
-    writing-mode: horizontal-tb !important;
-    transform: none !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    display: block !important;
-    white-space: normal !important;
-    text-align: left !important;
-}
-
-
-        width: 280px;
-    }
-    
-    .content,
-    .enterprise-content {
-        padding: 30px;
-    }
-}
-
-@media (max-width: 1024px) {
-    .sidebar.left.collapsed,
-    .enterprise-sidebar.collapsed {
-        transform: translateX(-100%);
-    }
-    
-    /* On mobile, keep the premium collapse behavior but ensure it doesn't break layout */
-    .sidebar.right.collapsed,
-    .enterprise-ai-panel.collapsed,
-    #aiSmartPanel.collapsed {
-        /* Maintain the slide-right animation but ensure it doesn't overflow */
-        transform: translateX(40px);
-        width: 0 !important;
-        max-width: 0 !important;
-    }
-    
-    .content,
-    .enterprise-content,
-    .main-content {
-        padding: 24px;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-    
-    /* Ensure layout wrapper maintains flex behavior on mobile */
-    .layout-wrapper {
-        flex-direction: column;
-    }
-    
-    /* On mobile, when collapsed, panel should be completely hidden */
-    @media (max-width: 768px) {
-        #aiSmartPanel.collapsed,
-        .body--ai-panel-hidden #aiSmartPanel {
-            transform: translateX(100%);
-            width: 0 !important;
-            max-width: 0 !important;
-        }
-    }
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-.content::-webkit-scrollbar,
-.enterprise-content::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar,
-.enterprise-sidebar::-webkit-scrollbar,
-.enterprise-ai-panel::-webkit-scrollbar {
-    width: 6px;
-}
-
-.content::-webkit-scrollbar-track,
-.enterprise-content::-webkit-scrollbar-track,
-.sidebar::-webkit-scrollbar-track,
-.enterprise-sidebar::-webkit-scrollbar-track,
-.enterprise-ai-panel::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 3px;
-}
-
-.content::-webkit-scrollbar-thumb,
-.enterprise-content::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb,
-.enterprise-sidebar::-webkit-scrollbar-thumb,
-.enterprise-ai-panel::-webkit-scrollbar-thumb {
-    background: rgba(0, 255, 191, 0.3);
-    border-radius: 3px;
-}
-
-.content::-webkit-scrollbar-thumb:hover,
-.enterprise-content::-webkit-scrollbar-thumb:hover,
-.sidebar::-webkit-scrollbar-thumb:hover,
-.enterprise-sidebar::-webkit-scrollbar-thumb:hover,
-.enterprise-ai-panel::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 255, 191, 0.5);
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes slideInFromRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideInFromLeft {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes glow {
-    0%, 100% {
-        box-shadow: 0 0 18px rgba(0, 255, 170, 0.08);
-    }
-    50% {
-        box-shadow: 0 0 24px rgba(0, 255, 170, 0.15);
-    }
-}
-
-.enterprise-section-card {
-    animation: glow 3s ease-in-out infinite;
-}
-
-/* ===== OVERRIDE FOR EXISTING STRUCTURE ===== */
-.enterprise-input-container {
-    display: flex !important;
-    height: 100vh !important;
-    background: linear-gradient(140deg, #020b0e, #061315, #01090e) !important;
-}
-
-.enterprise-sidebar {
-    width: 260px !important;
-    padding: 20px !important;
-}
-
-.enterprise-content {
-    flex: 1 !important;
-    padding: 160px 35px 35px 35px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    width: auto !important;
-}
-
-.enterprise-ai-panel {
-    width: 300px !important;
-    padding: 20px !important;
-}
-
-/* Ensure section titles are horizontal */
-.enterprise-section-card h2,
-.enterprise-section-card .section-title,
-#section-transport h2,
-#section-cargo h2,
-#section-seller h2,
-#section-buyer h2,
-#section-algorithms h2 {
-    writing-mode: horizontal-tb !important;
-    transform: none !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    display: block !important;
-    white-space: normal !important;
-    text-align: left !important;
-}
-
-
-        width: 280px;
-    }
-    
-    .content,
-    .enterprise-content {
-        padding: 30px;
-    }
-}
-
-@media (max-width: 1024px) {
-    .sidebar.left.collapsed,
-    .enterprise-sidebar.collapsed {
-        transform: translateX(-100%);
-    }
-    
-    /* On mobile, keep the premium collapse behavior but ensure it doesn't break layout */
-    .sidebar.right.collapsed,
-    .enterprise-ai-panel.collapsed,
-    #aiSmartPanel.collapsed {
-        /* Maintain the slide-right animation but ensure it doesn't overflow */
-        transform: translateX(40px);
-        width: 0 !important;
-        max-width: 0 !important;
-    }
-    
-    .content,
-    .enterprise-content,
-    .main-content {
-        padding: 24px;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-    
-    /* Ensure layout wrapper maintains flex behavior on mobile */
-    .layout-wrapper {
-        flex-direction: column;
-    }
-    
-    /* On mobile, when collapsed, panel should be completely hidden */
-    @media (max-width: 768px) {
-        #aiSmartPanel.collapsed,
-        .body--ai-panel-hidden #aiSmartPanel {
-            transform: translateX(100%);
-            width: 0 !important;
-            max-width: 0 !important;
-        }
     }
 }
 

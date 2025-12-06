@@ -41,9 +41,7 @@ import warnings
 from functools import lru_cache
 import time
 import json
-
-# === CLIMATE v14.5 MODULES (EXISTING) ====================================
-from app.core.riskcast_v14_5_climate_upgrade import (
+from app.core.legacy.riskcast_v14_5_climate_upgrade import (
     ClimateVariables,
     ClimateRiskLayerExtensions,
     ClimateMonteCarloExtension,
@@ -70,8 +68,6 @@ class RiskConfig:
     # Fat-tailed distribution
     STUDENT_T_DF = 5
     TAIL_SHOCK_PROBABILITY = 0.05
-    
-    # Risk Thresholds
     VAR_CONFIDENCE_95 = 0.95
     VAR_CONFIDENCE_99 = 0.99
     
@@ -792,8 +788,6 @@ class InteractionEngine:
         ('container_match', 'cargo_sensitivity', 1.30),
         ('port_risk', 'route_complexity', 1.25),
         ('weather_exposure', 'cargo_sensitivity', 1.40),
-        
-        # Additional interactions (v14.0)
         ('weather_exposure', 'port_risk', 1.28),
         ('cargo_sensitivity', 'priority_level', 1.22),
         ('route_complexity', 'port_risk', 1.30),
@@ -1044,8 +1038,6 @@ class MonteCarloEngine:
             samples, list(layers.keys())
         )
         risk_distribution += interaction_boost
-        
-        # === CLIMATE TAIL SHOCKS (v14.5) =================================
         if climate_vars is not None:
             climate_shocks = ClimateMonteCarloExtension.generate_climate_tail_shocks(
                 n_samples=self.iterations,
@@ -2762,15 +2754,11 @@ class EnterpriseRiskEngine:
         Returns:
             RiskMetrics object with comprehensive analysis
         """
-        
-        # === CLIMATE v14.5: build full climate variables & CHI ============
         climate_vars = self._build_climate_variables(shipment_data)
         chi = climate_vars.calculate_CHI()
         
         # 1. Build risk layers
         layers = self._build_risk_layers(shipment_data)
-        
-        # 1.b CLIMATE ADJUSTMENTS on layers (v14.5) =======================
         layers = self._apply_climate_to_layers(layers, climate_vars)
         
         # 2. Calculate optimized weights using Fuzzy AHP + Entropy
@@ -2798,8 +2786,6 @@ class EnterpriseRiskEngine:
         
         # 6. Calculate risk metrics
         risk_metrics = self.financial_calculator.calculate_all_metrics(risk_distribution)
-        
-        # 6.b Climate-VaR metrics (v14.5) ================================
         c_var_metrics = ClimateMonteCarloExtension.calculate_climate_var(
             risk_distribution
         )
@@ -2841,8 +2827,6 @@ class EnterpriseRiskEngine:
             risk_metrics, layer_scores, scenario_results, interactions,
             delay_info, financial_dist, weights_meta
         )
-        
-        # 14.b Add Climate AI Narrative (v14.5) ==========================
         financial_chi_impact = (chi / 10.0) * 0.3   # tối đa ~30% impact
         
         climate_vuln = ClimateAIAnalysis.generate_climate_vulnerability_summary(
@@ -3233,11 +3217,13 @@ def compute_partner_risk(buyer: Optional[Dict] = None, seller: Optional[Dict] = 
         esg = float(entity.get("esg", 50) or 50)
         rel = float(entity.get("reliability", 50) or 50)
         
+        size_value = entity.get("size")
+        size_str = str(size_value) if size_value is not None else "Medium"
         size_bonus = {
             "SME": -5.0,
             "Medium": 0.0,
             "Large": 5.0
-        }.get(entity.get("size"), 0.0)
+        }.get(size_str, 0.0)
         
         # Tính điểm: 60% reliability + 30% ESG + size bonus
         # Điểm càng cao = rủi ro càng thấp (inverse)
@@ -3484,7 +3470,6 @@ class EnterpriseRiskEngineV16:
         
         # === RETURN COMPREHENSIVE RESULTS =================================
         return {
-            # Core metrics (v14 compatibility)
             'overall_risk': float(overall_risk),
             'risk_level': risk_level,
             'expected_loss': float(enhanced_data.cargo_value * (overall_risk / 10) ** 1.5 * 0.30),

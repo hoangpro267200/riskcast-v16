@@ -1,37 +1,44 @@
 {
-    "python.defaultInterpreterPath": "C:/Users/ASUS/RICK CAST/venv/Scripts/python.exe",
-    "python.terminal.activateEnvironment": true,
-    "python.terminal.activateEnvInCurrentTerminal": true,
-    "python.experiments.enabled": false,
-
-    // Force all links to open in external browser (Chrome)
-    "window.openExternal": true,
-
-    // 🔥 CRITICAL — Force HTML to open NOT in VSCode
-    "workbench.editorAssociations": {
-        "*.html": "default"
-    },
-
-    // Disable preview mode in editor
-    "workbench.editor.enablePreview": false,
-
-    // Disable HTML preview in VSCode
-    "html.preview.enabled": false,
-
-    // Open Markdown links in external browser
-    "markdown.preview.openMarkdownLinks": "inBrowser",
-
-    // Set Chrome as default external browser
-    "workbench.externalBrowser": "chrome",
-    "openInExternalBrowser.default": "chrome",
-
-    // Live Server configuration - use Chrome
-    "liveServer.settings.NoBrowser": false,
-    "liveServer.settings.CustomBrowser": "chrome",
-
-    // Disable Simple Browser
-    "simpleBrowser.focusLockIndicator.enabled": false,
-
-    // Disable Live Preview (Microsoft)
-    "livePreview.autoRefreshPreview": false
+  "files.associations": {
+    "**/dist/**/*.min.js": "plaintext",
+    "**/dist/**/*.min.css": "plaintext",
+    "**/*.bundle.min.js": "plaintext",
+    "**/*.bundle.min.css": "plaintext"
+  },
+  "files.watcherExclude": {
+    "**/dist/**": true,
+    "**/node_modules/**": true
+  },
+  "search.exclude": {
+    "**/dist": true,
+    "**/node_modules": true
+  },
+  "css.validate.enable": false,
+  "javascript.validate.enable": false,
+  "typescript.validate.enable": false,
+  "css.lint.unknownAtRules": "ignore",
+  "css.lint.unknownProperties": "ignore",
+  "problems.showCurrentInStatus": true,
+  "python.defaultInterpreterPath": "python",
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/app",
+    "C:\\Users\\ASUS\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python312\\site-packages"
+  ],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none",
+    "reportAttributeAccessIssue": "none",
+    "reportOptionalMemberAccess": "none",
+    "reportGeneralTypeIssues": "none",
+    "reportArgumentType": "none",
+    "reportCallIssue": "none",
+    "reportOptionalIterable": "none",
+    "reportOptionalSubscript": "none"
+  },
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.diagnosticMode": "workspace",
+  "git.ignoreLimitWarning": true
 }

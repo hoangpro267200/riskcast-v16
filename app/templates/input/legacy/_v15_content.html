@@ -1,0 +1,124 @@
+<!-- Top Progress Bar -->
+<div class="rc-top-progress">
+    <div class="rc-top-progress-fill" id="rcTopProgressFill"></div>
+    <span class="rc-top-progress-label" id="rcTopProgressLabel">0%</span>
+</div>
+
+<!-- Header -->
+<header class="rc-header">
+    <div class="rc-header-container">
+        <div class="rc-header-left">
+            <div class="rc-logo">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                    <path d="M18 3L32 11V25L18 33L4 25V11L18 3Z" stroke="#00FFC8" stroke-width="2.5"/>
+                    <circle cx="18" cy="18" r="5" fill="#00FFC8"/>
+                    <circle cx="18" cy="18" r="5" fill="#00FFC8" opacity="0.3"/>
+                </svg>
+                <span class="rc-logo-text">RISKCAST</span>
+                <span class="rc-logo-version">v15</span>
+            </div>
+        </div>
+        <div class="rc-header-right">
+            <div class="rc-system-status">
+                <div class="rc-status-dot"></div>
+                <span>All Systems Online</span>
+            </div>
+            <div class="rc-user-menu">
+                <div class="rc-user-avatar">JD</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Layout -->
+<div class="rc-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="rc-sidebar">
+        <nav class="rc-nav">
+            <a href="#section-transport" class="rc-nav-item active" data-section="section-transport">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="15" height="13"/>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                <span>Transport Setup</span>
+            </a>
+            <a href="#section-cargo" class="rc-nav-item" data-section="section-cargo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>Cargo & Packing</span>
+            </a>
+            <a href="#section-seller" class="rc-nav-item" data-section="section-seller">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Seller Information</span>
+            </a>
+            <a href="#section-buyer" class="rc-nav-item" data-section="section-buyer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="8.5" cy="7" r="4"/>
+                    <polyline points="17 11 19 13 23 9"/>
+                </svg>
+                <span>Buyer Information</span>
+            </a>
+            <a href="#section-algorithms" class="rc-nav-item" data-section="section-algorithms">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <span>Algorithm Modules</span>
+            </a>
+            <a href="#section-summary" class="rc-nav-item" data-section="section-summary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>Summary Overview</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="rc-main">
+        <div class="rc-main-container">
+            <!-- Page Header -->
+            <div class="rc-page-header">
+                <h1 class="rc-page-title">Shipment Risk Analysis Configuration</h1>
+                <p class="rc-page-subtitle">Configure your shipment parameters to generate comprehensive risk assessment and predictions</p>
+            </div>
+
+            {% include "input/partials/_v15_sections.html" %}
+        </div>
+    </main>
+</div>
+
+<!-- Floating Toast Progress -->
+<div class="rc-toast-progress" id="rcToastProgress">
+    <div class="rc-toast-header">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span class="rc-toast-title">Configuration Progress</span>
+    </div>
+    <div class="rc-toast-body">
+        <span class="rc-toast-label" id="rcToastLabel">0 / 6 sections completed</span>
+        <div class="rc-toast-bar">
+            <div class="rc-toast-fill" id="rcToastFill"></div>
+        </div>
+    </div>
+</div>
+
+
+
+

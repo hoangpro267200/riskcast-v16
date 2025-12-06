@@ -1,0 +1,1604 @@
+{% set page_type = "input" %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISKCAST v12 — Enterprise Risk Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" referrerpolicy="no-referrer">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <link rel="stylesheet" href="/static/css/components/phosphor_icons.css">
+   
+    {% if page_type == "input" %}
+    <!-- Smart Input Styles -->
+    <link rel="stylesheet" href="/static/css/smart_input_styles.css">
+    
+    <!-- AI Chat Widget Styles -->
+    <link rel="stylesheet" href="/static/css/ai_chat.css">
+    
+    <!-- Packing List Module - Ultra Premium 2026 -->
+    <link rel="stylesheet" href="/static/css/packing_list.css">
+    
+    <!-- Summary CSS -->
+    <link rel="stylesheet" href="/static/css/summary.css">
+    
+    <!-- Summary Overview CSS -->
+    <link rel="stylesheet" href="/static/css/overview.css">
+   
+    <!-- Input Page Inline Styles (Extracted for better organization) -->
+    <link rel="stylesheet" href="/static/css/input_inline.css">
+    
+    <!-- Enterprise Input Layout -->
+    <link rel="stylesheet" href="/static/css/enterprise_input_layout.css">
+    
+    <!-- Transport Setup Refactor -->
+    <link rel="stylesheet" href="/static/css/transport_setup_refactor.css">
+    
+    <!-- RISKCAST v12 Dark Neon Layout -->
+    <link rel="stylesheet" href="/static/css/riskcast_v12_layout.css">
+    
+    <!-- Navigation Bar CSS -->
+    <link rel="stylesheet" href="/static/css/navigation.css">
+    {% endif %}
+   
+    <!-- Input Page CSS Files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/input/form_unlock.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/input/neon_borders.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/input/transit_styling.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/input/form_inputs_visibility.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/input/ai_panel_styles.css') }}">
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loader-container">
+            <div class="loader-spinner"></div>
+            <div class="loader-text" data-i18n="loading_text">Initializing Risk Engine...</div>
+        </div>
+    </div>
+ 
+    {% if page_type == "input" %}
+    <div class="main-container">
+        <header class="header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <h1 data-i18n="brand_title" class="brand-title-compact">RISKCAST v12</h1>
+                        <p data-i18n="brand_subtitle" class="brand-subtitle-compact">Enterprise Risk Assessment</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" data-lang="en">EN</button>
+                        <button class="lang-btn" data-lang="vi">VI</button>
+                    </div>
+                    <div class="header-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text" data-i18n="status_ready">System Ready</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-progress header-progress-spaced">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 500;" data-i18n="progress_label">Tiến Độ:</span>
+                    <div class="smart-progress-container" style="flex: 1; position: relative;">
+                        <div class="smart-progress-track" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; position: relative; display: flex;">
+                            <div class="progress-section" data-section="shipping-info" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1);">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease;"></div>
+                            </div>
+                            <div class="progress-section" data-section="cargo-details" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1);">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease;"></div>
+                            </div>
+                            <div class="progress-section" data-section="seller-info" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1);">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease;"></div>
+                            </div>
+                            <div class="progress-section" data-section="buyer-info" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1);">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease;"></div>
+                            </div>
+                            <div class="progress-section" data-section="algorithm-modules" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05);">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease;"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                            <span id="progress-sections-text" style="font-size: 10px; color: rgba(255,255,255,0.5);">0/5 phần đã hoàn thành</span>
+                            <span id="header_progress_text" style="font-size: 12px; font-weight: 600; color: #10B981; min-width: 40px; text-align: right;">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Sticky Smart Progress Bar (Follows scroll) -->
+        <div id="sticky-progress-bar" class="sticky-progress-bar" style="display: none;">
+            <div class="sticky-progress-content">
+                <div class="sticky-progress-header">
+                    <div class="sticky-progress-title">
+                        <span class="progress-icon">📊</span>
+                        <span>Tiến Độ Hoàn Thành</span>
+                    </div>
+                    <button id="close-progress-bar" class="close-progress-btn" title="Đóng thanh tiến độ">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                            <path d="M12 4L4 12M4 4l8 8" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="sticky-progress-body">
+                    <!-- Smart Progress Bar with 5 Sections -->
+                    <div class="smart-progress-container" style="flex: 1; position: relative;">
+                        <div class="smart-progress-track" style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; position: relative; display: flex;">
+                            <!-- Section 1: Shipping Info -->
+                            <div class="progress-section" data-section="shipping-info" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1); position: relative;">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease; border-radius: 0;"></div>
+                                <div class="progress-section-indicator" style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255,255,255,0.5); white-space: nowrap; font-weight: 600;">01</div>
+                            </div>
+                            
+                            <!-- Section 2: Cargo Details -->
+                            <div class="progress-section" data-section="cargo-details" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1); position: relative;">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease; border-radius: 0;"></div>
+                                <div class="progress-section-indicator" style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255,255,255,0.5); white-space: nowrap; font-weight: 600;">02</div>
+                            </div>
+                            
+                            <!-- Section 3: Seller Info -->
+                            <div class="progress-section" data-section="seller-info" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1); position: relative;">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease; border-radius: 0;"></div>
+                                <div class="progress-section-indicator" style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255,255,255,0.5); white-space: nowrap; font-weight: 600;">03</div>
+                            </div>
+                            
+                            <!-- Section 4: Buyer Info -->
+                            <div class="progress-section" data-section="buyer-info" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.1); position: relative;">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease; border-radius: 0;"></div>
+                                <div class="progress-section-indicator" style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255,255,255,0.5); white-space: nowrap; font-weight: 600;">04</div>
+                            </div>
+                            
+                            <!-- Section 5: Algorithm Modules -->
+                            <div class="progress-section" data-section="algorithm-modules" style="flex: 1; height: 100%; background: rgba(255,255,255,0.05); position: relative;">
+                                <div class="progress-section-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.5s ease; border-radius: 0;"></div>
+                                <div class="progress-section-indicator" style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255,255,255,0.5); white-space: nowrap; font-weight: 600;">05</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Text -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                            <span id="sticky-progress-sections-text" style="font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500;">0/5 phần đã hoàn thành</span>
+                            <span id="sticky-progress-text" style="font-size: 14px; font-weight: 700; color: #10B981; min-width: 55px; text-align: right;">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notification Toast Container -->
+        <div id="progress-notification-container" class="progress-notification-container"></div>
+ 
+        <!-- Enterprise Layout Container -->
+        <div class="enterprise-input-container">
+            <!-- Left Sidebar Navigation -->
+            <aside class="enterprise-sidebar glass">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">Navigation</div>
+                    <div class="sidebar-subtitle">RISKCAST v12</div>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="#shipping-info" class="sidebar-nav-item" data-section="shipping-info">
+                        <span class="nav-item-number">01</span>
+                        <span class="nav-item-label">Transport Setup</span>
+                        <span class="nav-item-check">✓</span>
+                    </a>
+                    <a href="#cargo-details" class="sidebar-nav-item" data-section="cargo-details">
+                        <span class="nav-item-number">02</span>
+                        <span class="nav-item-label">Cargo & Packing</span>
+                        <span class="nav-item-check">✓</span>
+                    </a>
+                    <a href="#seller-info" class="sidebar-nav-item" data-section="seller-info">
+                        <span class="nav-item-number">03</span>
+                        <span class="nav-item-label">Seller Information</span>
+                        <span class="nav-item-check">✓</span>
+                    </a>
+                    <a href="#buyer-info" class="sidebar-nav-item" data-section="buyer-info">
+                        <span class="nav-item-number">04</span>
+                        <span class="nav-item-label">Buyer Information</span>
+                        <span class="nav-item-check">✓</span>
+                    </a>
+                    <a href="#algorithm-modules" class="sidebar-nav-item" data-section="algorithm-modules">
+                        <span class="nav-item-number">05</span>
+                        <span class="nav-item-label">Algorithm Modules</span>
+                        <span class="nav-item-check">✓</span>
+                    </a>
+                    <a href="#summaryOverviewSection" class="sidebar-nav-item" data-section="summaryOverviewSection">
+                        <span class="nav-item-number">06</span>
+                        <span class="nav-item-label">Summary Overview</span>
+                        <span class="nav-item-check">✓</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Layout Wrapper for Main Content + AI Panel -->
+            <div class="layout-wrapper">
+                <!-- Main Content Area -->
+                <main class="enterprise-content main-content">
+                <div class="form-container">
+                    <form id="risk_form" class="risk-form" novalidate>
+               
+                <!-- Hidden inputs map from dropdowns to real form fields for Flask -->
+                <div style="display:none;">
+                    <input type="hidden" name="transport_mode" id="transport_mode_input">
+                    <input type="hidden" name="cargo_type" id="cargo_type_input">
+                    <input type="hidden" name="route" id="route_input">
+                    <input type="hidden" name="incoterm" id="incoterm_input">
+                    <input type="hidden" name="container" id="container_input">
+                    <input type="hidden" name="packaging" id="packaging_input">
+                    <input type="hidden" name="priority" id="priority_input">
+                </div>
+               
+                <!-- MỤC 01 — THÔNG TIN VẬN CHUYỂN (SHIPPING INFORMATION) -->
+                <section id="shipping-info" class="form-section">
+                    <div class="enterprise-section-card" id="section-transport">
+                        <h2 class="section-title">01. Transport Setup</h2>
+                        <p class="section-subtitle">Dữ liệu nền để AI tính toán rủi ro lộ trình, khí hậu, và thời gian.</p>
+
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6 w-full">
+                            <!-- Commercial Route -->
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label class="form-label" for="route_dropdown" data-i18n="label_route">
+                                    <i class="ph ph-globe input-icon"></i>
+                                    Tuyến Đường Vận Chuyển
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="custom-dropdown" id="route_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn tuyến đường</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="vn_cn" role="option">🇻🇳 Việt Nam → 🇨🇳 Trung Quốc</div>
+                                        <div class="dropdown-option" data-value="vn_us" role="option">🇻🇳 Việt Nam → 🇺🇸 Mỹ (LA/NY)</div>
+                                        <div class="dropdown-option" data-value="vn_kr" role="option">🇻🇳 Việt Nam → 🇰🇷 Hàn Quốc</div>
+                                        <div class="dropdown-option" data-value="vn_jp" role="option">🇻🇳 Việt Nam → 🇯🇵 Nhật Bản</div>
+                                        <div class="dropdown-option" data-value="vn_eu" role="option">🇻🇳 Việt Nam → 🇪🇺 EU (Hà Lan/Đức)</div>
+                                        <div class="dropdown-option" data-value="vn_hk" role="option">🇻🇳 Việt Nam → 🇭🇰 Hồng Kông</div>
+                                        <div class="dropdown-option" data-value="vn_in" role="option">🇻🇳 Việt Nam → 🇮🇳 Ấn Độ</div>
+                                        <div class="dropdown-option" data-value="vn_th" role="option">🇻🇳 Việt Nam → 🇹🇭 Thái Lan</div>
+                                        <div class="dropdown-option" data-value="vn_tw" role="option">🇻🇳 Việt Nam → 🇹🇼 Đài Loan</div>
+                                        <div class="dropdown-option" data-value="domestic" role="option">🇻🇳 Nội Địa Việt Nam</div>
+                                    </div>
+                                </div>
+                                <span class="error-message" id="route_error"></span>
+                            </div>
+
+                            <!-- Transport Mode -->
+                            <div class="form-group" id="transport_mode_group" style="display: none; grid-column: 1 / -1;">
+                                <label class="form-label" for="transport_mode_dropdown" data-i18n="label_transport_mode">
+                                    <i class="ph ph-truck input-icon"></i>
+                                    Phương Thức Vận Tải
+                                    <span class="required-indicator">*</span>
+                                    <span class="badge-recommended" id="transport_recommended_badge" style="display:none; margin-left: 8px; padding: 2px 8px; background: rgba(0,255,136,0.2); color: #00ff88; border-radius: 4px; font-size: 10px;">Được đề xuất</span>
+                                </label>
+                                <div class="custom-dropdown" id="transport_mode_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder">Chọn tuyến đường thương mại trước</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox" id="transport_mode_menu">
+                                        <!-- Options sẽ được populate dynamically -->
+                                    </div>
+                                </div>
+                                <span class="error-message" id="transport_mode_error"></span>
+                                <span class="field-hint" id="transport_mode_hint"></span>
+                            </div>
+
+                            <!-- Detailed Route -->
+                            <div class="form-group" id="detailed_route_group" style="display: none; grid-column: 1 / -1;">
+                                <label class="form-label" for="detailed_route_dropdown">
+                                    <i class="ph ph-navigation-arrow input-icon"></i>
+                                    Tuyến (Route)
+                                    <span class="help-icon" title="Chọn tuyến vận chuyển cụ thể cho tuyến đường đã chọn" style="margin-left: 8px; cursor: help;">💡</span>
+                                </label>
+                                <div class="custom-dropdown" id="detailed_route_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder">Chọn phương thức vận chuyển trước</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" id="detailed_route_menu" role="listbox">
+                                        <!-- Routes will be populated dynamically -->
+                                    </div>
+                                </div>
+                                <input type="hidden" name="detailed_route" id="detailed_route_input" value="">
+                                <span class="error-message" id="detailed_route_error"></span>
+                                
+                                <!-- Route Details Panel -->
+                                <div id="route_details_panel" class="route-details-panel" style="display: none; margin-top: 12px;">
+                                    <div class="route-details-header">
+                                        <span class="route-details-icon">📋</span>
+                                        <span class="route-details-title">Thông Tin Chi Tiết Tuyến</span>
+                                    </div>
+                                    <div class="route-details-grid">
+                                        <div class="route-detail-item">
+                                            <span class="detail-label">⏱️ Transit Time:</span>
+                                            <span class="detail-value" id="route_detail_transit">--</span>
+                                        </div>
+                                        <div class="route-detail-item">
+                                            <span class="detail-label">💰 Phụ Phí (11/2025):</span>
+                                            <span class="detail-value" id="route_detail_surcharge">--</span>
+                                        </div>
+                                        <div class="route-detail-item">
+                                            <span class="detail-label">🌡️ Rủi Ro Khí Hậu:</span>
+                                            <span class="detail-value" id="route_detail_climate">--</span>
+                                        </div>
+                                        <div class="route-detail-item">
+                                            <span class="detail-label">⚔️ Rủi Ro Chiến Sự:</span>
+                                            <span class="detail-value" id="route_detail_conflict">--</span>
+                                        </div>
+                                        <div class="route-detail-item">
+                                            <span class="detail-label">📊 % Tàu Đang Đi:</span>
+                                            <span class="detail-value" id="route_detail_usage">--</span>
+                                        </div>
+                                    </div>
+                                    <div class="route-details-note">
+                                        <span class="note-icon">💬</span>
+                                        <span class="note-text" id="route_detail_note">--</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Carrier -->
+                            <div class="form-group" id="carrier_group" style="display: none; grid-column: 1 / -1;">
+                                <label class="form-label" for="carrier_dropdown" data-i18n="label_carrier">
+                                    <i class="ph ph-anchor input-icon"></i>
+                                    Hãng Tàu / Carrier
+                                    <span class="required-indicator">*</span>
+                                    <span class="carrier-rating-display" id="carrier_rating_info" style="display: none; margin-left: 12px; font-size: 13px; color: var(--text-secondary);">
+                                        <span id="carrier_rating_stars_display"></span>
+                                        <span id="carrier_rating_votes" style="margin-left: 8px;"></span>
+                                    </span>
+                                </label>
+                                <div class="custom-dropdown" id="carrier_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder">Chọn tuyến cụ thể trước để xem hãng tàu</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" id="carrier_dropdown_menu" role="listbox">
+                                        <!-- Carriers will be populated dynamically by smart_input.js -->
+                                    </div>
+                                </div>
+                                <div id="carrier_note" class="field-hint" style="display: none;"></div>
+                                <input type="hidden" name="carrier" id="carrier_input" value="">
+                                <span class="error-message" id="carrier_error"></span>
+                                <div id="carrier-suggestion" class="suggestion-panel" style="display: none;"></div>
+                            </div>
+
+                            <!-- POL -->
+                            <div class="form-group">
+                                <label class="form-label" for="pol_dropdown">
+                                    <i class="ph ph-map-pin input-icon"></i>
+                                    Cảng Bốc Hàng (POL)
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="custom-dropdown" id="pol_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button">
+                                        <span class="dropdown-value placeholder">Chọn phương thức trước</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox" id="pol_menu">
+                                        <!-- Options dynamically populated -->
+                                    </div>
+                                </div>
+                                <input type="hidden" name="pol" id="pol_input">
+                                <span class="error-message" id="pol_error"></span>
+                            </div>
+
+                            <!-- POD -->
+                            <div class="form-group">
+                                <label class="form-label" for="pod_dropdown">
+                                    <i class="ph ph-flag-checkered input-icon"></i>
+                                    Cảng Dỡ Hàng (POD)
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="custom-dropdown" id="pod_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button">
+                                        <span class="dropdown-value placeholder">Chọn phương thức trước</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox" id="pod_menu">
+                                        <!-- Options dynamically populated -->
+                                    </div>
+                                </div>
+                                <input type="hidden" name="pod" id="pod_input">
+                                <span class="error-message" id="pod_error"></span>
+                            </div>
+
+                            <!-- ETD / Departure Time -->
+                            <div class="form-group">
+                                <label class="form-label" for="shipment-month">
+                                    <i class="ph ph-calendar-blank input-icon"></i>
+                                    Thời Gian Dự Kiến Đi Hàng
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="month" id="shipment-month" name="shipment_month" value="2025-11" required class="form-input date-input" style="display: none;">
+                                    <input type="text" id="shipment-month-display" class="form-input date-input" readonly placeholder="Chọn tháng" style="width: 100%; cursor: pointer;">
+                                    <span class="input-icon calendar-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <rect x="3" y="4" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M7 2V6M13 2V6M3 8H17" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Distance -->
+                            <div class="form-group">
+                                <label class="form-label" for="distance">
+                                    <i class="ph ph-ruler input-icon"></i>
+                                    Khoảng Cách Vận Chuyển
+                                    <span class="auto-badge">Tự động</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="distance" name="distance" class="form-input" placeholder="Sẽ tự động điền" style="background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.3);">
+                                    <span class="input-suffix">km</span>
+                                </div>
+                            </div>
+
+                            <!-- Transit Days -->
+                            <div class="form-group">
+                                <label class="form-label" for="transit_time_display">
+                                    <i class="ph ph-timer input-icon"></i>
+                                    Thời Gian Vận Chuyển Dự Kiến
+                                    <span class="auto-badge">Tự động</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="transit_time_display" class="form-input" placeholder="--" readonly style="background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.3); font-weight: 700; font-size: 20px; color: #00ff9d; text-align: center; padding: 12px 16px;">
+                                    <span class="input-suffix">ngày</span>
+                                </div>
+                                <input type="hidden" name="transit_time" id="transit_time">
+                            </div>
+
+                            <!-- Cargo Type -->
+                            <div class="form-group">
+                                <label class="form-label" for="cargo_type_dropdown" data-i18n="label_cargo_type">
+                                    <i class="ph ph-cube input-icon"></i>
+                                    Loại Hàng Hóa
+                                </label>
+                                <div class="custom-dropdown" id="cargo_type_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder" data-i18n="placeholder_select">Select cargo type</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="general" role="option" data-i18n="opt_ct_general">General Cargo</div>
+                                        <div class="dropdown-option" data-value="electronics" role="option" data-i18n="opt_ct_electronics">Electronics</div>
+                                        <div class="dropdown-option" data-value="food_bev" role="option" data-i18n="opt_ct_food_bev">Food & Beverage</div>
+                                        <div class="dropdown-option" data-value="garments" role="option" data-i18n="opt_ct_garments">Garments / Textile</div>
+                                        <div class="dropdown-option" data-value="agriculture" role="option" data-i18n="opt_ct_agriculture">Agriculture</div>
+                                        <div class="dropdown-option" data-value="refrigerated" role="option" data-i18n="opt_ct_refrigerated">Refrigerated / Frozen</div>
+                                        <div class="dropdown-option" data-value="chemicals" role="option" data-i18n="opt_ct_chemicals">Chemicals</div>
+                                        <div class="dropdown-option" data-value="machinery" role="option" data-i18n="opt_ct_machinery">Machinery</div>
+                                        <div class="dropdown-option" data-value="fragile" role="option" data-i18n="opt_ct_fragile">Fragile Goods</div>
+                                        <div class="dropdown-option" data-value="auto_parts" role="option" data-i18n="opt_ct_auto_parts">Automotive Parts</div>
+                                        <div class="dropdown-option" data-value="dg" role="option" data-i18n="opt_ct_dg">Dangerous Goods (DG)</div>
+                                        <div class="dropdown-option" data-value="pharma" role="option" data-i18n="opt_ct_pharma">Pharmaceutical</div>
+                                    </div>
+                                </div>
+                                <span class="error-message" id="cargo_type_error"></span>
+                            </div>
+
+                            <!-- Incoterm -->
+                            <div class="form-group">
+                                <label class="form-label" for="incoterm_dropdown" data-i18n="label_incoterm">
+                                    <i class="ph ph-file-text input-icon"></i>
+                                    Incoterms
+                                </label>
+                                <div class="custom-dropdown" id="incoterm_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder" data-i18n="placeholder_select">Select incoterm</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="exw" role="option" data-i18n="opt_ic_exw">EXW</div>
+                                        <div class="dropdown-option" data-value="fca" role="option" data-i18n="opt_ic_fca">FCA</div>
+                                        <div class="dropdown-option" data-value="fas" role="option" data-i18n="opt_ic_fas">FAS</div>
+                                        <div class="dropdown-option" data-value="fob" role="option" data-i18n="opt_ic_fob">FOB</div>
+                                        <div class="dropdown-option" data-value="cfr" role="option" data-i18n="opt_ic_cfr">CFR</div>
+                                        <div class="dropdown-option" data-value="cif" role="option" data-i18n="opt_ic_cif">CIF</div>
+                                        <div class="dropdown-option" data-value="cpt" role="option" data-i18n="opt_ic_cpt">CPT</div>
+                                        <div class="dropdown-option" data-value="cip" role="option" data-i18n="opt_ic_cip">CIP</div>
+                                        <div class="dropdown-option" data-value="dap" role="option" data-i18n="opt_ic_dap">DAP</div>
+                                        <div class="dropdown-option" data-value="dpu" role="option" data-i18n="opt_ic_dpu">DPU</div>
+                                        <div class="dropdown-option" data-value="ddp" role="option" data-i18n="opt_ic_ddp">DDP</div>
+                                    </div>
+                                </div>
+                                <span class="error-message" id="incoterm_error"></span>
+                            </div>
+
+                            <!-- Container Type -->
+                            <div class="form-group">
+                                <label class="form-label" for="container_dropdown" data-i18n="label_container">
+                                    <i class="ph ph-package input-icon"></i>
+                                    Loại Container
+                                </label>
+                                <div class="custom-dropdown" id="container_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder" data-i18n="placeholder_select">Select container</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option container-item" id="container-20ft_standard" data-value="20ft_standard" data-container-type="20ft_standard" role="option" data-i18n="opt_cn_20ft">
+                                            <span>20ft Standard</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-40ft_standard" data-value="40ft_standard" data-container-type="40ft_standard" role="option" data-i18n="opt_cn_40ft">
+                                            <span>40ft Standard</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-40ft_highcube" data-value="40ft_highcube" data-container-type="40ft_highcube" role="option" data-i18n="opt_cn_40hc">
+                                            <span>40ft High Cube</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-45ft_highcube" data-value="45ft_highcube" data-container-type="45ft_highcube" role="option" data-i18n="opt_cn_45hc">
+                                            <span>45ft High Cube</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-reefer" data-value="reefer" data-container-type="reefer" role="option" data-i18n="opt_cn_reefer">
+                                            <span>Reefer Container</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-open_top" data-value="open_top" data-container-type="open_top" role="option" data-i18n="opt_cn_opentop">
+                                            <span>Open-top</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-flat_rack" data-value="flat_rack" data-container-type="flat_rack" role="option" data-i18n="opt_cn_flatrack">
+                                            <span>Flat-rack</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-iso_tank" data-value="iso_tank" data-container-type="iso_tank" role="option" data-i18n="opt_cn_isotank">
+                                            <span>ISO Tank</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-bulk_container" data-value="bulk_container" data-container-type="bulk_container" role="option" data-i18n="opt_cn_bulk">
+                                            <span>Bulk Container</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-palletized" data-value="palletized" data-container-type="palletized" role="option" data-i18n="opt_cn_pallet">
+                                            <span>Palletized</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-wooden_crates" data-value="wooden_crates" data-container-type="wooden_crates" role="option" data-i18n="opt_cn_wooden">
+                                            <span>Wooden Crates</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                        <div class="dropdown-option container-item" id="container-polybags_cartons" data-value="polybags_cartons" data-container-type="polybags_cartons" role="option" data-i18n="opt_cn_poly">
+                                            <span>Polybags / Cartons</span>
+                                            <span class="compatibility-badge" style="display: none;">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="error-message" id="container_error"></span>
+                                <div id="container-suggestion" class="suggestion-panel" style="display: none;"></div>
+                            </div>
+
+                            <!-- Packing Quality -->
+                            <div class="form-group">
+                                <label class="form-label" for="packaging_dropdown" data-i18n="label_packaging">
+                                    <i class="ph ph-gift input-icon"></i>
+                                    Chất Lượng Đóng Gói
+                                </label>
+                                <div class="custom-dropdown" id="packaging_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder" data-i18n="placeholder_select">Select quality</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="poor" role="option" data-i18n="opt_pk_poor">Poor</div>
+                                        <div class="dropdown-option" data-value="medium" role="option" data-i18n="opt_pk_medium">Medium</div>
+                                        <div class="dropdown-option" data-value="good" role="option" data-i18n="opt_pk_good">Good</div>
+                                        <div class="dropdown-option" data-value="excellent" role="option" data-i18n="opt_pk_excellent">Excellent</div>
+                                    </div>
+                                </div>
+                                <span class="error-message" id="packaging_error"></span>
+                            </div>
+
+                        </div>
+
+
+                        <!-- Climate Risk Panel (Collapsible) -->
+                        <div id="climate-panel" class="climate-card" style="display: none;">
+                            <div class="climate-header" id="climate-header-toggle">
+                                <div class="climate-header-title">
+                                    <i class="ph ph-cloud-lightning" style="font-size: 18px; color: #00FFC8; margin-right: 8px; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                    <span>Climate Risk Overview</span>
+                                    <span class="climate-header-score" id="climate-header-score">
+                                        <span id="climate-stress-value-header">--</span>
+                                        <span id="climate-stress-badge-header" class="badge">--</span>
+                                    </span>
+                                </div>
+                                <span id="climate-arrow" class="climate-toggle-icon">▼</span>
+                            </div>
+                            <div id="climate-body" class="climate-body hidden">
+                                <div class="climate-body-content">
+                                    <h3>
+                                        ENSO INDEX: <span id="enso-value" style="color: #10B981; font-weight: 700;">La Niña Phase (ONI: -0.6°C)</span>
+                                    </h3>
+                                    <h3>
+                                        TẦN SUẤT BÃO: <span id="storm-value" style="color: #10B981; font-weight: 700;">3 cơn bão dự kiến</span>
+                                    </h3>
+                                    <h3>
+                                        NHIỆT ĐỘ BIỂN (SST): <span id="sst-value" style="color: #10B981; font-weight: 700;">-0.5°C</span>
+                                    </h3>
+                                    <h3>
+                                        <span style="color: #ffffff; font-weight: 700;">ĐIỂM ÁP LỰC KHÍ HẬU:</span> 
+                                        <span id="climate-stress-badge" class="badge critical" style="margin-left: 8px;">Critical</span>
+                                        <span id="climate-stress-value" style="color: #10B981; font-weight: 700; margin-left: 8px;">8.7</span>
+                                    </h3>
+                                    <div style="position: relative; margin-top: 12px;">
+                                        <input type="range" id="climate-stress-slider" min="1" max="10" value="8.7" step="0.1" disabled style="width: 100%; height: 8px; border-radius: 4px; background: var(--bg-tertiary); outline: none; opacity: 0.7;">
+                                        <div class="slider-labels" style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; font-weight: 700;">
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">1</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">2</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">3</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">4</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">5</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">6</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">7</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">8</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">9</span>
+                                            <span style="color: rgba(255, 255, 255, 0.8); padding: 2px 4px; border-radius: 3px;">10</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Priority Profile - Moved to end -->
+                        <div class="form-group" style="grid-column: 1 / -1; margin-top: 24px;">
+                            <label class="form-label" for="priority_dropdown" data-i18n="label_priority">
+                                <i class="ph ph-star input-icon"></i>
+                                Hồ Sơ Ưu Tiên
+                            </label>
+                            <div class="custom-dropdown" id="priority_dropdown">
+                                <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                    <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn tùy chọn</span>
+                                    <span class="dropdown-arrow">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dropdown-menu" role="listbox">
+                                    <div class="dropdown-option" data-value="economy" role="option" data-i18n="opt_pr_economy">Economy</div>
+                                    <div class="dropdown-option" data-value="standard" role="option" data-i18n="opt_pr_standard">Standard</div>
+                                    <div class="dropdown-option" data-value="express" role="option" data-i18n="opt_pr_express">Express</div>
+                                    <div class="dropdown-option" data-value="critical" role="option" data-i18n="opt_pr_critical">Critical</div>
+                                </div>
+                            </div>
+                            <span class="error-message" id="priority_error"></span>
+                        </div>
+
+                        <!-- Priority Weights Preview - Moved to end -->
+                        <div id="priority-preview" class="priority-box" style="display: none; grid-column: 1 / -1;">
+                            <div class="priority-weights-preview" id="priority_preview_box">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                                    <i class="ph ph-chart-bar" style="color: #00FFC8; font-size: 20px; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                    <h4 style="color: #00FFC8; font-size: 15px; font-weight: 600; margin: 0; text-shadow: 0 0 8px rgba(0, 255, 200, 0.3);">Priority Weights Preview</h4>
+                                    <span id="priority_selected_badge" style="display: none; margin-left: auto; padding: 4px 10px; background: rgba(0, 255, 200, 0.2); color: #00FFC8; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; border: 1px solid rgba(0, 255, 200, 0.3);"></span>
+                                </div>
+                                <div class="grid-3" style="gap: 16px; margin-bottom: 16px;">
+                                    <div style="text-align: center; padding: 12px; background: rgba(0, 255, 200, 0.08); border-radius: 8px; border: 1px solid rgba(0, 255, 200, 0.3); transition: all 0.3s ease;">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: #00FFC8; margin-bottom: 6px; font-weight: 500;">
+                                            <i class="ph ph-timer" style="color: #00FFC8; font-size: 16px; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                            Speed
+                                        </div>
+                                        <div id="priority_speed_display" style="font-size: 24px; font-weight: 700; color: #00FFC8; transition: all 0.3s ease; text-shadow: 0 0 8px rgba(0, 255, 200, 0.4);">--</div>
+                                    </div>
+                                    <div style="text-align: center; padding: 12px; background: rgba(0, 255, 200, 0.08); border-radius: 8px; border: 1px solid rgba(0, 255, 200, 0.3); transition: all 0.3s ease;">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: #00FFC8; margin-bottom: 6px; font-weight: 500;">
+                                            <i class="ph ph-currency-dollar" style="color: #00FFC8; font-size: 16px; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                            Cost
+                                        </div>
+                                        <div id="priority_cost_display" style="font-size: 24px; font-weight: 700; color: #00FFC8; transition: all 0.3s ease; text-shadow: 0 0 8px rgba(0, 255, 200, 0.4);">--</div>
+                                    </div>
+                                    <div style="text-align: center; padding: 12px; background: rgba(0, 255, 200, 0.08); border-radius: 8px; border: 1px solid rgba(0, 255, 200, 0.3); transition: all 0.3s ease;">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; color: #00FFC8; margin-bottom: 6px; font-weight: 500;">
+                                            <i class="ph ph-warning" style="color: #00FFC8; font-size: 16px; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                            Risk
+                                        </div>
+                                        <div id="priority_risk_display" style="font-size: 24px; font-weight: 700; color: #00FFC8; transition: all 0.3s ease; text-shadow: 0 0 8px rgba(0, 255, 200, 0.4);">--</div>
+                                    </div>
+                                </div>
+                                <p id="priority_description" style="margin-top: 0; font-size: 13px; color: rgba(0, 255, 200, 0.7); text-align: center; font-style: italic; padding: 12px; background: rgba(0, 255, 200, 0.05); border-radius: 8px; border: 1px solid rgba(0, 255, 200, 0.1);">Chọn chế độ ưu tiên để xem phân bổ trọng số</p>
+                            </div>
+                        </div>
+
+                        <div id="climate-section" style="display: none;"></div>
+                    </div>
+                </section>
+ 
+                <!-- MỤC 02 — CHI TIẾT LÔ HÀNG & PACKING LIST (ULTRA PREMIUM 2026) -->
+                <section id="cargo-details" class="form-section packing-list-section">
+                    <div class="enterprise-section-card" id="section-cargo">
+                        <h2 class="section-title">02. Cargo & Packing</h2>
+                        <p class="section-subtitle">Specify quantity, timing, and cargo value</p>
+
+                        <!-- Basic Shipment Info (ETD/ETA/Cargo Value) -->
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6 w-full" style="margin-bottom: 32px;">
+                            <!-- ETD -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_etd" for="etd">
+                                    <i class="ph ph-calendar-blank input-icon"></i>
+                                    ETD – Ngày Khởi Hành
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="date" id="etd" name="etd" class="form-input date-input" required />
+                                    <span class="input-icon calendar-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <rect x="3" y="4" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M7 2V6M13 2V6M3 8H17" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="etd_error"></span>
+                            </div>
+
+                            <!-- ETA -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_eta" for="eta">
+                                    <i class="ph ph-calendar input-icon"></i>
+                                    ETA – Ngày Đến
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="date" id="eta" name="eta" class="form-input date-input" required />
+                                    <span class="input-icon calendar-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <rect x="3" y="4" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M7 2V6M13 2V6M3 8H17" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="eta_error"></span>
+                            </div>
+
+                            <!-- Cargo Value -->
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label class="form-label" data-i18n="label_cargo_value" for="cargo_value">
+                                    <i class="ph ph-currency-dollar input-icon"></i>
+                                    Giá Trị Hàng Hóa
+                                </label>
+                                <div class="input-wrapper" style="position: relative;">
+                                    <span class="input-prefix" style="left: 16px; top: 50%; transform: translateY(-50%); position: absolute; color: #00ff88; font-weight: 700; font-size: 16px; z-index: 2; text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);">$</span>
+                                    <input type="text" id="cargo_value" name="cargo_value" class="form-input with-prefix" placeholder="0" min="0" step="1" required style="padding-left: 36px; padding-right: 100px; font-size: 16px; font-weight: 600; letter-spacing: 0.5px;" />
+                                    <div class="currency-selector" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 6px; z-index: 2;">
+                                        <span class="currency-text" style="color: rgba(255, 255, 255, 0.8); font-size: 13px; font-weight: 600;">USD</span>
+                                        <button type="button" class="currency-toggle" style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 4px; padding: 2px 6px; cursor: pointer; color: #00ff88; font-size: 10px; transition: all 0.2s ease;" title="Change currency">
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                                <path d="M3 4.5L6 1.5L9 4.5M3 7.5L6 10.5L9 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="error-message" id="cargo_value_error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Packing List Table -->
+                        <div class="packing-list-table-wrapper" style="margin-bottom: 32px;">
+                            <table class="packing-list-table" id="packing-list-table">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Mô Tả Hàng Hóa</th>
+                                        <th>Số Kiện</th>
+                                        <th>Loại Đóng Gói</th>
+                                        <th>Dài x Rộng x Cao (cm)</th>
+                                        <th>Trọng Lượng Kiện (kg)</th>
+                                        <th>Stackable</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="packing-list-tbody">
+                                    <!-- Rows will be added dynamically -->
+                                    <!-- Debug: Check if this tbody is visible -->
+                                </tbody>
+                            </table>
+                            <button type="button" class="add-row-btn" id="add-packing-row">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 5V19M5 12H19" stroke-linecap="round"/>
+                                </svg>
+                                Thêm Hàng Hóa
+                            </button>
+                        </div>
+
+                        <!-- Auto-Calculation Panel -->
+                        <div class="packing-calc-panel" id="packing-calc-panel">
+                            <div class="calc-card">
+                                <div class="calc-card-header">
+                                    <div class="calc-card-label">
+                                        Total Packages
+                                        <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16V12M12 8H12.01"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="calc-card-value highlight" id="calc-total-packages">0</div>
+                                <div class="calc-card-unit">kiện</div>
+                            </div>
+
+                            <div class="calc-card">
+                                <div class="calc-card-header">
+                                    <div class="calc-card-label">
+                                        Total Gross Weight
+                                        <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16V12M12 8H12.01"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="calc-card-value highlight" id="calc-total-weight">0</div>
+                                <div class="calc-card-unit">kg</div>
+                            </div>
+
+                            <div class="calc-card">
+                                <div class="calc-card-header">
+                                    <div class="calc-card-label">
+                                        Total Volume
+                                        <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16V12M12 8H12.01"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="calc-card-value highlight" id="calc-total-volume">0</div>
+                                <div class="calc-card-unit">m³</div>
+                            </div>
+
+                            <div class="calc-card">
+                                <div class="calc-card-header">
+                                    <div class="calc-card-label">
+                                        Chargeable Weight
+                                        <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16V12M12 8H12.01"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="calc-card-value highlight" id="calc-chargeable-weight">0</div>
+                                <div class="calc-card-unit">kg (volumetric 1:167)</div>
+                            </div>
+
+                            <div class="calc-card">
+                                <div class="calc-card-header">
+                                    <div class="calc-card-label">
+                                        Container Utilization
+                                        <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16V12M12 8H12.01"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="calc-card-value highlight" id="calc-container-util">0%</div>
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar">
+                                        <div class="progress-bar-fill" id="util-progress-bar" style="width: 0%"></div>
+                                    </div>
+                                    <div class="progress-bar-text" id="util-progress-text">40HQ</div>
+                                </div>
+                            </div>
+
+                            <div class="calc-card score-card">
+                                <div class="calc-card-header">
+                                    <div class="calc-card-label">
+                                        Packing Quality Score
+                                        <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16V12M12 8H12.01"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="score-value" id="calc-packing-score">0.0</div>
+                                <div class="calc-card-unit">/ 10 (affects insurance rate & risk)</div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden input for total packages (for form submission) -->
+                        <input type="hidden" id="packages" name="packages" value="0">
+                    </div>
+                </section>
+
+                <!-- SECTION 03: THÔNG TIN NGƯỜI BÁN (SELLER INFORMATION) -->
+                <section id="seller-info" class="form-section">
+                    <div class="enterprise-section-card" id="section-seller">
+                        <h2 class="section-title">03. Seller Information</h2>
+                        <p class="section-subtitle">Company details and contact information</p>
+
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6 w-full">
+                            <!-- 1. Tên công ty -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_seller_name" for="seller_name">
+                                    <i class="ph ph-buildings input-icon"></i>
+                                    Tên Công Ty
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="seller_name" name="seller_name" class="form-input" data-i18n-placeholder="placeholder_seller_name" placeholder="Nhập tên công ty" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M3 6C3 4.89543 3.89543 4 5 4H15C16.1046 4 17 4.89543 17 6V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M7 8H13M7 12H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="seller_name_error"></span>
+                            </div>
+
+                            <!-- 2. Quốc gia -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_seller_country" for="seller_country_dropdown">
+                                    <i class="ph ph-flag input-icon"></i>
+                                    Quốc Gia
+                                </label>
+                                <div class="custom-dropdown" id="seller_country_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn quốc gia</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="vn" role="option" data-i18n="opt_country_vn">Việt Nam</div>
+                                        <div class="dropdown-option" data-value="us" role="option" data-i18n="opt_country_us">United States</div>
+                                        <div class="dropdown-option" data-value="cn" role="option" data-i18n="opt_country_cn">China</div>
+                                        <div class="dropdown-option" data-value="sg" role="option" data-i18n="opt_country_sg">Singapore</div>
+                                        <div class="dropdown-option" data-value="jp" role="option" data-i18n="opt_country_jp">Japan</div>
+                                        <div class="dropdown-option" data-value="kr" role="option" data-i18n="opt_country_kr">South Korea</div>
+                                        <div class="dropdown-option" data-value="th" role="option" data-i18n="opt_country_th">Thailand</div>
+                                        <div class="dropdown-option" data-value="my" role="option" data-i18n="opt_country_my">Malaysia</div>
+                                        <div class="dropdown-option" data-value="id" role="option" data-i18n="opt_country_id">Indonesia</div>
+                                        <div class="dropdown-option" data-value="ph" role="option" data-i18n="opt_country_ph">Philippines</div>
+                                        <div class="dropdown-option" data-value="gb" role="option" data-i18n="opt_country_gb">United Kingdom</div>
+                                        <div class="dropdown-option" data-value="de" role="option" data-i18n="opt_country_de">Germany</div>
+                                        <div class="dropdown-option" data-value="fr" role="option" data-i18n="opt_country_fr">France</div>
+                                        <div class="dropdown-option" data-value="au" role="option" data-i18n="opt_country_au">Australia</div>
+                                        <div class="dropdown-option" data-value="other" role="option" data-i18n="opt_country_other">Other</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="seller_country" id="seller_country_input" value="">
+                                <span class="error-message" id="seller_country_error"></span>
+                            </div>
+
+                            <!-- 3. Quy Mô Công Ty -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_seller_size" for="seller_size_dropdown">
+                                    <i class="ph ph-users input-icon"></i>
+                                    Quy Mô Công Ty
+                                </label>
+                                <div class="custom-dropdown" id="seller_size_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder">Chọn tùy chọn</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="SME" role="option">SME (Small/Medium)</div>
+                                        <div class="dropdown-option" data-value="Medium" role="option">Medium Enterprise</div>
+                                        <div class="dropdown-option" data-value="Large" role="option">Large Corporation</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="seller_size" id="seller_size_input" value="">
+                                <span class="error-message" id="seller_size_error"></span>
+                            </div>
+
+                            <!-- 4. Email -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_seller_email" for="seller_email">
+                                    <i class="ph ph-envelope input-icon"></i>
+                                    Email
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="email" id="seller_email" name="seller_email" class="form-input" data-i18n-placeholder="placeholder_seller_email" placeholder="email@example.com" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M3 5C3 3.89543 3.89543 3 5 3H15C16.1046 3 17 3.89543 17 5V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M3 6L10 11L17 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="seller_email_error"></span>
+                            </div>
+
+                            <!-- 5. Số điện thoại -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_seller_phone" for="seller_phone">
+                                    <i class="ph ph-phone input-icon"></i>
+                                    Số Điện Thoại
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="tel" id="seller_phone" name="seller_phone" class="form-input" data-i18n-placeholder="placeholder_seller_phone" placeholder="+84 123 456 789" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M4 3C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3H4Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M8 5H12M8 9H12M8 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="seller_phone_error"></span>
+                            </div>
+
+                            <!-- 6. Người phụ trách -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_seller_pic" for="seller_pic">
+                                    <i class="ph ph-user input-icon"></i>
+                                    Người Phụ Trách
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="seller_pic" name="seller_pic" class="form-input" data-i18n-placeholder="placeholder_seller_pic" placeholder="Nhập tên người phụ trách" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M5 17C5 13.6863 7.68629 11 10 11C12.3137 11 15 13.6863 15 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="seller_pic_error"></span>
+                            </div>
+
+                            <!-- 7. Địa chỉ -->
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label class="form-label" data-i18n="label_seller_address" for="seller_address">
+                                    <i class="ph ph-map-pin input-icon"></i>
+                                    Địa Chỉ
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="seller_address" name="seller_address" class="form-input" data-i18n-placeholder="placeholder_seller_address" placeholder="Nhập địa chỉ" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M10 10.5C11.3807 10.5 12.5 9.38071 12.5 8C12.5 6.61929 11.3807 5.5 10 5.5C8.61929 5.5 7.5 6.61929 7.5 8C7.5 9.38071 8.61929 10.5 10 10.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M10 18C13 14.5 16 11.5 16 8C16 4.68629 13.3137 2 10 2C6.68629 2 4 4.68629 4 8C4 11.5 7 14.5 10 18Z" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="seller_address_error"></span>
+                            </div>
+
+                            <!-- 8. ESG Score -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_seller_esg" for="seller_esg">
+                                    <i class="ph ph-leaf input-icon"></i>
+                                    ESG Score (0-100)
+                                </label>
+                                <input type="number" id="seller_esg" name="seller_esg" class="form-input" placeholder="50" min="0" max="100" step="1" />
+                                <span class="field-hint">Higher = better ESG performance</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 04: THÔNG TIN NGƯỜI MUA (BUYER INFORMATION) -->
+                <section id="buyer-info" class="form-section">
+                    <div class="enterprise-section-card" id="section-buyer">
+                        <h2 class="section-title">04. Buyer Information</h2>
+                        <p class="section-subtitle">Company details and contact information</p>
+
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-6 w-full">
+                            <!-- 1. Tên công ty -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_buyer_name" for="buyer_name">
+                                    <i class="ph ph-buildings input-icon"></i>
+                                    Tên Công Ty
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="buyer_name" name="buyer_name" class="form-input" data-i18n-placeholder="placeholder_buyer_name" placeholder="Nhập tên công ty" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M3 6C3 4.89543 3.89543 4 5 4H15C16.1046 4 17 4.89543 17 6V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M7 8H13M7 12H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="buyer_name_error"></span>
+                            </div>
+
+                            <!-- 2. Quốc gia -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_buyer_country" for="buyer_country_dropdown">
+                                    <i class="ph ph-flag input-icon"></i>
+                                    Quốc Gia
+                                </label>
+                                <div class="custom-dropdown" id="buyer_country_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder" data-i18n="placeholder_select">Chọn quốc gia</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="vn" role="option" data-i18n="opt_country_vn">Việt Nam</div>
+                                        <div class="dropdown-option" data-value="us" role="option" data-i18n="opt_country_us">United States</div>
+                                        <div class="dropdown-option" data-value="cn" role="option" data-i18n="opt_country_cn">China</div>
+                                        <div class="dropdown-option" data-value="sg" role="option" data-i18n="opt_country_sg">Singapore</div>
+                                        <div class="dropdown-option" data-value="jp" role="option" data-i18n="opt_country_jp">Japan</div>
+                                        <div class="dropdown-option" data-value="kr" role="option" data-i18n="opt_country_kr">South Korea</div>
+                                        <div class="dropdown-option" data-value="th" role="option" data-i18n="opt_country_th">Thailand</div>
+                                        <div class="dropdown-option" data-value="my" role="option" data-i18n="opt_country_my">Malaysia</div>
+                                        <div class="dropdown-option" data-value="id" role="option" data-i18n="opt_country_id">Indonesia</div>
+                                        <div class="dropdown-option" data-value="ph" role="option" data-i18n="opt_country_ph">Philippines</div>
+                                        <div class="dropdown-option" data-value="gb" role="option" data-i18n="opt_country_gb">United Kingdom</div>
+                                        <div class="dropdown-option" data-value="de" role="option" data-i18n="opt_country_de">Germany</div>
+                                        <div class="dropdown-option" data-value="fr" role="option" data-i18n="opt_country_fr">France</div>
+                                        <div class="dropdown-option" data-value="au" role="option" data-i18n="opt_country_au">Australia</div>
+                                        <div class="dropdown-option" data-value="other" role="option" data-i18n="opt_country_other">Other</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="buyer_country" id="buyer_country_input" value="">
+                                <span class="error-message" id="buyer_country_error"></span>
+                            </div>
+
+                            <!-- 3. Quy Mô Công Ty -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_buyer_size" for="buyer_size_dropdown">
+                                    <i class="ph ph-users input-icon"></i>
+                                    Quy Mô Công Ty
+                                </label>
+                                <div class="custom-dropdown" id="buyer_size_dropdown">
+                                    <div class="dropdown-trigger" tabindex="0" role="button" aria-haspopup="listbox">
+                                        <span class="dropdown-value placeholder">Chọn tùy chọn</span>
+                                        <span class="dropdown-arrow">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <path d="M5 8L10 13L15 8" stroke="currentColor" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="dropdown-menu" role="listbox">
+                                        <div class="dropdown-option" data-value="SME" role="option">SME (Small/Medium)</div>
+                                        <div class="dropdown-option" data-value="Medium" role="option">Medium Enterprise</div>
+                                        <div class="dropdown-option" data-value="Large" role="option">Large Corporation</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="buyer_size" id="buyer_size_input" value="">
+                                <span class="error-message" id="buyer_size_error"></span>
+                            </div>
+
+                            <!-- 4. Email -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_buyer_email" for="buyer_email">
+                                    <i class="ph ph-envelope input-icon"></i>
+                                    Email
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="email" id="buyer_email" name="buyer_email" class="form-input" data-i18n-placeholder="placeholder_buyer_email" placeholder="email@example.com" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M3 5C3 3.89543 3.89543 3 5 3H15C16.1046 3 17 3.89543 17 5V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M3 6L10 11L17 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="buyer_email_error"></span>
+                            </div>
+
+                            <!-- 5. Số điện thoại -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_buyer_phone" for="buyer_phone">
+                                    <i class="ph ph-phone input-icon"></i>
+                                    Số Điện Thoại
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="tel" id="buyer_phone" name="buyer_phone" class="form-input" data-i18n-placeholder="placeholder_buyer_phone" placeholder="+84 123 456 789" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M4 3C3.44772 3 3 3.44772 3 4V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V4C17 3.44772 16.5523 3 16 3H4Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M8 5H12M8 9H12M8 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="buyer_phone_error"></span>
+                            </div>
+
+                            <!-- 6. Người phụ trách -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_buyer_pic" for="buyer_pic">
+                                    <i class="ph ph-user input-icon"></i>
+                                    Người Phụ Trách
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="buyer_pic" name="buyer_pic" class="form-input" data-i18n-placeholder="placeholder_buyer_pic" placeholder="Nhập tên người phụ trách" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M5 17C5 13.6863 7.68629 11 10 11C12.3137 11 15 13.6863 15 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="buyer_pic_error"></span>
+                            </div>
+
+                            <!-- 7. Địa chỉ -->
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label class="form-label" data-i18n="label_buyer_address" for="buyer_address">
+                                    <i class="ph ph-map-pin input-icon"></i>
+                                    Địa Chỉ
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="buyer_address" name="buyer_address" class="form-input" data-i18n-placeholder="placeholder_buyer_address" placeholder="Nhập địa chỉ" />
+                                    <span class="input-icon">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <path d="M10 10.5C11.3807 10.5 12.5 9.38071 12.5 8C12.5 6.61929 11.3807 5.5 10 5.5C8.61929 5.5 7.5 6.61929 7.5 8C7.5 9.38071 8.61929 10.5 10 10.5Z" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M10 18C13 14.5 16 11.5 16 8C16 4.68629 13.3137 2 10 2C6.68629 2 4 4.68629 4 8C4 11.5 7 14.5 10 18Z" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <span class="error-message" id="buyer_address_error"></span>
+                            </div>
+
+                            <!-- 8. ESG Score -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="label_buyer_esg" for="buyer_esg">
+                                    <i class="ph ph-leaf input-icon"></i>
+                                    ESG Score (0-100)
+                                </label>
+                                <input type="number" id="buyer_esg" name="buyer_esg" class="form-input" placeholder="50" min="0" max="100" step="1" />
+                                <span class="field-hint">Higher = better ESG performance</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+                <!-- SECTION 05: MÔ-ĐUN THUẬT TOÁN (RISK ENGINE MODULES) -->
+                <section id="algorithm-modules" class="form-section">
+                    <div class="enterprise-section-card" id="section-algorithms">
+                        <h2 class="section-title">05. Algorithm Modules</h2>
+                        <p class="section-subtitle">Configure risk calculation algorithms</p>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="algorithm-module-card" data-module="fuzzy">
+                                <div class="module-icon-wrapper">
+                                    <i class="ph ph-brain" style="font-size: 24px; color: #00FFC8; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                </div>
+                                <div class="module-title" data-i18n="module_fuzzy_title">Fuzzy AHP</div>
+                                <div class="module-desc" data-i18n="module_fuzzy_desc">Multi-criteria decision analysis</div>
+                                <div class="module-toggle">
+                                    <div class="toggle-switch-enterprise active">
+                                        <input type="checkbox" id="use_fuzzy" name="use_fuzzy" checked style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="algorithm-module-card" data-module="arima">
+                                <div class="module-icon-wrapper">
+                                    <i class="ph ph-chart-line-up" style="font-size: 24px; color: #00FFC8; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                </div>
+                                <div class="module-title" data-i18n="module_arima_title">ARIMA Forecasting</div>
+                                <div class="module-desc" data-i18n="module_arima_desc">Time series prediction model</div>
+                                <div class="module-toggle">
+                                    <div class="toggle-switch-enterprise active">
+                                        <input type="checkbox" id="use_forecast" name="use_forecast" checked style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="algorithm-module-card" data-module="monte-carlo">
+                                <div class="module-icon-wrapper">
+                                    <i class="ph ph-dice-five" style="font-size: 24px; color: #00FFC8; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                </div>
+                                <div class="module-title" data-i18n="module_mc_title">Monte Carlo</div>
+                                <div class="module-desc" data-i18n="module_mc_desc">Stochastic simulation engine</div>
+                                <div class="module-toggle">
+                                    <div class="toggle-switch-enterprise active">
+                                        <input type="checkbox" id="use_mc" name="use_mc" checked style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="algorithm-module-card" data-module="var">
+                                <div class="module-icon-wrapper">
+                                    <i class="ph ph-shield-warning" style="font-size: 24px; color: #00FFC8; filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.5));"></i>
+                                </div>
+                                <div class="module-title" data-i18n="module_var_title">VaR / CVaR</div>
+                                <div class="module-desc" data-i18n="module_var_desc">Extreme risk quantification</div>
+                                <div class="module-toggle">
+                                    <div class="toggle-switch-enterprise active">
+                                        <input type="checkbox" id="use_var" name="use_var" checked style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                        <!-- Hidden inputs for backend -->
+                        <input type="hidden" name="route_type" id="route_type_input" value="standard">
+                        <input type="hidden" name="carrier_rating" id="carrier_rating" value="3.0">
+                        <input type="hidden" name="container_match" id="container_match" value="8.0">
+                    </section>
+
+                <!-- SECTION 06: SUMMARY OVERVIEW -->
+                <section id="summaryOverviewSection" class="form-section" style="margin-top: 32px;">
+                    <div class="summary-section-header" style="margin-bottom: 24px;">
+                        <h2 style="font-size: 24px; font-weight: 700; color: #e6fff8; margin-bottom: 4px;">06. Summary Overview</h2>
+                        <p style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 24px;">Tổng hợp toàn bộ dữ liệu từ các mục đã nhập</p>
+                    </div>
+                    
+                    <!-- Summary Grid Container -->
+                    <div class="overview-summary-grid" id="inputSummaryGrid">
+                        <!-- Cards will be dynamically generated here by overview.js -->
+                    </div>
+                </section>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="reset-form-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 10C3 13.866 6.134 17 10 17C12.389 17 14.531 15.955 16 14.292M17 10C17 6.134 13.866 3 10 3C7.611 3 5.469 4.045 4 5.708" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M3 5V10H8M17 15V10H12" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        <span data-i18n="btn_reset">Reset Form</span>
+                    </button>
+                    <button type="submit" id="run_risk" class="btn btn-primary">
+                        RUN RISK ANALYSIS
+                    </button>
+                </div>
+                    </form>
+                </div>
+                </main>
+                
+                <!-- AI Smart Assist Panel - Right Sidebar -->
+                <aside class="ai-smart-assist-panel" id="ai-smart-assist-panel">
+                    <div class="ai-panel-header">
+                        <div class="ai-panel-title">
+                            <span>🤖</span>
+                            <span>AI Smart Assist</span>
+                        </div>
+                        <button class="ai-panel-close" id="ai-panel-close" aria-label="Close AI panel">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="ai-panel-content lazy-load" id="ai-panel-content">
+                        <div class="ai-welcome-message">
+                            <p>Xin chào! Tôi là RISKCAST AI Assistant. Tôi có thể giúp bạn:</p>
+                            <ul>
+                                <li>Điền form tự động</li>
+                                <li>Giải thích các trường dữ liệu</li>
+                                <li>Đề xuất giá trị phù hợp</li>
+                                <li>Phân tích rủi ro nhanh</li>
+                            </ul>
+                        </div>
+                        <div class="ai-chat-messages" id="ai-chat-messages">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                        <div class="ai-chat-input-wrapper">
+                            <input type="text" class="ai-chat-input" id="ai-chat-input" placeholder="Hỏi tôi về form nhập liệu..." autocomplete="off">
+                            <button class="ai-chat-send" id="ai-chat-send">Send</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+        
+        <!-- AI Panel Toggle Button -->
+        <button class="ai-panel-toggle" id="ai-panel-toggle" aria-label="Open AI Smart Assist">
+            <span>🤖</span>
+        </button>
+    </div>
+    {% endif %}
+ 
+    {% if page_type == "input" %}
+    <!-- PHASE 3: Single Module Entry Point -->
+    <!-- All JavaScript modules are now imported via ES6 imports in init_page.js -->
+    <script type="module" src="{{ url_for('static', filename='js/pages/input/init_page.js') }}"></script>
+    
+    <!-- Legacy scripts still loading for backward compatibility during migration -->
+    <!-- These will be removed once all functionality is migrated to ES6 modules -->
+    <script src="/static/js/modules/enterprise_input.js"></script>
+    <script src="/static/js/modules/progress_tracker.js"></script>
+    <script src="/static/js/input_form.js"></script>
+    <script src="/static/js/climate_data_2025.js"></script>
+    <script src="/static/js/logistics_data.js"></script>
+    <script src="/static/js/pages/booking_summary.js"></script>
+    <script src="/static/js/packing_list.js"></script>
+    <script src="/static/js/pages/packing_list_init.js"></script>
+    <script src="/static/js/modules/smart_input.js"></script>
+    <script src="/static/js/core/streaming.js"></script>
+    <script src="/static/js/modules/ai_adviser.js"></script>
+    <script src="/static/js/pages/input.js"></script>
+    <script src="/static/js/modules/ai_chat.js"></script>
+    <script src="/static/js/modules/input_summary.js"></script>
+    <script src="/static/js/core/riskcast_data_store.js"></script>
+    <script src="/static/js/pages/overview.js"></script>
+    
+    <!-- AI Chat UI Elements (will be moved to modules) -->
+
+    <div class="ai-chat-panel" id="ai-panel" style="display: none !important; position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99998 !important;">
+        <div class="ai-header">
+            <div class="ai-info">
+                <div class="ai-avatar">🤖</div>
+                <div>
+                    <div class="ai-name">RISKCAST AI Assistant</div>
+                    <div class="ai-status">Online • 24/7</div>
+                </div>
+            </div>
+            <button class="ai-minimize" id="ai-minimize" aria-label="Minimize chat">_</button>
+        </div>
+        <div class="ai-messages" id="ai-messages">
+            <div class="ai-bubble">Xin chào! Tôi có thể giúp bạn điền form, giải thích dữ liệu hoặc đề xuất giá trị phù hợp cho phân tích rủi ro.</div>
+        </div>
+        <div class="ai-input-area">
+            <input type="text" placeholder="Hỏi tôi về form nhập liệu..." id="ai-input" autocomplete="off">
+            <button id="ai-send">Send</button>
+        </div>
+    </div>
+
+    <div class="ai-widget-container" id="aiWidgetContainer" style="display: none;">
+        <div class="ai-bot-3d" id="aiBot">
+            <div class="bot-head">
+                <div class="bot-antenna"></div>
+                <div class="bot-eyes">
+                    <div class="bot-eye"></div>
+                    <div class="bot-eye"></div>
+                </div>
+                <div class="bot-mouth"></div>
+            </div>
+            <div class="bot-body">
+                <div class="bot-arm left"></div>
+                <div class="bot-arm right"></div>
+            </div>
+            <div class="bot-legs">
+                <div class="bot-leg"></div>
+                <div class="bot-leg"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-chat-popup" id="chatPopup" aria-live="polite">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-title">
+                    <h3>RISKCAST AI Assistant</h3>
+                    <div class="chat-status">
+                        <span class="status-dot"></span>
+                        <span>Online • 24/7</span>
+                    </div>
+                </div>
+            </div>
+            <button class="chat-close" id="chatClose" aria-label="Đóng trợ lý">✕</button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai">
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    Xin chào! Tôi có thể giúp bạn điền form, giải thích các trường dữ liệu, hoặc đề xuất giá trị phù hợp cho phân tích rủi ro. 👋
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="Hỏi tôi về form nhập liệu..."
+                    autocomplete="off"
+                >
+                <button class="chat-send-btn" id="sendButton" aria-label="Gửi câu hỏi">➤</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- EMERGENCY UNLOCK - Run immediately before any other scripts -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // Force unlock immediately
+            function emergencyUnlock() {
+                // Hide loading overlay
+                const overlays = document.querySelectorAll('.loading-overlay, #loadingOverlay, .backdrop, [class*="overlay"]');
+                overlays.forEach(el => {
+                    el.style.display = 'none';
+                    el.style.pointerEvents = 'none';
+                    el.style.zIndex = '-9999';
+                });
+                
+                // Force scroll
+                document.documentElement.style.overflow = 'auto';
+                document.documentElement.style.overflowY = 'auto';
+                document.body.style.overflow = 'auto';
+                document.body.style.overflowY = 'auto';
+                document.body.style.position = 'relative';
+                
+                // Force enable inputs
+                const inputs = document.querySelectorAll('input, select, textarea, button, .dropdown-trigger');
+                inputs.forEach(el => {
+                    el.disabled = false;
+                    el.readOnly = false;
+                    el.style.setProperty('pointer-events', 'auto', 'important');
+                    el.style.setProperty('opacity', '1', 'important');
+                    el.style.setProperty('z-index', '10000', 'important');
+                });
+            }
+            
+            // Run immediately
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', emergencyUnlock);
+            } else {
+                emergencyUnlock();
+            }
+            
+            // Run multiple times to ensure it works
+            setTimeout(emergencyUnlock, 100);
+            setTimeout(emergencyUnlock, 500);
+            setTimeout(emergencyUnlock, 1000);
+        })();
+    </script>
+
+</body>
+</html>
+

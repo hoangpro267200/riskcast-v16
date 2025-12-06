@@ -1,9 +1,3 @@
-/**
- * ======================================================
- * PREMIUM INPUT TRACKER - RISKCAST v12.5+ ULTRA 2026
- * Tracks form completion, progress, and triggers animations
- * ======================================================
- */
 
 (function() {
     'use strict';

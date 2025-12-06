@@ -1,1545 +1,665 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RISKCAST - Logistics Risk Intelligence AI | Dự báo rủi ro vận tải hàng hóa</title>
-    <meta name="description" content="RISKCAST phân tích rủi ro tuyến đường, Incoterm, tàu – cảng, thời tiết, container và tình trạng vận hành để giúp doanh nghiệp giảm thiểu sự cố vận chuyển, tối ưu chi phí bảo hiểm hàng hóa và nâng độ tin cậy chuỗi cung ứng.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/home-optimized.css">
-</head>
-<body>
-    <!-- Matrix Canvas Background -->
-    <canvas id="matrixCanvas" aria-hidden="true"></canvas>
+{% extends "layouts/base.html" %}
 
-    <!-- Grid Background -->
-    <div class="grid-background" aria-hidden="true"></div>
-    <div class="grid-background grid-fine" aria-hidden="true"></div>
+{% block title %}RISKCAST - AI Logistics Risk Engine{% endblock %}
 
-    <!-- Glow Radial Gradients -->
-    <div class="glow-radial glow-bottom-left" aria-hidden="true"></div>
-    <div class="glow-radial glow-top-right" aria-hidden="true"></div>
+{% block page_styles %}
 
-    <!-- Navigation -->
-    <nav class="nav-container" role="navigation" aria-label="Main navigation">
-        <div class="nav-content">
-            <div class="nav-logo">
-                <span class="logo-text">RISKCAST</span>
-                <span class="logo-badge">AI</span>
-            </div>
-            <div class="nav-links">
-                <a href="#features" class="nav-link">Tính năng</a>
-                <a href="#demo" class="nav-link">Demo</a>
-                <a href="#customers" class="nav-link">Khách hàng</a>
-                <a href="#contact" class="nav-link-cta">Liên hệ</a>
-            </div>
-        </div>
-    </nav>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/home_v27.css') }}">
 
-    <!-- Hero Section - OPTIMIZED -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title fade-in">
-                        Dự báo rủi ro vận tải hàng hóa
-                        <span class="hero-highlight">bằng Trí tuệ nhân tạo</span>
-                    </h1>
-                    <p class="hero-subtitle fade-in">
-                        RISKCAST phân tích rủi ro tuyến đường, Incoterm, tàu – cảng, thời tiết, container và tình trạng vận hành.
-                    </p>
-                    <p class="hero-description fade-in">
-                        Giúp doanh nghiệp giảm thiểu sự cố vận chuyển, tối ưu chi phí bảo hiểm hàng hóa và nâng độ tin cậy chuỗi cung ứng.
-                    </p>
-                    <div class="hero-cta fade-in">
-                        <a href="/input" class="btn-primary">
-                            Trải nghiệm ngay
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                                <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </a>
-                        <button class="btn-secondary" type="button">Xem demo 30s</button>
-                    </div>
-                    <div class="hero-stats fade-in">
-                        <div class="stat-item">
-                            <span class="stat-number">95%</span>
-                            <span class="stat-label">Chính xác cảnh báo rủi ro</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">2.4s</span>
-                            <span class="stat-label">Thời gian phân tích</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">40%</span>
-                            <span class="stat-label">Giảm chi phí sự cố</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-visual fade-in">
-                    <div class="visual-glow" aria-hidden="true"></div>
-                    <div class="visual-card">
-                        <div class="visual-header">
-                            <span class="visual-status">PHÂN TÍCH THỜI GIAN THỰC</span>
-                            <div class="visual-indicator" aria-hidden="true"></div>
-                        </div>
-                        <div class="hero-image">
-                            <img src="/static/images/hero-ship.jpg" alt="Hệ thống RISKCAST phân tích rủi ro vận chuyển container qua biển">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+{% endblock %}
 
-    <!-- Core Values Section -->
-    <section id="core-values" class="core-values-section">
-        <div class="container">
-            <header class="section-header">
-                <span class="section-badge">RISKCAST CORE VALUES</span>
-                <h2 class="section-title">Precision. Transparency. Integrity in Risk Intelligence.</h2>
-                <p class="section-description">
-                    8 giá trị cốt lõi định hình cách RISKCAST phân tích và quản trị rủi ro trong logistics & ESG.
-                </p>
-            </header>
-            <div class="core-values-grid">
-                <!-- Value Card 1: Precision First -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <path d="M14 2L2 8V12C2 18.5 7 24.5 14 26C21 24.5 26 18.5 26 12V8L14 2Z" stroke="#00F6A2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <circle cx="14" cy="14" r="4" stroke="#00F6A2" stroke-width="2"/>
-                            <circle cx="14" cy="14" r="1.5" fill="#00F6A2"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Precision First</h3>
-                    <p class="value-card-subtitle">Độ chính xác là ưu tiên số 1</p>
-                    <p class="value-card-description">
-                        Phân tích rủi ro dựa trên FAHP, TOPSIS, VaR/CVaR, Monte Carlo và climate models để đảm bảo kết quả nhất quán và tin cậy.
-                    </p>
-                </article>
+{% block navbar %}{% endblock %}
 
-                <!-- Value Card 2: Transparent Logic -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <rect x="4" y="6" width="20" height="16" rx="2" stroke="#00F6A2" stroke-width="2"/>
-                            <path d="M4 11H24" stroke="#00F6A2" stroke-width="2"/>
-                            <circle cx="8" cy="8.5" r="1" fill="#00F6A2"/>
-                            <circle cx="11" cy="8.5" r="1" fill="#00F6A2"/>
-                            <path d="M8 15H20M8 18H16" stroke="#00F6A2" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Transparent Logic</h3>
-                    <p class="value-card-subtitle">Không giấu công thức, không black-box</p>
-                    <p class="value-card-description">
-                        Mọi chỉ số, trọng số và xếp hạng đều có giải thích rõ ràng, giúp người dùng hiểu lý do phía sau mỗi quyết định rủi ro.
-                    </p>
-                </article>
+{% block ai_panel %}{% endblock %}
 
-                <!-- Value Card 3: Risk Integrity -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <path d="M14 2L4 8V12C4 19 8.5 25 14 26.5C19.5 25 24 19 24 12V8L14 2Z" stroke="#00F6A2" stroke-width="2"/>
-                            <path d="M9 14L12.5 17.5L19 11" stroke="#00F6A2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Risk Integrity</h3>
-                    <p class="value-card-subtitle">Không tô hồng rủi ro</p>
-                    <p class="value-card-description">
-                        Dữ liệu thật cho ra kết quả thật. RISKCAST không che giấu, không làm đẹp số liệu, luôn ưu tiên cảnh báo trung thực.
-                    </p>
-                </article>
+{% block content %}
 
-                <!-- Value Card 4: Ultra Performance -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <path d="M14 4L16 10L22 12L16 14L14 20L12 14L6 12L12 10L14 4Z" stroke="#00F6A2" stroke-width="2" stroke-linejoin="round"/>
-                            <circle cx="14" cy="14" r="10" stroke="#00F6A2" stroke-width="2" opacity="0.3"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Ultra Performance</h3>
-                    <p class="value-card-subtitle">Nhanh, mượt, tối ưu cho vận hành</p>
-                    <p class="value-card-description">
-                        Tối ưu trải nghiệm với tính toán tức thì, animation ~0.2s và phản hồi mượt mà như một hệ thống vận hành doanh nghiệp thực tế.
-                    </p>
-                </article>
 
-                <!-- Value Card 5: Multi-Model Fusion -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <circle cx="14" cy="7" r="4" stroke="#00F6A2" stroke-width="2"/>
-                            <circle cx="7" cy="21" r="4" stroke="#00F6A2" stroke-width="2"/>
-                            <circle cx="21" cy="21" r="4" stroke="#00F6A2" stroke-width="2"/>
-                            <path d="M13 10L8 18M15 10L20 18" stroke="#00F6A2" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Multi-Model Fusion</h3>
-                    <p class="value-card-subtitle">Kết hợp nhiều mô hình rủi ro</p>
-                    <p class="value-card-description">
-                        Tích hợp FAHP, TOPSIS, thống kê, mô phỏng và climate-network để giảm lệch mô hình và tăng độ tin cậy cho từng phân tích.
-                    </p>
-                </article>
 
-                <!-- Value Card 6: Human-Centered Design -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <circle cx="14" cy="9" r="4" stroke="#00F6A2" stroke-width="2"/>
-                            <path d="M6 24C6 19 9.5 15 14 15C18.5 15 22 19 22 24" stroke="#00F6A2" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M14 13V15M10 17L8 19M18 17L20 19" stroke="#00F6A2" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Human-Centered Design</h3>
-                    <p class="value-card-subtitle">Thiết kế xoay quanh người dùng</p>
-                    <p class="value-card-description">
-                        Giao diện dark neon, glass, auto-collapse thông minh, hướng dẫn từng bước giúp người dùng không chuyên cũng đọc hiểu rủi ro dễ dàng.
-                    </p>
-                </article>
+<!-- Cinematic Background System (B1) -->
 
-                <!-- Value Card 7: Data Ethics -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <path d="M14 2L5 7V13C5 19 9 24.5 14 26C19 24.5 23 19 23 13V7L14 2Z" stroke="#00F6A2" stroke-width="2"/>
-                            <rect x="11" y="11" width="6" height="8" rx="1" stroke="#00F6A2" stroke-width="1.5"/>
-                            <circle cx="14" cy="14" r="1.5" fill="#00F6A2"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Data Ethics</h3>
-                    <p class="value-card-subtitle">Minh bạch và tôn trọng dữ liệu</p>
-                    <p class="value-card-description">
-                        Chỉ sử dụng dữ liệu hợp pháp, không tạo giá trị ảo, đặt đạo đức dữ liệu lên hàng đầu trong mọi mô-đun phân tích rủi ro.
-                    </p>
-                </article>
+<div class="rc-cine-bg">
 
-                <!-- Value Card 8: Sustainability-Driven -->
-                <article class="core-value-card scroll-animate">
-                    <div class="value-card-icon">
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-                            <circle cx="14" cy="14" r="10" stroke="#00F6A2" stroke-width="2"/>
-                            <path d="M14 6V14H20" stroke="#00F6A2" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M8 10L14 14L18 18" stroke="#00F6A2" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-card-title">Sustainability-Driven</h3>
-                    <p class="value-card-subtitle">Hướng tới chuỗi cung ứng bền vững</p>
-                    <p class="value-card-description">
-                        Tích hợp ESG, carbon emission và climate risk để hỗ trợ doanh nghiệp tối ưu rủi ro gắn với mục tiêu phát triển bền vững.
-                    </p>
-                </article>
-            </div>
-        </div>
-    </section>
+  <canvas id="rc-stars"></canvas>
 
-    <!-- Value Proposition Section -->
-    <section class="value-section">
-        <div class="container">
-            <header class="section-header">
-                <h2 class="section-title">Tại sao doanh nghiệp chọn RISKCAST</h2>
-            </header>
-            <div class="value-grid">
-                <article class="value-card scroll-animate">
-                    <div class="value-icon">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <path d="M24 4L6 14V22C6 32.5 13 42.5 24 44C35 42.5 42 32.5 42 22V14L24 4Z" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M16 24L22 30L32 20" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-title">Giảm thiểu rủi ro vận tải</h3>
-                    <p class="value-description">
-                        AI phân tích rủi ro tuyến đường, cảng, tàu và container để phát hiện sớm các sự cố tiềm ẩn.
-                    </p>
-                    <div class="value-metric">
-                        <span class="metric-number">↓ 40%</span>
-                        <span class="metric-text">Sự cố vận chuyển</span>
-                    </div>
-                </article>
+  <canvas id="rc-particles"></canvas>
 
-                <article class="value-card scroll-animate">
-                    <div class="value-icon">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <circle cx="24" cy="24" r="18" stroke="#00ffc3" stroke-width="2.5"/>
-                            <path d="M24 12V24L32 28" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-title">Tối ưu chi phí bảo hiểm</h3>
-                    <p class="value-description">
-                        Tự động tính toán mức rủi ro theo tuyến, Incoterm và thời tiết → giảm phí bảo hiểm & tránh bồi thường.
-                    </p>
-                    <div class="value-metric">
-                        <span class="metric-number">↓ 25%</span>
-                        <span class="metric-text">Phí bảo hiểm trung bình</span>
-                    </div>
-                </article>
+  <div class="rc-volumetric-light"></div>
 
-                <article class="value-card scroll-animate">
-                    <div class="value-icon">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <path d="M6 36L16 26L24 34L42 16" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M32 16H42V26" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="value-title">Dự báo độ trễ & ETA chính xác</h3>
-                    <p class="value-description">
-                        AI dự báo thời gian giao hàng, rủi ro delay và các điểm nghẽn cảng biển.
-                    </p>
-                    <div class="value-metric">
-                        <span class="metric-number">95%</span>
-                        <span class="metric-text">Độ chính xác ETA</span>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
+  <div class="rc-holo-grid" id="rcHoloGrid"></div>
 
-    <!-- System Overview Section -->
-    <section class="system-section">
-        <div class="container">
-            <header class="section-header">
-                <span class="section-badge">CÁCH THỨC HOẠT ĐỘNG</span>
-                <h2 class="section-title">RISKCAST hoạt động như thế nào</h2>
-                <p class="section-description">
-                    Ba bước đơn giản để có được báo cáo rủi ro logistics toàn diện và dự báo chính xác
-                </p>
-            </header>
-            <div class="system-flow">
-                <article class="flow-step scroll-animate">
-                    <div class="step-number">01</div>
-                    <div class="step-content">
-                        <div class="step-icon">
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-                                <path d="M20 5V35M5 20H35" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
-                                <circle cx="20" cy="20" r="15" stroke="#00ffc3" stroke-width="2.5"/>
-                            </svg>
-                        </div>
-                        <h3 class="step-title">Nhập thông tin lô hàng</h3>
-                        <p class="step-description">
-                            Origin → Destination, phương thức vận chuyển, carrier, container, Incoterm, giá trị hàng hóa, ETA dự kiến.
-                        </p>
-                    </div>
-                </article>
+  <div class="rc-ambient-dust"></div>
 
-                <div class="flow-arrow" aria-hidden="true">
-                    <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
-                        <path d="M0 12H58M58 12L48 2M58 12L48 22" stroke="url(#arrow-gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <defs>
-                            <linearGradient id="arrow-gradient" x1="0" y1="12" x2="58" y2="12">
-                                <stop offset="0%" stop-color="#00ffc3" stop-opacity="0.2"/>
-                                <stop offset="100%" stop-color="#00ffc3"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
+  <div class="rc-neon-sparks"></div>
 
-                <article class="flow-step scroll-animate">
-                    <div class="step-number">02</div>
-                    <div class="step-content">
-                        <div class="step-icon">
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-                                <path d="M20 5L25 15H35L27 21L30 31L20 25L10 31L13 21L5 15H15L20 5Z" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <h3 class="step-title">AI phân tích rủi ro đa tầng</h3>
-                        <p class="step-description">
-                            Phân tích 7 nhóm rủi ro: Tuyến đường, Cảng – tàu – hãng vận chuyển, Container, Thời tiết – khí hậu, Incoterm, Trễ lịch trình, Sự cố quốc tế.
-                        </p>
-                    </div>
-                </article>
+  <div class="rc-vignette"></div>
 
-                <div class="flow-arrow" aria-hidden="true">
-                    <svg width="60" height="24" viewBox="0 0 60 24" fill="none">
-                        <path d="M0 12H58M58 12L48 2M58 12L48 22" stroke="url(#arrow-gradient-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <defs>
-                            <linearGradient id="arrow-gradient-2" x1="0" y1="12" x2="58" y2="12">
-                                <stop offset="0%" stop-color="#00ffc3" stop-opacity="0.2"/>
-                                <stop offset="100%" stop-color="#00ffc3"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
+  <div class="rc-scanlines"></div>
 
-                <article class="flow-step scroll-animate">
-                    <div class="step-number">03</div>
-                    <div class="step-content">
-                        <div class="step-icon">
-                            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-                                <path d="M8 30H32C33.1 30 34 29.1 34 28V12C34 10.9 33.1 10 32 10H8C6.9 10 6 10.9 6 12V28C6 29.1 6.9 30 8 30Z" stroke="#00ffc3" stroke-width="2.5"/>
-                                <path d="M12 18H28M12 22H22" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                        <h3 class="step-title">Nhận báo cáo rủi ro tức thì</h3>
-                        <p class="step-description">
-                            Xuất: risk score, bản đồ rủi ro tuyến đường, cảnh báo nóng, đề xuất bảo hiểm tối ưu.
-                        </p>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
+  <div class="rc-bg-overlay"></div>
 
-    <!-- Features Section -->
-    <section class="features-section" id="features">
-        <div class="container">
-            <header class="section-header">
-                <span class="section-badge">TÍNH NĂNG NỔI BẬT</span>
-                <h2 class="section-title">Nền tảng AI toàn diện cho quản trị rủi ro logistics</h2>
-            </header>
-            <div class="features-grid">
-                <article class="feature-card scroll-animate">
-                    <div class="feature-icon-wrapper">
-                        <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                <path d="M16 4L6 10V14C6 20.5 10 26.5 16 28C22 26.5 26 20.5 26 14V10L16 4Z" stroke="#00ffc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="feature-title">Dự báo rủi ro tuyến đường</h3>
-                    <p class="feature-description">
-                        Phân tích rủi ro theo tuyến vận chuyển, cảng biển và điểm đến 
-                        với độ chính xác 95%, đưa ra cảnh báo sớm các sự cố tiềm ẩn.
-                    </p>
-                </article>
+</div>
 
-                <article class="feature-card scroll-animate">
-                    <div class="feature-icon-wrapper">
-                        <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                <rect x="4" y="8" width="24" height="20" rx="2" stroke="#00ffc3" stroke-width="2"/>
-                                <path d="M4 14H28M10 8V4M22 8V4" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="feature-title">Phân tích thời gian thực</h3>
-                    <p class="feature-description">
-                        Xử lý và phân tích dữ liệu tức thì, cập nhật risk score liên tục 
-                        khi có thông tin mới về thời tiết, tình trạng cảng hoặc sự cố vận chuyển.
-                    </p>
-                </article>
 
-                <article class="feature-card scroll-animate">
-                    <div class="feature-icon-wrapper">
-                        <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                <path d="M4 24L12 16L18 22L28 12" stroke="#00ffc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M20 12H28V20" stroke="#00ffc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="feature-title">Dashboard tương tác</h3>
-                    <p class="feature-description">
-                        Giao diện trực quan với bản đồ rủi ro tuyến đường, bộ lọc thông minh 
-                        và khả năng drill-down sâu vào từng yếu tố rủi ro logistics.
-                    </p>
-                </article>
 
-                <article class="feature-card scroll-animate">
-                    <div class="feature-icon-wrapper">
-                        <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                <circle cx="16" cy="16" r="12" stroke="#00ffc3" stroke-width="2"/>
-                                <path d="M16 10V16L20 20" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="feature-title">Cảnh báo tự động</h3>
-                    <p class="feature-description">
-                        Hệ thống thông báo thông minh qua email, SMS hoặc webhook 
-                        khi phát hiện rủi ro vận chuyển, delay hoặc sự cố tiềm ẩn.
-                    </p>
-                </article>
+<!-- Theme Toggle -->
 
-                <article class="feature-card scroll-animate">
-                    <div class="feature-icon-wrapper">
-                        <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                <path d="M4 8H28M4 16H28M4 24H28" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
-                                <circle cx="10" cy="8" r="2" fill="#00ffc3"/>
-                                <circle cx="10" cy="16" r="2" fill="#00ffc3"/>
-                                <circle cx="10" cy="24" r="2" fill="#00ffc3"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="feature-title">Báo cáo chi tiết</h3>
-                    <p class="feature-description">
-                        Tạo báo cáo PDF chuyên nghiệp với risk score, bản đồ rủi ro, 
-                        phân tích sâu và đề xuất bảo hiểm tối ưu.
-                    </p>
-                </article>
+<button class="rc-theme-toggle" id="rcThemeToggle" aria-label="Toggle theme">
 
-                <article class="feature-card scroll-animate">
-                    <div class="feature-icon-wrapper">
-                        <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                <rect x="4" y="4" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
-                                <rect x="18" y="4" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
-                                <rect x="4" y="18" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
-                                <rect x="18" y="18" width="10" height="10" rx="2" stroke="#00ffc3" stroke-width="2"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="feature-title">Tích hợp API với TMS/WMS</h3>
-                    <p class="feature-description">
-                        RESTful API dễ sử dụng, webhook support và SDK cho Python, 
-                        Node.js giúp tích hợp nhanh vào hệ thống TMS, WMS hiện có.
-                    </p>
-                </article>
-            </div>
-        </div>
-    </section>
+  <span class="rc-theme-icon rc-theme-icon--moon">🌙</span>
 
-    <!-- Demo Section -->
-    <section class="demo-section" id="demo">
-        <div class="container">
-            <header class="section-header">
-                <span class="section-badge">XEM DEMO</span>
-                <h2 class="section-title">Trải nghiệm RISKCAST trong 30 giây</h2>
-                <p class="section-description">
-                    Xem cách RISKCAST phân tích lô hàng và đưa ra dự báo rủi ro vận chuyển chính xác
-                </p>
-            </header>
-            <div class="demo-container scroll-animate">
-                <div class="demo-video-wrapper">
-                    <div class="demo-video-placeholder">
-                        <div class="play-button">
-                            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                                <circle cx="32" cy="32" r="30" stroke="#00ffc3" stroke-width="2"/>
-                                <path d="M26 20L42 32L26 44V20Z" fill="#00ffc3"/>
-                            </svg>
-                        </div>
-                        <div class="demo-overlay">
-                            <span class="demo-duration">0:30</span>
-                        </div>
-                    </div>
-                    <div class="demo-info">
-                        <h3 class="demo-title">Demo: Phân tích rủi ro vận chuyển lô hàng</h3>
-                        <p class="demo-description">
-                            Xem RISKCAST xử lý thông tin lô hàng, 
-                            phân tích 11 nhóm rủi ro và đưa ra kết quả trong 2.4 giây
-                        </p>
-                    </div>
-                </div>
-                <div class="demo-features">
-                    <div class="demo-feature-item">
-                        <div class="demo-check">✓</div>
-                        <span>Nhập thông tin lô hàng tức thì</span>
-                    </div>
-                    <div class="demo-feature-item">
-                        <div class="demo-check">✓</div>
-                        <span>AI phân tích rủi ro real-time</span>
-                    </div>
-                    <div class="demo-feature-item">
-                        <div class="demo-check">✓</div>
-                        <span>Báo cáo rủi ro chi tiết ngay lập tức</span>
-                    </div>
-                    <div class="demo-feature-item">
-                        <div class="demo-check">✓</div>
-                        <span>Đề xuất bảo hiểm tối ưu</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <span class="rc-theme-icon rc-theme-icon--sun">☀️</span>
 
-    <!-- Customers Section -->
-    <section class="customers-section" id="customers">
-        <div class="container">
-            <header class="section-header">
-                <span class="section-badge">KHÁCH HÀNG MỤC TIÊU</span>
-                <h2 class="section-title">Ai đang sử dụng RISKCAST</h2>
-            </header>
-            <div class="customers-grid">
-                <article class="customer-card scroll-animate">
-                    <div class="customer-icon">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <path d="M8 40V14C8 12.9 8.9 12 10 12H38C39.1 12 40 12.9 40 14V40" stroke="#00ffc3" stroke-width="2.5"/>
-                            <path d="M16 20H32M16 26H32M16 32H24" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
-                            <rect x="4" y="40" width="40" height="4" rx="2" fill="#00ffc3" opacity="0.2"/>
-                        </svg>
-                    </div>
-                    <h3 class="customer-title">Doanh nghiệp xuất nhập khẩu</h3>
-                    <p class="customer-description">
-                        Đánh giá rủi ro vận chuyển & chọn tuyến tối ưu để bảo vệ hàng hóa và tối ưu chi phí logistics.
-                    </p>
-                    <div class="customer-use-case">
-                        <span class="use-case-label">Use case:</span>
-                        <span class="use-case-text">Đánh giá rủi ro vận chuyển & chọn tuyến tối ưu</span>
-                    </div>
-                </article>
+</button>
 
-                <article class="customer-card scroll-animate">
-                    <div class="customer-icon">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <circle cx="24" cy="24" r="18" stroke="#00ffc3" stroke-width="2.5"/>
-                            <path d="M24 14V24L30 30" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
-                            <path d="M12 12L8 8M36 12L40 8" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="customer-title">Freight Forwarders</h3>
-                    <p class="customer-description">
-                        Dự báo ETA, giảm claim & cải thiện reliability để nâng cao chất lượng dịch vụ và giữ chân khách hàng.
-                    </p>
-                    <div class="customer-use-case">
-                        <span class="use-case-label">Use case:</span>
-                        <span class="use-case-text">Dự báo ETA, giảm claim & cải thiện reliability</span>
-                    </div>
-                </article>
 
-                <article class="customer-card scroll-animate">
-                    <div class="customer-icon">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <rect x="6" y="10" width="36" height="28" rx="3" stroke="#00ffc3" stroke-width="2.5"/>
-                            <path d="M6 18H42" stroke="#00ffc3" stroke-width="2.5"/>
-                            <circle cx="14" cy="26" r="2" fill="#00ffc3"/>
-                            <path d="M20 26H34" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="customer-title">Doanh nghiệp logistics 3PL/4PL</h3>
-                    <p class="customer-description">
-                        Risk monitoring, route optimization để tối ưu hiệu quả vận hành và giảm thiểu rủi ro trong chuỗi cung ứng.
-                    </p>
-                    <div class="customer-use-case">
-                        <span class="use-case-label">Use case:</span>
-                        <span class="use-case-text">Risk monitoring, route optimization</span>
-                    </div>
-                </article>
 
-                <article class="customer-card scroll-animate">
-                    <div class="customer-icon">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <path d="M24 6L8 14V22C8 30.5 14 38.5 24 40C34 38.5 40 30.5 40 22V14L24 6Z" stroke="#00ffc3" stroke-width="2.5"/>
-                            <path d="M18 24L22 28L30 20" stroke="#00ffc3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <h3 class="customer-title">Bảo hiểm hàng hóa</h3>
-                    <p class="customer-description">
-                        Pricing theo rủi ro từng tuyến/Incoterm để tối ưu phí bảo hiểm và quản lý rủi ro danh mục hiệu quả.
-                    </p>
-                    <div class="customer-use-case">
-                        <span class="use-case-label">Use case:</span>
-                        <span class="use-case-text">Pricing theo rủi ro từng tuyến/Incoterm</span>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
+<!-- FutureOS System HUD -->
 
-    <!-- Why Section -->
-    <section class="why-section">
-        <div class="container">
-            <div class="why-content">
-                <div class="why-text">
-                    <span class="section-badge">TẠI SAO RISKCAST</span>
-                    <h2 class="section-title">Nền tảng Logistics Risk Intelligence AI hàng đầu</h2>
-                    <div class="why-list">
-                        <article class="why-item scroll-animate">
-                            <div class="why-number">01</div>
-                            <div class="why-details">
-                                <h4 class="why-subtitle">AI huấn luyện trên dữ liệu giao vận quốc tế 10 năm</h4>
-                                <p class="why-text-description">
-                                    Mô hình AI được huấn luyện trên hàng triệu lô hàng quốc tế, 
-                                    tích hợp dữ liệu từ các hãng vận chuyển, cảng biển và bảo hiểm hàng hóa.
-                                </p>
-                            </div>
-                        </article>
+<div class="rc-hud rc-hud--left">
 
-                        <article class="why-item scroll-animate">
-                            <div class="why-number">02</div>
-                            <div class="why-details">
-                                <h4 class="why-subtitle">Phân tích 11 nhóm rủi ro logistics</h4>
-                                <p class="why-text-description">
-                                    Tuyến đường, cảng biển, tàu, container, thời tiết, Incoterm, 
-                                    carrier, delay, sự cố quốc tế, giá trị hàng hóa và điều kiện vận hành.
-                                </p>
-                            </div>
-                        </article>
+  <div class="rc-hud__panel">
 
-                        <article class="why-item scroll-animate">
-                            <div class="why-number">03</div>
-                            <div class="why-details">
-                                <h4 class="why-subtitle">Bảo mật chuẩn doanh nghiệp</h4>
-                                <p class="why-text-description">
-                                    Tuân thủ ISO 27001, mã hóa AES-256, và kiểm toán bảo mật định kỳ. 
-                                    Dữ liệu được lưu trữ an toàn tại data center tier III tại Việt Nam.
-                                </p>
-                            </div>
-                        </article>
+    <span class="rc-hud__label">RISKCAST v28</span>
 
-                        <article class="why-item scroll-animate">
-                            <div class="why-number">04</div>
-                            <div class="why-details">
-                                <h4 class="why-subtitle">Tích hợp API với TMS/WMS</h4>
-                                <p class="why-text-description">
-                                    RESTful API dễ sử dụng, tích hợp nhanh chóng với hệ thống TMS, WMS 
-                                    và các nền tảng quản lý logistics hiện có.
-                                </p>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-                <div class="why-visual scroll-animate">
-                    <div class="why-stats-card">
-                        <div class="stat-box">
-                            <div class="stat-icon">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                    <path d="M16 4L6 10V14C6 20.5 10 26.5 16 28C22 26.5 26 20.5 26 14V10L16 4Z" stroke="#00ffc3" stroke-width="2"/>
-                                </svg>
-                            </div>
-                            <div class="stat-data">
-                                <span class="stat-big-number">10 năm</span>
-                                <span class="stat-label-text">Dữ liệu giao vận</span>
-                            </div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                    <circle cx="16" cy="16" r="12" stroke="#00ffc3" stroke-width="2"/>
-                                    <path d="M16 10V16L20 20" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                            </div>
-                            <div class="stat-data">
-                                <span class="stat-big-number">2.4s</span>
-                                <span class="stat-label-text">Thời gian phản hồi</span>
-                            </div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                    <path d="M4 24L12 16L18 22L28 12" stroke="#00ffc3" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                            </div>
-                            <div class="stat-data">
-                                <span class="stat-big-number">95%</span>
-                                <span class="stat-label-text">Độ chính xác</span>
-                            </div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                    <path d="M16 4L20 12L28 14L22 20L24 28L16 24L8 28L10 20L4 14L12 12L16 4Z" stroke="#00ffc3" stroke-width="2"/>
-                                </svg>
-                            </div>
-                            <div class="stat-data">
-                                <span class="stat-big-number">11</span>
-                                <span class="stat-label-text">Nhóm rủi ro</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <span class="rc-hud__value">FutureOS Mode</span>
 
-    <!-- Footer -->
-    <footer class="footer-section">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-main">
-                    <div class="footer-brand">
-                        <div class="footer-logo">
-                            <span class="logo-text">RISKCAST</span>
-                            <span class="logo-badge">AI</span>
-                        </div>
-                        <p class="footer-tagline">
-                            Nền tảng Logistics Risk Intelligence AI, 
-                            giúp doanh nghiệp giảm thiểu sự cố vận chuyển, tối ưu chi phí bảo hiểm hàng hóa và nâng độ tin cậy chuỗi cung ứng.
-                        </p>
-                        <div class="footer-social">
-                            <a href="#" class="social-link" aria-label="Facebook">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M22 12C22 6.48 17.52 2 12 2C6.48 2 2 6.48 2 12C2 16.84 5.44 20.87 10 21.8V15H8V12H10V9.5C10 7.57 11.57 6 13.5 6H16V9H14C13.45 9 13 9.45 13 10V12H16V15H13V21.95C18.05 21.45 22 17.19 22 12Z" fill="currentColor"/>
-                                </svg>
-                            </a>
-                            <a href="#" class="social-link" aria-label="Twitter">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M22.46 6C21.69 6.35 20.86 6.58 20 6.69C20.88 6.16 21.56 5.32 21.88 4.31C21.05 4.81 20.13 5.16 19.16 5.36C18.37 4.5 17.26 4 16 4C13.65 4 11.73 5.92 11.73 8.29C11.73 8.63 11.77 8.96 11.84 9.27C8.28 9.09 5.11 7.38 3 4.79C2.63 5.42 2.42 6.16 2.42 6.94C2.42 8.43 3.17 9.75 4.33 10.5C3.62 10.5 2.96 10.3 2.38 10C2.38 10 2.38 10 2.38 10.03C2.38 12.11 3.86 13.85 5.82 14.24C5.46 14.34 5.08 14.39 4.69 14.39C4.42 14.39 4.15 14.36 3.89 14.31C4.43 16 6 17.26 7.89 17.29C6.43 18.45 4.58 19.13 2.56 19.13C2.22 19.13 1.88 19.11 1.54 19.07C3.44 20.29 5.7 21 8.12 21C16 21 20.33 14.46 20.33 8.79C20.33 8.6 20.33 8.42 20.32 8.23C21.16 7.63 21.88 6.87 22.46 6Z" fill="currentColor"/>
-                                </svg>
-                            </a>
-                            <a href="#" class="social-link" aria-label="LinkedIn">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M19 3H5C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3ZM9 17H6.48V9.99H9V17ZM7.74 8.91C6.91 8.91 6.24 8.24 6.24 7.41C6.24 6.58 6.91 5.91 7.74 5.91C8.57 5.91 9.24 6.58 9.24 7.41C9.24 8.24 8.57 8.91 7.74 8.91ZM18 17H15.48V13.17C15.48 11.61 14.19 11.44 13.77 11.44C13.35 11.44 11.82 11.71 11.82 13.17V17H9.3V9.99H11.82V11.09C12.3 10.12 13.63 9.75 14.82 9.75C16.28 9.75 18 10.66 18 13.17V17Z" fill="currentColor"/>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="footer-links">
-                        <div class="footer-column">
-                            <h4 class="footer-heading">Sản phẩm</h4>
-                            <ul class="footer-list">
-                                <li><a href="#features">Tính năng</a></li>
-                                <li><a href="#demo">Demo</a></li>
-                                <li><a href="#">Bảng giá</a></li>
-                                <li><a href="#">API Documentation</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h4 class="footer-heading">Giải pháp</h4>
-                            <ul class="footer-list">
-                                <li><a href="#">Xuất nhập khẩu</a></li>
-                                <li><a href="#">Freight Forwarders</a></li>
-                                <li><a href="#">Logistics 3PL/4PL</a></li>
-                                <li><a href="#">Bảo hiểm hàng hóa</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h4 class="footer-heading">Công ty</h4>
-                            <ul class="footer-list">
-                                <li><a href="#">Về chúng tôi</a></li>
-                                <li><a href="#">Đội ngũ</a></li>
-                                <li><a href="#">Tuyển dụng</a></li>
-                                <li><a href="#contact">Liên hệ</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h4 class="footer-heading">Hỗ trợ</h4>
-                            <ul class="footer-list">
-                                <li><a href="#">Trung tâm trợ giúp</a></li>
-                                <li><a href="#">Blog</a></li>
-                                <li><a href="#">Case Studies</a></li>
-                                <li><a href="#">Điều khoản dịch vụ</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <div class="footer-bottom-content">
-                        <p class="footer-copyright">
-                            © 2025 RISKCAST. Bảo lưu mọi quyền.
-                        </p>
-                        <div class="footer-legal">
-                            <a href="#">Chính sách bảo mật</a>
-                            <span class="separator">•</span>
-                            <a href="#">Điều khoản sử dụng</a>
-                            <span class="separator">•</span>
-                            <a href="#">Cookies</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+  </div>
 
-    <script src="/static/js/home.js"></script>
+</div>
 
-    <!-- ========================================
-         AI CHAT WIDGET
-         ======================================== -->
-    <style>
-        /* ========================================
-           RESET & BASE
-        ======================================== */
-        .ai-widget-container * {
-            box-sizing: border-box;
-        }
 
-        /* ========================================
-           FLOATING WIDGET CONTAINER
-        ======================================== */
-        .ai-widget-container {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            z-index: 9999;
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            pointer-events: none;
-        }
-        .ai-widget-container > * {
-            pointer-events: auto;
-        }
 
-        /* ========================================
-           FLOATING CHAT BUTTON
-        ======================================== */
-        .ai-chat-button {
-            width: 68px;
-            height: 68px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            box-shadow: 
-                0 8px 32px rgba(102, 126, 234, 0.5),
-                0 0 0 0 rgba(102, 126, 234, 0.7);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            overflow: hidden;
-            color: #ffffff;
-        }
-        .ai-chat-button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease;
-            border-radius: 50%;
-        }
-        .ai-chat-button:hover {
-            transform: scale(1.12) rotate(5deg);
-            box-shadow: 
-                0 12px 48px rgba(102, 126, 234, 0.6),
-                0 0 0 8px rgba(102, 126, 234, 0.2);
-        }
-        .ai-chat-button:hover::before {
-            transform: translate(-50%, -50%) scale(1.5);
-        }
-        .ai-chat-button:active {
-            transform: scale(1.02);
-        }
+<div class="rc-hud rc-hud--right">
 
-        /* Notification Badge */
-        .notification-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 24px;
-            height: 24px;
-            background: #ee5a6f;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(238, 90, 111, 0.5);
-            animation: badgePulse 2s ease-in-out infinite;
-        }
+  <div class="rc-hud__panel">
 
-        /* ========================================
-           CHAT POPUP
-        ======================================== */
-        .ai-chat-popup {
-            position: fixed;
-            bottom: 110px;
-            right: 28px;
-            width: 420px;
-            height: 600px;
-            max-height: calc(100vh - 140px);
-            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(20, 20, 40, 0.98));
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 20px;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(102, 126, 234, 0.1),
-                inset 0 0 40px rgba(102, 126, 234, 0.05);
-            display: none;
-            flex-direction: column;
-            z-index: 9998;
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .ai-chat-popup.active {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+    <div class="rc-hud__indicator">
 
-        /* Chat Header */
-        .chat-header {
-            padding: 20px 24px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-            border-radius: 20px 20px 0 0;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .chat-header-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .chat-title {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .chat-title h3 {
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 600;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            margin: 0;
-        }
-        .chat-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #a0aec0;
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #48bb78;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #48bb78;
-            animation: statusPulse 2s ease-in-out infinite;
-        }
-        .chat-close {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .chat-close:hover {
-            background: rgba(255, 107, 107, 0.2);
-            transform: rotate(90deg);
-        }
+      <span class="rc-hud__label">FPS</span>
 
-        /* Chat Messages */
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #667eea, #764ba2);
-            border-radius: 10px;
-        }
-        .message {
-            display: flex;
-            gap: 10px;
-            animation: messageSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .message.user {
-            flex-direction: row-reverse;
-        }
-        .message-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-        .message.ai .message-avatar {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
-        }
-        .message-bubble {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.5;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        .message.ai .message-bubble {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            color: #e2e8f0;
-            border-radius: 18px 18px 18px 4px;
-        }
-        .message.user .message-bubble {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #ffffff;
-            border-radius: 18px 18px 4px 18px;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-        }
+      <span class="rc-hud__value" id="rc-hud-fps">60</span>
 
-        /* Chat Input */
-        .chat-input-container {
-            padding: 16px 20px 20px;
-            background: rgba(26, 26, 46, 0.8);
-            border-top: 1px solid rgba(102, 126, 234, 0.2);
-            border-radius: 0 0 20px 20px;
-        }
-        .chat-input-wrapper {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 16px;
-            padding: 4px 4px 4px 16px;
-            transition: all 0.3s ease;
-        }
-        .chat-input-wrapper:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-        .chat-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            color: #ffffff;
-            font-size: 14px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            outline: none;
-            padding: 10px 0;
-        }
-        .chat-input::placeholder {
-            color: #718096;
-        }
-        .chat-send-btn {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 12px;
-            color: #ffffff;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            flex-shrink: 0;
-        }
-        .chat-send-btn:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-        .chat-send-btn:active {
-            transform: scale(0.95);
-        }
-        .chat-send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Typing Indicator */
-        .typing-indicator {
-            display: none;
-            gap: 4px;
-            padding: 12px 16px;
-        }
-        .typing-indicator.active {
-            display: flex;
-        }
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #667eea;
-            border-radius: 50%;
-            animation: typingBounce 1.4s infinite ease-in-out;
-        }
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        /* ========================================
-           ANIMATIONS
-        ======================================== */
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(238, 90, 111, 0.7); }
-            50% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(238, 90, 111, 0); }
-        }
-        @keyframes statusPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        @keyframes messageSlide {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
-        }
-
-        /* ========================================
-           RESPONSIVE
-        ======================================== */
-        @media (max-width: 480px) {
-            .ai-chat-popup {
-                width: calc(100vw - 32px);
-                height: calc(100vh - 140px);
-                right: 16px;
-                bottom: 100px;
-            }
-            .ai-widget-container {
-                bottom: 20px;
-                right: 20px;
-            }
-            .ai-chat-button {
-                width: 60px;
-                height: 60px;
-                font-size: 28px;
-            }
-        }
-    </style>
-
-    <!-- HTML STRUCTURE -->
-    <div class="ai-widget-container">
-        <!-- Floating Chat Button -->
-        <button class="ai-chat-button" id="chatButton" aria-label="Mở trợ lý AI">
-            <span style="font-size: 24px;">💬</span>
-            <span style="font-size: 11px; margin-top: 2px; font-weight: 600;">Ask AI</span>
-            <span class="notification-badge" id="notificationBadge" style="display: none;">3</span>
-        </button>
     </div>
 
-    <!-- Chat Popup -->
-    <div class="ai-chat-popup" id="chatPopup">
-        <!-- Header -->
-        <div class="chat-header">
-            <div class="chat-header-info">
-                <div class="chat-title">
-                    <h3>RISKCAST AI Assistant</h3>
-                    <div class="chat-status">
-                        <span class="status-dot"></span>
-                        <span>Online</span>
-                    </div>
-                </div>
-            </div>
-            <button class="chat-close" id="chatClose">✕</button>
-        </div>
+    <div class="rc-hud__indicator">
 
-        <!-- Messages Container -->
-        <div class="chat-messages" id="chatMessages">
-            <div class="message ai">
-                <div class="message-avatar">🤖</div>
-                <div class="message-bubble">
-                    Xin chào! Tôi là RISKCAST AI Assistant. Tôi có thể giúp bạn phân tích rủi ro logistics. 👋
-                </div>
-            </div>
-            <div class="message ai">
-                <div class="message-avatar">🤖</div>
-                <div class="message-bubble">
-                    Bạn có thể hỏi tôi về bất kỳ điều gì liên quan đến rủi ro vận tải, bảo hiểm, ESG, hoặc khuyến nghị tuyến đường!
-                </div>
-            </div>
-        </div>
+      <span class="rc-hud__label">LAT</span>
 
-        <!-- Input Container -->
-        <div class="chat-input-container">
-            <div class="chat-input-wrapper">
-                <input 
-                    type="text" 
-                    class="chat-input" 
-                    id="chatInput" 
-                    placeholder="Nhập tin nhắn..."
-                    autocomplete="off"
-                >
-                <button class="chat-send-btn" id="sendButton">➤</button>
-            </div>
-        </div>
+      <span class="rc-hud__value" id="rc-hud-latency">12ms</span>
+
     </div>
 
-    <script>
-        // ========================================
-        // DOM ELEMENTS
-        // ========================================
-        const chatButton = document.getElementById('chatButton');
-        const chatPopup = document.getElementById('chatPopup');
-        const chatClose = document.getElementById('chatClose');
-        const chatInput = document.getElementById('chatInput');
-        const sendButton = document.getElementById('sendButton');
-        const chatMessages = document.getElementById('chatMessages');
-        const notificationBadge = document.getElementById('notificationBadge');
+    <div class="rc-hud__indicator">
 
-        // ========================================
-        // OPEN/CLOSE CHAT POPUP
-        // ========================================
-        function openChat() {
-            if (!chatPopup) {
-                console.error('[AI Chat] chatPopup is null!');
-                return;
-            }
-            
-            // Force display and visibility
-            chatPopup.style.display = 'flex';
-            chatPopup.style.visibility = 'visible';
-            chatPopup.style.opacity = '1';
-            chatPopup.style.transform = 'translateY(0) scale(1)';
-            chatPopup.classList.add('active');
-            
-            // Small delay to ensure CSS transitions work
-            setTimeout(() => {
-                chatPopup.style.opacity = '1';
-                chatPopup.style.transform = 'translateY(0) scale(1)';
-            }, 10);
-            
-            if (chatInput) {
-                setTimeout(() => chatInput.focus(), 100);
-            }
-            if (notificationBadge) {
-                notificationBadge.style.display = 'none';
-            }
-            
-            console.log('[AI Chat] Chat popup opened successfully');
-        }
+      <span class="rc-hud__label">TEMP</span>
 
-        function closeChat() {
-            if (!chatPopup) return;
-            chatPopup.classList.remove('active');
-            chatPopup.style.display = 'none';
-            chatPopup.style.opacity = '0';
-            chatPopup.style.transform = 'translateY(20px) scale(0.95)';
-        }
+      <span class="rc-hud__value" id="rc-hud-temp">42°C</span>
 
-        // Event Listeners
-        if (chatButton) {
-            chatButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                openChat();
-            });
-        }
-        if (chatClose) {
-            chatClose.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                closeChat();
-            });
-        }
+    </div>
 
-        // Close on outside click
-        document.addEventListener('click', function(e) {
-            if (chatPopup && chatPopup.classList.contains('active')) {
-                if (!chatPopup.contains(e.target) && !chatButton.contains(e.target)) {
-                    closeChat();
-                }
-            }
-        });
+  </div>
 
-        // ========================================
-        // SEND MESSAGE FUNCTION (Connected to Real API)
-        // ========================================
-        async function sendMessage() {
-            const messageText = chatInput.value.trim();
-            
-            if (!messageText) return;
+</div>
 
-            // Add user message
-            addMessage(messageText, 'user');
-            
-            // Clear input
-            chatInput.value = '';
-            
-            // Disable send button
-            if (sendButton) sendButton.disabled = true;
-            
-            // Show typing indicator
-            showTypingIndicator();
-            
-            try {
-                // Call real API endpoint
-                const response = await fetch('/api/ai/stream', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        prompt: messageText,
-                        context: {}
-                    })
-                });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
 
-                // Hide typing indicator
-                hideTypingIndicator();
+<!-- FutureOS Floating Navbar -->
 
-                // Create AI message bubble for streaming
-                const aiMessageDiv = document.createElement('div');
-                aiMessageDiv.className = 'message ai';
-                const aiAvatar = document.createElement('div');
-                aiAvatar.className = 'message-avatar';
-                aiAvatar.textContent = '🤖';
-                const aiBubble = document.createElement('div');
-                aiBubble.className = 'message-bubble';
-                aiBubble.textContent = '';
-                aiMessageDiv.appendChild(aiAvatar);
-                aiMessageDiv.appendChild(aiBubble);
-                if (chatMessages) chatMessages.appendChild(aiMessageDiv);
+<nav class="rc-navbar-future" id="rcNavbarFuture">
 
-                // Stream response
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let fullText = '';
+  <div class="rc-navbar-future__container">
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
+    <a href="/" class="rc-navbar-future__item rc-navbar-future__item--active" data-hover data-select>Home</a>
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.split('\n');
+    <a href="/input_v20" class="rc-navbar-future__item" data-hover data-select>Input</a>
 
-                    for (const line of lines) {
-                        if (!line.trim()) continue;
+    <a href="/results" class="rc-navbar-future__item" data-hover data-select>Results</a>
 
-                        if (line.startsWith('data: ')) {
-                            const data = line.slice(6);
-                            
-                            if (data === '[DONE]') {
-                                break;
-                            }
+    <a href="#" class="rc-navbar-future__item" data-hover data-select>About</a>
 
-                            try {
-                                const parsed = JSON.parse(data);
-                                if (parsed.text) {
-                                    fullText += parsed.text;
-                                    aiBubble.textContent = fullText;
-                                    scrollToBottom();
-                                } else if (parsed.error) {
-                                    throw new Error(parsed.error);
-                                }
-                            } catch (e) {
-                                // If not JSON, treat as plain text
-                                if (data !== '[DONE]') {
-                                    fullText += data;
-                                    aiBubble.textContent = fullText;
-                                    scrollToBottom();
-                                }
-                            }
-                        } else {
-                            // Plain text streaming
-                            fullText += line;
-                            aiBubble.textContent = fullText;
-                            scrollToBottom();
-                        }
-                    }
-                }
+    <a href="#" class="rc-navbar-future__item rc-navbar-future__item--ai" data-hover data-select>
 
-            } catch (error) {
-                console.error('Error sending message:', error);
-                hideTypingIndicator();
-                addMessage('Xin lỗi, đã xảy ra lỗi khi kết nối với AI. Vui lòng thử lại sau.', 'ai');
-            } finally {
-                if (sendButton) sendButton.disabled = false;
-            }
-        }
+      <span class="rc-navbar-future__ai-dot"></span>
 
-        // ========================================
-        // ADD MESSAGE TO CHAT
-        // ========================================
-        function addMessage(text, sender) {
-            if (!chatMessages) return;
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = sender === 'ai' ? '🤖' : '👤';
-            
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble';
-            bubble.textContent = text;
-            
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(bubble);
-            
-            chatMessages.appendChild(messageDiv);
-            
-            // Scroll to bottom
-            scrollToBottom();
-        }
+      AI Assist
 
-        // ========================================
-        // TYPING INDICATOR
-        // ========================================
-        function showTypingIndicator() {
-            if (!chatMessages) return;
-            
-            const indicator = document.createElement('div');
-            indicator.className = 'message ai';
-            indicator.id = 'typingIndicator';
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = '🤖';
-            
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message-bubble typing-indicator active';
-            typingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-            
-            indicator.appendChild(avatar);
-            indicator.appendChild(typingDiv);
-            chatMessages.appendChild(indicator);
-            
-            scrollToBottom();
-        }
+    </a>
 
-        function hideTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) {
-                indicator.remove();
-            }
-        }
+  </div>
 
-        // ========================================
-        // SCROLL TO BOTTOM
-        // ========================================
-        function scrollToBottom() {
-            if (chatMessages) {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        }
+</nav>
 
-        // ========================================
-        // EVENT LISTENERS
-        // ========================================
-        if (sendButton) {
-            sendButton.addEventListener('click', sendMessage);
-        }
-        
-        if (chatInput) {
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-        }
 
-        // ========================================
-        // PREVENT CLICK PROPAGATION
-        // ========================================
-        if (chatPopup) {
-            chatPopup.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        }
-    </script>
-</body>
-</html>
+
+<div class="rc-home">
+
+
+
+  <!-- HERO SECTION -->
+
+  <section class="rc-hero">
+
+    <div class="rc-hero__container">
+
+
+
+      <!-- Left Column -->
+
+      <div class="rc-hero__left">
+
+        <div class="rc-badge rc-badge--hero">
+
+          <span class="rc-badge__icon"></span>
+
+          <span>AI-Driven Logistics Risk Intelligence</span>
+
+        </div>
+
+
+
+        <h1 class="rc-hero__title">
+
+          Predict Prevent<br>Optimize
+
+        </h1>
+
+
+
+        <p class="rc-hero__subtitle">
+
+          AI Logistics Risk Engine for the Next Decade.
+
+        </p>
+
+
+
+        <p class="rc-hero__description">
+
+          Harness the power of AI to forecast logistics risks before they impact your operations. 
+
+          Optimize routes dynamically, anticipate disruptions, and make proactive decisions 
+
+          with real-time intelligence across sea, air, and rail networks.
+
+        </p>
+
+
+
+        <div class="rc-hero__ctas">
+
+          <a href="/input_v20" class="rc-btn rc-btn--primary" data-hover data-select data-activate>
+
+            Start Risk Analysis
+
+          </a>
+
+          <a href="#" class="rc-btn rc-btn--secondary" data-hover data-select data-activate>
+
+            Watch 60s Demo
+
+          </a>
+
+        </div>
+
+
+
+        <div class="rc-hero__stats">
+
+          <div class="rc-stat-pill">
+
+            <span class="rc-stat-pill__value">120</span>
+
+            <span class="rc-stat-pill__label">lanes simulated</span>
+
+          </div>
+
+          <div class="rc-stat-pill">
+
+            <span class="rc-stat-pill__value">30</span>
+
+            <span class="rc-stat-pill__label">risk factors</span>
+
+          </div>
+
+          <div class="rc-stat-pill">
+
+            <span class="rc-stat-pill__value">&lt;60</span>
+
+            <span class="rc-stat-pill__label">to first insight</span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- Right Column: 3D Hologram Globe -->
+
+      <div class="rc-hero__right">
+
+        <div class="rc-holo-globe" id="rcGlobeContainer">
+
+          <canvas id="rc-globe"></canvas>
+
+          <div class="rc-scan-ring"></div>
+
+          <div class="rc-globe-core"></div>
+
+          <div class="rc-globe-orbit rc-globe-orbit--1"></div>
+
+          <div class="rc-globe-orbit rc-globe-orbit--2"></div>
+
+          <div class="rc-globe-spotlight"></div>
+
+          <canvas class="rc-globe-packets" id="rc-globe-packets"></canvas>
+
+        </div>
+
+      </div>
+
+
+
+    </div>
+
+  </section>
+
+
+
+  <!-- LIVE RISK PULSE SECTION -->
+
+  <section class="rc-section rc-live-pulse">
+
+    <div class="rc-section__container">
+
+      <div class="rc-section__header">
+
+        <h2 class="rc-section__title">Live Risk Pulse</h2>
+
+        <p class="rc-section__subtitle">
+
+          Snapshot of global lanes monitored by RISKCAST (demo data)
+
+        </p>
+
+      </div>
+
+      <div class="rc-pulse-grid" id="riskPulseGrid"></div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- CORE VALUES GRID SECTION -->
+
+  <section class="rc-section rc-core-values">
+
+    <div class="rc-section__container">
+
+      <div class="rc-section__header">
+
+        <h2 class="rc-section__title">Core Principles of RISKCAST</h2>
+
+        <p class="rc-section__subtitle">
+
+          Eight pillars that define our AI logistics risk engine
+
+        </p>
+
+      </div>
+
+
+
+      <div class="rc-values-grid">
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">AI-First Architecture</h3>
+
+          <p class="rc-card__text">
+
+            Built from the ground up with AI at the core, not as an afterthought.
+
+          </p>
+
+        </div>
+
+
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">Actionable Insights</h3>
+
+          <p class="rc-card__text">
+
+            Every prediction comes with clear next steps and recommended actions.
+
+          </p>
+
+        </div>
+
+
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">Explainable Risk</h3>
+
+          <p class="rc-card__text">
+
+            Transparent AI that shows exactly why a risk exists and how it's calculated.
+
+          </p>
+
+        </div>
+
+
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">Human-in-the-Loop</h3>
+
+          <p class="rc-card__text">
+
+            AI assists human experts, never replaces them. Final decisions stay with you.
+
+          </p>
+
+        </div>
+
+
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">Scenario Simulation</h3>
+
+          <p class="rc-card__text">
+
+            Test what-if scenarios before making critical logistics decisions.
+
+          </p>
+
+        </div>
+
+
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">Logistics-Grade Design</h3>
+
+          <p class="rc-card__text">
+
+            Purpose-built for real-world supply chain complexity and scale.
+
+          </p>
+
+        </div>
+
+
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">Modular & Extensible</h3>
+
+          <p class="rc-card__text">
+
+            Flexible architecture that grows with your needs and integrates easily.
+
+          </p>
+
+        </div>
+
+
+
+        <div class="rc-card rc-card--value">
+
+          <div class="rc-card__icon">
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+              <circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+
+            </svg>
+
+          </div>
+
+          <h3 class="rc-card__title">Built for Real Operations</h3>
+
+          <p class="rc-card__text">
+
+            Designed with input from logistics professionals handling daily challenges.
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- AI SMART ASSIST PREVIEW -->
+
+  <section class="rc-section rc-ai-assist">
+
+    <div class="rc-section__container">
+
+      <div class="rc-ai-assist__layout">
+
+        <div class="rc-ai-assist__left">
+
+          <div class="rc-ai-panel">
+
+            <div class="rc-ai-panel__header">
+
+              <div class="rc-ai-panel__avatar">
+
+                <div class="rc-ai-avatar-orb"></div>
+
+              </div>
+
+              <span class="rc-ai-panel__title">AI Smart Assist</span>
+
+              <span class="rc-badge rc-badge--small">Beta</span>
+
+            </div>
+
+            <div class="rc-ai-panel__scan-line"></div>
+
+            <div class="rc-ai-panel__data-stream"></div>
+
+            <div class="rc-ai-panel__chat">
+
+              <div class="rc-chat-message rc-chat-message--user">
+
+                <div class="rc-chat-message__bubble">
+
+                  What is the current congestion risk on VN → US (LA) in the next 7 days?
+
+                </div>
+
+              </div>
+
+              <div class="rc-chat-message rc-chat-message--ai">
+
+                <div class="rc-chat-message__bubble">
+
+                  <div class="rc-chat-message__typing">
+
+                    <span></span><span></span><span></span>
+
+                  </div>
+
+                  <div class="rc-chat-message__content">
+
+                    <p><strong>Risk Level:</strong> Moderate → Rising</p>
+
+                    <p><strong>Score:</strong> 46 → 52 (projected)</p>
+
+                    <p><strong>Key Drivers:</strong></p>
+
+                    <ul>
+
+                      <li>Port congestion at LA/LGB</li>
+
+                      <li>Schedule reliability declining</li>
+
+                      <li>Weather: Pacific storms day 5-7</li>
+
+                    </ul>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="rc-ai-assist__right">
+
+          <h2 class="rc-section__title">Conversational AI</h2>
+
+          <p class="rc-ai-assist__text">
+
+            Ask questions in plain language and get instant, explainable answers.
+
+          </p>
+
+          <a href="#" class="rc-btn rc-btn--primary" data-hover data-select data-activate>Try AI Smart Assist</a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- FOOTER -->
+
+  <footer class="rc-footer">
+
+    <div class="rc-footer__container">
+
+      <div class="rc-footer__left">
+
+        <p>© 2025 RISKCAST — AI Logistics Risk Engine</p>
+
+      </div>
+
+      <div class="rc-footer__right">
+
+        <a href="#" class="rc-footer__link">Home</a>
+
+        <span class="rc-footer__separator">·</span>
+
+        <a href="#" class="rc-footer__link">Input</a>
+
+        <span class="rc-footer__separator">·</span>
+
+        <a href="#" class="rc-footer__link">Results</a>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='js/pages/home_v27.js') }}"></script>
+
+{% endblock %}

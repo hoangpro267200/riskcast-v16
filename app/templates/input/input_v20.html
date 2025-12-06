@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en" class="rc-theme-dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISKCAST v20 — VisionOS Edition | Premium Risk Input</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Stylesheet v20 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/input/input_v20.css') }}">
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="rc-ambient-bg"></div>
+    <canvas id="rc-particles-canvas" class="rc-particles-canvas"></canvas>
+    
+    <!-- Fixed Header -->
+    <header class="rc-header-v20">
+        <div class="rc-header-neon-line"></div>
+        <div class="rc-header-content">
+            <div class="rc-header-left">
+                <div class="rc-logo-v20">
+                    <span class="rc-logo-icon">⚡</span>
+                    <span class="rc-logo-text">RISKCAST</span>
+                    <span class="rc-logo-version">v20</span>
+                </div>
+                <div class="rc-status-indicator">
+                    <span class="rc-status-dot"></span>
+                    <span>AI Ready</span>
+                </div>
+            </div>
+            
+            <div class="rc-header-right">
+                <button class="rc-header-btn" id="rc-theme-toggle" aria-label="Toggle Theme">
+                    <i data-lucide="sun" class="rc-icon-sun"></i>
+                    <i data-lucide="moon" class="rc-icon-moon"></i>
+                </button>
+                <button class="rc-header-btn" id="rc-notifications">
+                    <i data-lucide="bell"></i>
+                    <span class="rc-badge">3</span>
+                </button>
+                <div class="rc-user-avatar">RC</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Sidebar Navigation -->
+    <aside class="rc-sidebar-v20" id="rc-sidebar">
+        <button class="rc-sidebar-toggle" id="rc-sidebar-toggle" aria-label="Toggle Sidebar">
+            <i data-lucide="menu"></i>
+        </button>
+        
+        <nav class="rc-nav-v20">
+            <a href="#section-transport" class="rc-nav-item active" data-section="transport">
+                <i data-lucide="ship"></i>
+                <span>Transport</span>
+            </a>
+            <a href="#section-cargo" class="rc-nav-item" data-section="cargo">
+                <i data-lucide="package"></i>
+                <span>Cargo</span>
+            </a>
+            <a href="#section-seller" class="rc-nav-item" data-section="seller">
+                <i data-lucide="building-2"></i>
+                <span>Seller</span>
+            </a>
+            <a href="#section-buyer" class="rc-nav-item" data-section="buyer">
+                <i data-lucide="users"></i>
+                <span>Buyer</span>
+            </a>
+            <a href="#section-modules" class="rc-nav-item" data-section="modules">
+                <i data-lucide="layers"></i>
+                <span>Modules</span>
+            </a>
+            <a href="#section-upload" class="rc-nav-item" data-section="upload">
+                <i data-lucide="upload-cloud"></i>
+                <span>Upload</span>
+            </a>
+        </nav>
+        
+        <div class="rc-sidebar-footer">
+            <button class="rc-btn-secondary rc-btn-block" id="rc-btn-save-draft-sidebar">
+                <i data-lucide="save"></i>
+                Save Draft
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="rc-main-v20" id="rc-main">
+        <!-- Page Header -->
+        <div class="rc-page-header">
+            <h1 class="rc-page-title">Risk Assessment Input</h1>
+            <p class="rc-page-subtitle">Configure your shipment and get real-time AI-powered risk analysis</p>
+            
+            <div class="rc-header-actions">
+                <button class="rc-btn-ghost" id="rc-btn-reset">
+                    <i data-lucide="rotate-ccw"></i>
+                    Reset Form
+                </button>
+                <button class="rc-btn-secondary" id="rc-auto-demo">
+                    <i data-lucide="sparkles"></i>
+                    🧬 Auto-Fill Demo Shipment
+                </button>
+                <button class="rc-btn-primary" id="rc-btn-analyze">
+                    <i data-lucide="zap"></i>
+                    Analyze Risk
+                </button>
+            </div>
+        </div>
+        
+        <!-- Form Container -->
+        <div class="rc-form-container">
+            
+            <!-- ================================================================
+                 SECTION 01: TRANSPORT SETUP (FULL FIELDS FROM V19)
+                 ================================================================ -->
+            <section id="section-transport" class="rc-form-panel" data-section="transport">
+                <div class="rc-section-header-v20">
+                    <div class="rc-section-icon">
+                        <i data-lucide="ship"></i>
+                    </div>
+                    <div class="rc-section-title-block">
+                        <h2 class="rc-section-title">01 • Transport Setup</h2>
+                        <p class="rc-section-description">Define trade lane, mode, and service route</p>
+                    </div>
+                    <span class="rc-pill rc-pill-required">Required</span>
+                </div>
+                
+                <div class="rc-glass-card">
+                    <div class="rc-form-grid">
+                        <!-- Trade Lane -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Trade Lane</label>
+                            <div class="rc-dropdown-v20" data-field="tradeLane" id="tradeLane">
+                                <button type="button" class="rc-dropdown-trigger">
+                                    <span class="rc-dropdown-value">Select trade lane</span>
+                                    <i data-lucide="chevron-down" class="rc-dropdown-arrow"></i>
+                                </button>
+                                <div class="rc-dropdown-menu">
+                                    <div class="rc-dropdown-search">
+                                        <i data-lucide="search"></i>
+                                        <input type="text" placeholder="Search routes..." class="rc-search-input">
+                                    </div>
+                                    <div class="rc-dropdown-items" id="tradeLane-menu">
+                                        <!-- Dynamic from logistics_data.js -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">Origin and destination trade route</span>
+                        </div>
+                        
+                        <!-- Mode of Transport -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Mode of Transport</label>
+                            <div class="rc-dropdown-v20" data-field="mode" id="mode">
+                                <button type="button" class="rc-dropdown-trigger">
+                                    <span class="rc-dropdown-value">Select mode</span>
+                                    <i data-lucide="chevron-down" class="rc-dropdown-arrow"></i>
+                                </button>
+                                <div class="rc-dropdown-menu">
+                                    <div class="rc-dropdown-items" id="mode-menu">
+                                        <!-- Dynamic based on trade lane -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">Available modes for selected trade lane</span>
+                        </div>
+                        
+                        <!-- Shipment Type -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Shipment Type</label>
+                            <div class="rc-dropdown-v20" data-field="shipmentType" id="shipmentType">
+                                <button type="button" class="rc-dropdown-trigger">
+                                    <span class="rc-dropdown-value">Select shipment type</span>
+                                    <i data-lucide="chevron-down" class="rc-dropdown-arrow"></i>
+                                </button>
+                                <div class="rc-dropdown-menu">
+                                    <div class="rc-dropdown-items" id="shipmentType-menu">
+                                        <!-- Dynamic based on mode -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">FCL, LCL, Break Bulk, etc.</span>
+                        </div>
+                        
+                        <!-- Service Route -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Service Route</label>
+                            <div class="rc-dropdown-v20" data-field="serviceRoute" id="serviceRoute">
+                                <button type="button" class="rc-dropdown-trigger">
+                                    <span class="rc-dropdown-value">Select service route</span>
+                                    <i data-lucide="chevron-down" class="rc-dropdown-arrow"></i>
+                                </button>
+                                <div class="rc-dropdown-menu">
+                                    <div class="rc-dropdown-search">
+                                        <i data-lucide="search"></i>
+                                        <input type="text" placeholder="Search routes..." class="rc-search-input">
+                                    </div>
+                                    <div class="rc-dropdown-items" id="serviceRoute-menu">
+                                        <!-- Dynamic -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">Specific route with carrier info</span>
+                        </div>
+                        
+                        <!-- Carrier -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Carrier</label>
+                            <div class="rc-dropdown-v20" data-field="carrier" id="carrier">
+                                <button type="button" class="rc-dropdown-trigger">
+                                    <span class="rc-dropdown-value">Select carrier</span>
+                                    <i data-lucide="chevron-down" class="rc-dropdown-arrow"></i>
+                                </button>
+                                <div class="rc-dropdown-menu">
+                                    <div class="rc-dropdown-items" id="carrier-menu">
+                                        <!-- Dynamic -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">Shipping line / airline</span>
+                        </div>
+                        
+                        <!-- Priority Selection (4 modes) -->
+                        <div class="rc-form-field rc-fade-in-up">
+                            <label class="rc-label">Priority Selection</label>
+                            <div id="priorityGroup" class="rc-pill-group" data-field="priority">
+                                <button type="button" class="rc-pill" data-value="fastest">
+                                    <i data-lucide="zap"></i>
+                                    Fastest
+                                </button>
+                                <button type="button" class="rc-pill active" data-value="balanced">
+                                    <i data-lucide="activity"></i>
+                                    Balanced
+                                </button>
+                                <button type="button" class="rc-pill" data-value="cheapest">
+                                    <i data-lucide="dollar-sign"></i>
+                                    Cheapest
+                                </button>
+                                <button type="button" class="rc-pill" data-value="reliable">
+                                    <i data-lucide="shield-check"></i>
+                                    Most Reliable
+                                </button>
+                            </div>
+                            <span class="rc-field-hint">Filter service routes by priority (4 modes)</span>
+                        </div>
+                        
+                        <!-- Incoterm (2020) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Incoterm® 2020</label>
+                            <div class="rc-dropdown-v20" data-field="incoterm" id="incoterm">
+                                <button type="button" class="rc-dropdown-trigger">
+                                    <span class="rc-dropdown-value">Select Incoterm</span>
+                                    <i data-lucide="chevron-down" class="rc-dropdown-arrow"></i>
+                                </button>
+                                <div class="rc-dropdown-menu">
+                                    <div class="rc-dropdown-items" id="incoterm-menu">
+                                        <!-- Dynamic -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">Defines cost & risk transfer point</span>
+                        </div>
+                        
+                        <!-- Incoterm Location -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Incoterm Location</label>
+                            <div class="rc-input-wrapper">
+                                <i data-lucide="map-pin"></i>
+                                <input type="text" id="incotermLocation" class="rc-input" placeholder="e.g., Shanghai, Los Angeles, Rotterdam">
+                            </div>
+                            <span class="rc-field-hint">Named place of delivery/transfer</span>
+                        </div>
+                        
+                        <!-- POL (Port of Loading) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label" id="label-pol">POL (Port of Loading)</label>
+                            <div class="rc-autosuggest" data-field="pol" id="pol">
+                                <div class="rc-input-wrapper">
+                                    <i data-lucide="map-pin"></i>
+                                    <input type="text" class="rc-input" placeholder="e.g., LAX, Shanghai...">
+                                </div>
+                                <div class="rc-suggest-menu" id="pol-menu">
+                                    <!-- Dynamic suggestions -->
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">Origin port/location</span>
+                        </div>
+                        
+                        <!-- POD (Port of Discharge) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label" id="label-pod">POD (Port of Discharge)</label>
+                            <div class="rc-autosuggest" data-field="pod" id="pod">
+                                <div class="rc-input-wrapper">
+                                    <i data-lucide="map-pin"></i>
+                                    <input type="text" class="rc-input" placeholder="e.g., Rotterdam, Dubai...">
+                                </div>
+                                <div class="rc-suggest-menu" id="pod-menu">
+                                    <!-- Dynamic suggestions -->
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">Destination port/location</span>
+                        </div>
+                        
+                        <!-- Container Type -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Container Type</label>
+                            <div class="rc-dropdown-v20" data-field="containerType" id="containerType">
+                                <button type="button" class="rc-dropdown-trigger">
+                                    <span class="rc-dropdown-value">Select container</span>
+                                    <i data-lucide="chevron-down" class="rc-dropdown-arrow"></i>
+                                </button>
+                                <div class="rc-dropdown-menu">
+                                    <div class="rc-dropdown-items" id="containerType-menu">
+                                        <!-- Dynamic from CONTAINER_TYPES -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rc-field-hint">20ft, 40ft, 40HC, Reefer, etc.</span>
+                        </div>
+                        
+                        <!-- ETD (Estimated Departure) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">ETD (Estimated Departure)</label>
+                            <div class="rc-input-wrapper">
+                                <i data-lucide="calendar"></i>
+                                <input type="date" class="rc-input" data-field="etd" id="etd">
+                            </div>
+                            <span class="rc-field-hint">Departure date</span>
+                        </div>
+                        
+                        <!-- Schedule (Auto-filled) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Schedule Frequency</label>
+                            <div class="rc-input-wrapper rc-input-disabled">
+                                <i data-lucide="calendar-clock"></i>
+                                <input type="text" class="rc-input" id="schedule" readonly placeholder="Auto-filled">
+                            </div>
+                            <span class="rc-field-hint">From service route data</span>
+                        </div>
+                        
+                        <!-- Transit Time (Auto-filled) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Transit Time (days)</label>
+                            <div class="rc-input-wrapper rc-input-disabled">
+                                <i data-lucide="clock"></i>
+                                <input type="number" class="rc-input" id="transitDays" readonly placeholder="Auto-filled">
+                            </div>
+                            <span class="rc-field-hint">From service route data</span>
+                        </div>
+                        
+                        <!-- ETA (Auto-filled) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">ETA (Estimated Arrival)</label>
+                            <div class="rc-input-wrapper rc-input-disabled">
+                                <i data-lucide="calendar-check"></i>
+                                <input type="date" class="rc-input" id="eta" readonly>
+                            </div>
+                            <span class="rc-field-hint">Calculated from ETD + transit</span>
+                        </div>
+                        
+                        <!-- Reliability Score (Auto-filled) -->
+                        <div class="rc-form-field">
+                            <label class="rc-label">Reliability Score</label>
+                            <div class="rc-input-wrapper rc-input-disabled">
+                                <i data-lucide="award"></i>
+                                <input type="text" class="rc-input" id="reliabilityScore" readonly placeholder="Auto-filled">
+                            </div>
+                            <span class="rc-field-hint">From service route data</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ================================================================
+                 SECTION 02: CARGO & PACKING (INTERNATIONAL STANDARD)
+                 ================================================================ -->
+            {% include 'input/partials/_v20_cargo_section.html' %}
+            
+            <!-- ================================================================
+                 SECTION 03: SELLER DETAILS (RISK-ORIENTED)
+                 ================================================================ -->
+            {% include 'input/partials/_v20_seller_section.html' %}
+            
+            <!-- ================================================================
+                 SECTION 04: BUYER DETAILS (RISK-ORIENTED)
+                 ================================================================ -->
+            {% include 'input/partials/_v20_buyer_section.html' %}
+            
+            <!-- ================================================================
+                 SECTION 05: RISK MODULES (FULL FROM V19)
+                 ================================================================ -->
+            <section id="section-modules" class="rc-form-panel" data-section="modules">
+                <div class="rc-section-header-v20">
+                    <div class="rc-section-icon">
+                        <i data-lucide="layers"></i>
+                    </div>
+                    <div class="rc-section-title-block">
+                        <h2 class="rc-section-title">05 • Risk Analysis Modules</h2>
+                        <p class="rc-section-description">Select additional risk analysis modules (optional)</p>
+                    </div>
+                </div>
+                
+                <div class="rc-glass-card">
+                    <div class="rc-modules-grid">
+                        <label class="rc-module-card">
+                            <input type="checkbox" class="rc-module-checkbox" data-field="moduleESG">
+                            <div class="rc-module-content">
+                                <div class="rc-module-icon">
+                                    <i data-lucide="leaf"></i>
+                                </div>
+                                <h3 class="rc-module-title">ESG Risk</h3>
+                                <p class="rc-module-desc">Environmental, social & governance compliance</p>
+                            </div>
+                            <div class="rc-module-indicator"></div>
+                        </label>
+                        
+                        <label class="rc-module-card">
+                            <input type="checkbox" class="rc-module-checkbox" data-field="moduleWeather">
+                            <div class="rc-module-content">
+                                <div class="rc-module-icon">
+                                    <i data-lucide="cloud-rain"></i>
+                                </div>
+                                <h3 class="rc-module-title">Weather & Climate Risk</h3>
+                                <p class="rc-module-desc">Real-time weather disruption analysis</p>
+                            </div>
+                            <div class="rc-module-indicator"></div>
+                        </label>
+                        
+                        <label class="rc-module-card">
+                            <input type="checkbox" class="rc-module-checkbox" data-field="modulePortCongestion">
+                            <div class="rc-module-content">
+                                <div class="rc-module-icon">
+                                    <i data-lucide="anchor"></i>
+                                </div>
+                                <h3 class="rc-module-title">Port Congestion Risk</h3>
+                                <p class="rc-module-desc">Port delays & congestion monitoring</p>
+                            </div>
+                            <div class="rc-module-indicator"></div>
+                        </label>
+                        
+                        <label class="rc-module-card">
+                            <input type="checkbox" class="rc-module-checkbox" data-field="moduleCarrier">
+                            <div class="rc-module-content">
+                                <div class="rc-module-icon">
+                                    <i data-lucide="truck"></i>
+                                </div>
+                                <h3 class="rc-module-title">Carrier Performance</h3>
+                                <p class="rc-module-desc">Carrier reliability & history optimization</p>
+                            </div>
+                            <div class="rc-module-indicator"></div>
+                        </label>
+                        
+                        <label class="rc-module-card">
+                            <input type="checkbox" class="rc-module-checkbox" data-field="moduleMarket">
+                            <div class="rc-module-content">
+                                <div class="rc-module-icon">
+                                    <i data-lucide="trending-up"></i>
+                                </div>
+                                <h3 class="rc-module-title">Market Condition Scanner</h3>
+                                <p class="rc-module-desc">Freight rates & market volatility</p>
+                            </div>
+                            <div class="rc-module-indicator"></div>
+                        </label>
+                        
+                        <label class="rc-module-card">
+                            <input type="checkbox" class="rc-module-checkbox" data-field="moduleInsurance">
+                            <div class="rc-module-content">
+                                <div class="rc-module-icon">
+                                    <i data-lucide="shield-check"></i>
+                                </div>
+                                <h3 class="rc-module-title">Insurance Optimization</h3>
+                                <p class="rc-module-desc">Coverage recommendations & premium estimates</p>
+                            </div>
+                            <div class="rc-module-indicator"></div>
+                        </label>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ================================================================
+                 SECTION 06: UPLOAD PACKING LIST
+                 ================================================================ -->
+            <section id="section-upload" class="rc-form-panel" data-section="upload">
+                <div class="rc-section-header-v20">
+                    <div class="rc-section-icon">
+                        <i data-lucide="upload-cloud"></i>
+                    </div>
+                    <div class="rc-section-title-block">
+                        <h2 class="rc-section-title">06 • Upload Packing List</h2>
+                        <p class="rc-section-description">Upload Excel/PDF packing list (optional)</p>
+                    </div>
+                </div>
+                
+                <div class="rc-glass-card">
+                    <div class="rc-upload-zone" id="rc-upload-zone">
+                        <input type="file" id="rc-file-input" accept=".pdf,.xlsx,.xls,.csv" hidden>
+                        <div class="rc-upload-content">
+                            <div class="rc-upload-icon">
+                                <i data-lucide="upload-cloud"></i>
+                            </div>
+                            <h3 class="rc-upload-title">Drag & Drop or Click to Upload</h3>
+                            <p class="rc-upload-desc">Supports PDF, Excel (XLSX, XLS), CSV</p>
+                            <button type="button" class="rc-btn-secondary" id="rc-upload-btn">
+                                <i data-lucide="folder-open"></i>
+                                Browse Files
+                            </button>
+                        </div>
+                        <div class="rc-upload-preview" id="rc-upload-preview" style="display: none;">
+                            <div class="rc-file-info">
+                                <i data-lucide="file-text"></i>
+                                <div class="rc-file-details">
+                                    <span class="rc-file-name"></span>
+                                    <span class="rc-file-size"></span>
+                                </div>
+                                <button class="rc-btn-icon" id="rc-file-remove">
+                                    <i data-lucide="x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+        
+        <!-- Submit Footer -->
+        <div class="rc-submit-footer">
+            <div class="rc-footer-content">
+                <div class="rc-footer-info">
+                    <p class="rc-footer-text">Ready to analyze? Click the button to run AI risk assessment.</p>
+                </div>
+                <div class="rc-footer-actions">
+                    <button class="rc-btn-ghost" id="rc-btn-save-draft">
+                        <i data-lucide="save"></i>
+                        Save Draft
+                    </button>
+                    <button class="rc-btn-primary rc-btn-large" id="rc-btn-submit">
+                        <i data-lucide="zap"></i>
+                        Run Risk Analysis
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Toast Notifications -->
+    <div class="rc-toast-container" id="rc-toast-container"></div>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/data/logistics_data.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/data/container_types.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pages/input/input_controller_v20.js') }}"></script>
+    
+    <script>
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

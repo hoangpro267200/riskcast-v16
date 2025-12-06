@@ -1,0 +1,299 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Global Route Overview v31 - RiskCast FutureOS{% endblock %}
+
+{% block extra_css %}
+<!-- Cesium CSS - CDN (reliable, no MIME issues) -->
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.109/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="/static/css/overview_v31.css">
+{% endblock %}
+
+{% block content %}
+<div class="overview-v31-container">
+    <!-- FutureOS Header -->
+    <header class="futureos-header">
+        <div class="header-left">
+            <h1 class="page-title">
+                <span class="title-icon">🌍</span>
+                Global Route Overview v31
+            </h1>
+            <span class="live-pill">
+                <span class="pulse-dot"></span>
+                LIVE
+            </span>
+        </div>
+        <div class="header-right">
+            <div class="latency-indicator">
+                <span class="latency-dot"></span>
+                <span class="latency-text">12ms</span>
+            </div>
+            <button class="mode-toggle" id="dayNightToggle">
+                <span class="mode-icon">🌙</span>
+                <span class="mode-text">Night Mode</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Layout Grid -->
+    <div class="main-grid">
+        <!-- Globe Panel (70% width) -->
+        <section class="globe-panel">
+            <div class="globe-header">
+                <h2>3D Route Visualization</h2>
+                <div class="globe-controls">
+                    <button class="control-btn" id="toggle3D2D" title="Toggle 3D/2D">
+                        <span>3D</span>
+                    </button>
+                    <button class="control-btn" id="zoomIn" title="Zoom In">+</button>
+                    <button class="control-btn" id="zoomOut" title="Zoom Out">−</button>
+                    <button class="control-btn" id="resetCamera" title="Reset Camera">⟲</button>
+                </div>
+            </div>
+            
+            <div class="globe-container" id="globe-3d-container">
+                <div class="globe-loading" id="globeLoading">
+                    <div class="loading-spinner"></div>
+                    <p>Initializing Cesium Globe...</p>
+                </div>
+                <div class="globe-error" id="globeError" style="display: none;">
+                    <div class="error-icon">⚠️</div>
+                    <p>Failed to load globe. Please refresh.</p>
+                </div>
+            </div>
+
+            <!-- Mini 2D Map -->
+            <div class="mini-map-container">
+                <div class="mini-map-header">
+                    <span>2D Overview</span>
+                </div>
+                <div id="globe-2d-minimap"></div>
+            </div>
+        </section>
+
+        <!-- Summary Panels -->
+        <aside class="summary-panels">
+            <!-- Transport Summary -->
+            <div class="summary-card" id="transportCard">
+                <div class="card-header">
+                    <span class="card-icon">🚢</span>
+                    <h3>Transport Details</h3>
+                    <span class="edit-hint">Click to edit</span>
+                </div>
+                <div class="card-content">
+                    <div class="info-row editable" data-field="mode">
+                        <label>Mode:</label>
+                        <div class="value-display" id="displayMode">Ocean Freight</div>
+                        <div class="value-edit" style="display: none;">
+                            <select id="editMode" class="inline-select">
+                                <option value="ocean">Ocean Freight 🚢</option>
+                                <option value="air">Air Freight ✈️</option>
+                                <option value="truck">Truck 🚚</option>
+                                <option value="rail">Rail 🚂</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="pol">
+                        <label>POL:</label>
+                        <div class="value-display" id="displayPOL">Ho Chi Minh, Vietnam (VNSGN)</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editPOL" class="inline-input port-autocomplete" placeholder="Search port...">
+                            <div class="autocomplete-dropdown" id="polDropdown"></div>
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="pod">
+                        <label>POD:</label>
+                        <div class="value-display" id="displayPOD">Shanghai, China (CNSHA)</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editPOD" class="inline-input port-autocomplete" placeholder="Search port...">
+                            <div class="autocomplete-dropdown" id="podDropdown"></div>
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="etd">
+                        <label>ETD:</label>
+                        <div class="value-display" id="displayETD">2025-12-10</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="date" id="editETD" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="eta">
+                        <label>ETA:</label>
+                        <div class="value-display" id="displayETA">2025-12-25</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="date" id="editETA" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <label>Transit:</label>
+                        <div class="value-display" id="displayTransit">15 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cargo Summary -->
+            <div class="summary-card" id="cargoCard">
+                <div class="card-header">
+                    <span class="card-icon">📦</span>
+                    <h3>Cargo Details</h3>
+                    <span class="edit-hint">Click to edit</span>
+                </div>
+                <div class="card-content">
+                    <div class="info-row editable" data-field="cargoType">
+                        <label>Type:</label>
+                        <div class="value-display" id="displayCargoType">Electronics</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editCargoType" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="hsCode">
+                        <label>HS Code:</label>
+                        <div class="value-display" id="displayHSCode">8471.30</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editHSCode" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="quantity">
+                        <label>Quantity:</label>
+                        <div class="value-display" id="displayQuantity">2 x 40' HC</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editQuantity" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="weight">
+                        <label>Weight:</label>
+                        <div class="value-display" id="displayWeight">24,000 kg</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editWeight" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="value">
+                        <label>Value:</label>
+                        <div class="value-display" id="displayValue">$150,000</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editValue" class="inline-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seller/Buyer Summary -->
+            <div class="summary-card" id="partiesCard">
+                <div class="card-header">
+                    <span class="card-icon">🤝</span>
+                    <h3>Trade Parties</h3>
+                    <span class="edit-hint">Click to edit</span>
+                </div>
+                <div class="card-content">
+                    <div class="info-row editable" data-field="seller">
+                        <label>Seller:</label>
+                        <div class="value-display" id="displaySeller">VN Tech Export Ltd.</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editSeller" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="buyer">
+                        <label>Buyer:</label>
+                        <div class="value-display" id="displayBuyer">Shanghai Electronics Co.</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editBuyer" class="inline-input">
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="incoterms">
+                        <label>Incoterms:</label>
+                        <div class="value-display" id="displayIncoterms">FOB</div>
+                        <div class="value-edit" style="display: none;">
+                            <select id="editIncoterms" class="inline-select">
+                                <option value="FOB">FOB</option>
+                                <option value="CIF">CIF</option>
+                                <option value="EXW">EXW</option>
+                                <option value="DDP">DDP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="info-row editable" data-field="paymentTerms">
+                        <label>Payment:</label>
+                        <div class="value-display" id="displayPaymentTerms">L/C at sight</div>
+                        <div class="value-edit" style="display: none;">
+                            <input type="text" id="editPaymentTerms" class="inline-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Preview -->
+            <div class="summary-card risk-card">
+                <div class="card-header">
+                    <span class="card-icon">⚠️</span>
+                    <h3>Risk Preview</h3>
+                </div>
+                <div class="card-content">
+                    <div class="risk-score-display">
+                        <div class="risk-circle">
+                            <span class="risk-value">7.2</span>
+                            <span class="risk-label">Medium</span>
+                        </div>
+                    </div>
+                    <div class="risk-factors">
+                        <div class="risk-item">
+                            <span class="risk-icon">🌊</span>
+                            <span>Weather: Moderate</span>
+                        </div>
+                        <div class="risk-item">
+                            <span class="risk-icon">⚓</span>
+                            <span>Port Congestion: Low</span>
+                        </div>
+                        <div class="risk-item">
+                            <span class="risk-icon">📋</span>
+                            <span>Documentation: OK</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Multi-Segment Route Viewer -->
+    <section class="route-segments-panel">
+        <div class="segments-header">
+            <h3>🛤️ Service Route Path</h3>
+            <span class="segments-count" id="segmentsCount">0 segments</span>
+        </div>
+        <div class="segments-container" id="segmentsContainer">
+            <!-- Dynamically populated -->
+        </div>
+    </section>
+
+    <!-- Analyze Button -->
+    <div class="analyze-button-container">
+        <button class="analyze-button" id="analyzeButton">
+            <span class="button-icon">🔍</span>
+            <span class="button-text">Analyze Shipment</span>
+            <div class="button-loader" style="display: none;">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </button>
+    </div>
+</div>
+
+<!-- Bootstrap State -->
+<script>
+// Shipment data from backend
+const shipmentData = {{ data | tojson | safe if data else '{}' }};
+window.__RC_OVERVIEW_BOOTSTRAP__ = {{ overview_state_json | tojson | safe if overview_state_json else '{}' }};
+console.log("Loaded shipment data:", shipmentData);
+console.log("Loaded overview state:", window.__RC_OVERVIEW_BOOTSTRAP__);
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Cesium Configuration - MUST load before Cesium.js -->
+<script src="/static/js/cesium_config.js"></script>
+<!-- Cesium Library - CDN (reliable, no MIME issues) -->
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.109/Build/Cesium/Cesium.js"></script>
+<!-- Leaflet Library -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Overview Controller -->
+<script src="/static/js/overview_v31.js"></script>
+{% endblock %}

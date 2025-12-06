@@ -837,7 +837,7 @@
 
   .overview-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+  gap: 16px;
   }
 
   .overview-title {
@@ -849,8 +849,8 @@
   }
 
   .overview-header-icon {
-    width: 48px;
-    height: 48px;
+  width: 48px;
+  height: 48px;
   }
 
   .card-header {
@@ -1510,7 +1510,7 @@
 /* Mini Grid */
 .data-row-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin: 8px 0;
 }

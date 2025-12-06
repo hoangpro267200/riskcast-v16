@@ -1,5 +1,4 @@
 // ===============================
-// RISKCAST v14.5 — RESULTS CORE
 // Map Backend JSON → appData → Charts
 // ===============================
 
@@ -1499,7 +1498,6 @@ window.ResultsCore = {
     },
 
     // ===============================
-    // RENDER CLIMATE MODULE v14.5
     // ===============================
     renderClimateModule(data) {
         const climate = this.safe(data.climate_v14, {});
@@ -2522,8 +2520,6 @@ window.ResultsCore = {
         
         Plotly.react(el, [trace], layout, { displayModeBar: false, responsive: true });
     },
-    
-    // UPDATE SCENARIO SUMMARY (legacy support)
     updateScenarioSummary(scenario) {
         const container = document.getElementById("scenarioSummary");
         if (!container || !scenario) return;
@@ -3092,10 +3088,6 @@ window.ResultsCore = {
     },
 };
 
-/**
- * RISKCAST v16 - AI ADVISER MODULE
- * Frontend Integration for Claude-based Risk Analysis
- */
 
 // Global state for last result
 let lastResult = null;
@@ -3327,13 +3319,13 @@ function initAIAdviser() {
     fetch("/api/ai/health")
         .then(response => response.json())
         .then(data => {
-            console.log("AI API Health:", data);
             if (data.status === "error") {
-                console.warn("AI API not fully configured:", data);
+                // Only warn if API key is actually missing (not just optional feature)
+                if (data.detail && data.detail.includes("API key")) {
+                    console.warn("AI API not fully configured:", data.detail);
+                }
             } else if (data.status === "ok") {
-                console.log("AI API is ready and configured:", data);
-            } else {
-                console.warn("AI API status unknown:", data);
+                console.log("AI API is ready and configured");
             }
         })
         .catch(error => {
@@ -3350,8 +3342,6 @@ async function exportAIReportPDF() {
         alert("Không có báo cáo để xuất");
         return;
     }
-    
-    // This is a placeholder - implement PDF generation as needed
     console.log("PDF export requested");
     alert("Chức năng xuất PDF đang được phát triển");
 }

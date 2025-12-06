@@ -1,0 +1,26 @@
+# Ignore minified bundle files from linting
+dist/**/*.min.js
+dist/**/*.min.css
+dist/**/*.bundle.*
+*.min.js
+*.min.css
+*.bundle.*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

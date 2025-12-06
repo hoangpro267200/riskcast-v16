@@ -13,24 +13,54 @@
     <link rel="stylesheet" href="/static/css/results.css">
     <link rel="stylesheet" href="/static/css/results_v16.css">
     <link rel="stylesheet" href="/static/css/neon_icons.css">
-    <link rel="stylesheet" href="/static/css/ai_panel.css">
+    <link rel="stylesheet" href="/static/css/components/ai_panel.css">
     <link rel="stylesheet" href="/static/css/neon.css">
     <link rel="stylesheet" href="/static/css/ai_chat.css">
     <link rel="stylesheet" href="/static/css/smart_input_styles.css">
     <link rel="stylesheet" href="/static/css/booking_summary.css">
     <link rel="stylesheet" href="/static/css/summary.css">
     
-    <!-- External JS libraries -->
-    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-    <script src="/static/js/translations_en.js"></script>
-    <script src="/static/js/translations_vi.js"></script>
-    <script src="/static/js/common_lang.js"></script>
+    <!-- RISKCAST Engine v2 Visualizations CSS -->
+    <link rel="stylesheet" href="/static/css/visualization/base.css">
+    <link rel="stylesheet" href="/static/css/visualization/heatmap.css">
+    <link rel="stylesheet" href="/static/css/visualization/network.css">
+    <link rel="stylesheet" href="/static/css/visualization/timeline.css">
+    <link rel="stylesheet" href="/static/css/visualization/gauge.css">
+    
+    <!-- Scenario Simulation CSS -->
+    <link rel="stylesheet" href="/static/css/scenario_simulation.css">
+    
+    <!-- External JS libraries (Lazy load for charts) -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    
+    <!-- RISKCAST Core JS -->
+    <script src="/static/js/core/translations.js"></script>
     <script src="/static/js/results_core.js"></script>
-    <script src="/static/js/streaming.js"></script>
-    <script src="/static/js/ai_adviser.js"></script>
+    
+    <!-- PHASE 3: Single Module Entry Point -->
+    <script type="module" src="{{ url_for('static', filename='js/pages/results/init_page.js') }}"></script>
+    <script src="/static/js/core/streaming.js"></script>
+    <script src="/static/js/modules/ai_adviser.js"></script>
     <script src="/static/js/logistics_data.js"></script>
-    <script src="/static/js/booking_summary.js"></script>
-    <script src="/static/js/summary.js"></script>
+    <script src="/static/js/pages/booking_summary.js"></script>
+    <script src="/static/js/modules/input_summary.js"></script>
+    
+    <!-- RISKCAST Engine v2 Visualizations JS -->
+    <script src="/static/js/visualization/utils.js"></script>
+    <script src="/static/js/visualization/heatmap.js"></script>
+    <script src="/static/js/visualization/radar.js"></script>
+    <script src="/static/js/visualization/drivers_bar.js"></script>
+    <script src="/static/js/visualization/timeline.js"></script>
+    <script src="/static/js/visualization/network_graph.js"></script>
+    <script src="/static/js/visualization/gauge.js"></script>
+    <script src="/static/js/visualization/results_v2_integration.js"></script>
+    
+    <!-- Scenario Simulation JS -->
+    <script src="/static/js/modules/scenario_simulation.js"></script>
+    
+    <!-- PDF Export JS -->
+    <script src="/static/js/modules/pdf_export.js"></script>
 </head>
 <body>
     <div class="container">
@@ -48,6 +78,14 @@
                         <button class="lang-btn active" data-lang="vi" id="lang-btn-vi">VI</button>
                         <button class="lang-btn" data-lang="en" id="lang-btn-en">EN</button>
                     </div>
+                    <button id="exportPdfBtn" class="btn-export-pdf" title="Export PDF Report">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Export PDF</span>
+                    </button>
                     <div class="chip status">
                         <span class="pulse"></span>
                         <span id="statusText" data-lang="status_ready">Phân Tích Hoàn Tất</span>
@@ -434,7 +472,7 @@
                                     </div>
                                     
                                     <!-- NEW KPI CARDS: Advanced Parameters -->
-                                    <div class="grid-4" style="margin-top: 24px;">
+                                    <div class="grid-4 mt-24">
                                         <!-- Climate Hazard Index (NEW) -->
                                         <div class="kpi-card climate-card">
                                             <div class="kpi-label">Climate Hazard Index (CHI)</div>
@@ -464,7 +502,7 @@
                                         </div>
                                     </div>
                                     
-                                    <ul class="insight-list" style="margin-top: 24px;">
+                                    <ul class="insight-list mt-24">
                                         <li><strong id="label-top-route" data-lang="label_top_route">Rủi ro tuyến vận tải lớn nhất:</strong> <span id="top-route-risk">--</span></li>
                                         <li><strong id="label-main-driver" data-lang="label_main_driver">Nguyên nhân chính:</strong> <span id="main-driver">--</span></li>
                                         <li><strong id="label-recommendation" data-lang="label_recommendation">Khuyến nghị của hệ thống:</strong> <span id="recommendation">--</span></li>
@@ -512,7 +550,7 @@
                                 </div>
                             </div>
 
-                            <div style="margin-top: 32px;">
+                            <div class="mt-32">
                                 <h3 class="chart-title">Climate Impact Comparison</h3>
                                 <table class="data-table">
                                     <thead>
@@ -669,6 +707,9 @@
                                     </div>
                                 </div>
                     </section>
+
+                    <!-- RISKCAST Engine v2 Visualizations Section -->
+                    {% include "components/risk_visualizations.html" %}
 
                     <!-- Risk Gauges Overview -->
                             <section class="section-block">
@@ -1411,25 +1452,182 @@
                                     </p>
                                 </div>
 
-                                <!-- Scenario Testing -->
-                                <div class="card">
+                                <!-- Scenario Simulation Engine -->
+                                <div class="card" id="scenario-simulation-card">
                                     <div class="card-header">
-                                        <h2 class="card-title"><div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7V12C3 16.5 6 20.16 12 21C18 20.16 21 16.5 21 12V7L12 2Z" stroke="currentColor" stroke-width="2"/><path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div> <span data-lang="section_scenario">Kiểm Tra Áp Lực Kịch Bản (What-if)</span></h2>
+                                        <h2 class="card-title">
+                                            <div class="icon-card"><svg class="neon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                <path d="M12 2L3 7V12C3 16.5 6 20.16 12 21C18 20.16 21 16.5 21 12V7L12 2Z" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                <path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                            </svg></div>
+                                            <span data-lang="section_scenario">Mô Phỏng Kịch Bản Rủi Ro (Real-Time Simulation)</span>
+                                        </h2>
+                                        <div class="scenario-controls-top">
+                                            <button id="scenario-compare-toggle" class="btn-secondary btn-sm">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3M12 3v18"/>
+                                                </svg>
+                                                <span>So Sánh</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="grid-scenario">
-                                        <div>
-                                            <h3 class="chart-title">Chọn Kịch Bản</h3>
-                                            <div class="scenario-pills" id="scenarioPills">
-                                                <!-- Buttons will be generated by JS -->
+                                    
+                                    <div id="scenario-simulation-container" class="scenario-simulation-container">
+                                        <!-- Left Sidebar: Scenario Controls -->
+                                        <div class="scenario-sidebar">
+                                            <div class="scenario-sidebar-section">
+                                                <h3 class="scenario-section-title">Preset Scenarios</h3>
+                                                <select id="scenario-preset-select" class="scenario-select">
+                                                    <option value="">-- Chọn Preset --</option>
+                                                    <option value="Heavy Rain Season Q3">Heavy Rain Season Q3</option>
+                                                    <option value="Port Strike">Port Strike</option>
+                                                    <option value="Equipment Shortage">Equipment Shortage</option>
+                                                    <option value="Carrier Reliability Drop">Carrier Reliability Drop</option>
+                                                    <option value="Holiday Peak Season">Holiday Peak Season</option>
+                                                    <option value="Extreme Weather Event">Extreme Weather Event</option>
+                                                    <option value="Trade Route Disruption">Trade Route Disruption</option>
+                                                    <option value="ESG Compliance Pressure">ESG Compliance Pressure</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="scenario-sidebar-section">
+                                                <h3 class="scenario-section-title">Adjust Risk Factors</h3>
+                                                
+                                                <!-- Port Congestion Slider -->
+                                                <div class="scenario-slider-group">
+                                                    <label for="slider-port" class="scenario-slider-label">
+                                                        <span>Port Congestion</span>
+                                                        <span class="slider-value" id="slider-port-value">0%</span>
+                                                    </label>
+                                                    <input type="range" id="slider-port" class="scenario-slider" 
+                                                           min="-0.5" max="0.5" step="0.01" value="0">
+                                                </div>
+                                                
+                                                <!-- Weather Hazard Slider -->
+                                                <div class="scenario-slider-group">
+                                                    <label for="slider-weather" class="scenario-slider-label">
+                                                        <span>Weather Hazard</span>
+                                                        <span class="slider-value" id="slider-weather-value">0%</span>
+                                                    </label>
+                                                    <input type="range" id="slider-weather" class="scenario-slider" 
+                                                           min="-0.5" max="0.5" step="0.01" value="0">
+                                                </div>
+                                                
+                                                <!-- Carrier Reliability Slider -->
+                                                <div class="scenario-slider-group">
+                                                    <label for="slider-carrier" class="scenario-slider-label">
+                                                        <span>Carrier Reliability</span>
+                                                        <span class="slider-value" id="slider-carrier-value">0%</span>
+                                                    </label>
+                                                    <input type="range" id="slider-carrier" class="scenario-slider" 
+                                                           min="-0.5" max="0.5" step="0.01" value="0">
+                                                </div>
+                                                
+                                                <!-- ESG Slider -->
+                                                <div class="scenario-slider-group">
+                                                    <label for="slider-esg" class="scenario-slider-label">
+                                                        <span>ESG Risk</span>
+                                                        <span class="slider-value" id="slider-esg-value">0%</span>
+                                                    </label>
+                                                    <input type="range" id="slider-esg" class="scenario-slider" 
+                                                           min="-0.5" max="0.5" step="0.01" value="0">
+                                                </div>
+                                                
+                                                <!-- Equipment Slider -->
+                                                <div class="scenario-slider-group">
+                                                    <label for="slider-equipment" class="scenario-slider-label">
+                                                        <span>Equipment Availability</span>
+                                                        <span class="slider-value" id="slider-equipment-value">0%</span>
+                                                    </label>
+                                                    <input type="range" id="slider-equipment" class="scenario-slider" 
+                                                           min="-0.5" max="0.5" step="0.01" value="0">
+                                                </div>
+                                                
+                                                <!-- Network Slider -->
+                                                <div class="scenario-slider-group">
+                                                    <label for="slider-network" class="scenario-slider-label">
+                                                        <span>Network Risk</span>
+                                                        <span class="slider-value" id="slider-network-value">0%</span>
+                                                    </label>
+                                                    <input type="range" id="slider-network" class="scenario-slider" 
+                                                           min="-0.5" max="0.5" step="0.01" value="0">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="scenario-sidebar-section">
+                                                <button id="scenario-reset-btn" class="btn-secondary btn-block">Reset All</button>
+                                                <button id="scenario-run-btn" class="btn-primary btn-block">Run Simulation</button>
+                                            </div>
+                                            
+                                            <div class="scenario-sidebar-section">
+                                                <h3 class="scenario-section-title">Save Scenario</h3>
+                                                <input type="text" id="scenario-name-input" class="scenario-input" 
+                                                       placeholder="Enter scenario name">
+                                                <button id="scenario-save-btn" class="btn-secondary btn-block">Save Scenario</button>
+                                            </div>
+                                            
+                                            <div class="scenario-sidebar-section">
+                                                <h3 class="scenario-section-title">Saved Scenarios</h3>
+                                                <div id="scenario-saved-list" class="scenario-saved-list">
+                                                    <p class="scenario-empty-text">No saved scenarios</p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <div class="scenario-summary" id="scenarioSummary">
-                                                <h4 style="color: var(--text-primary); margin-bottom: 8px;">Trường Hợp Cơ Bản</h4>
-                                                <p style="color: var(--text-secondary); font-size: 14px;" id="scenario-description">Đang tải mô tả...</p>
+                                        
+                                        <!-- Main Content: Charts and Comparison -->
+                                        <div class="scenario-main-content">
+                                            <!-- Comparison Mode: Baseline vs Scenario -->
+                                            <div id="scenario-comparison-view" class="scenario-comparison-view view-hidden">
+                                                <div class="scenario-comparison-column">
+                                                    <h3 class="scenario-comparison-title">Baseline</h3>
+                                                    <div id="scenario-baseline-score" class="scenario-score-display">--</div>
+                                                    <div id="scenario-baseline-radar" class="scenario-chart-mini"></div>
+                                                    <div id="scenario-baseline-drivers" class="scenario-drivers-list"></div>
+                                                </div>
+                                                <div class="scenario-comparison-delta">
+                                                    <div id="scenario-delta-display" class="scenario-delta-box">
+                                                        <div class="scenario-delta-value">+0</div>
+                                                        <div class="scenario-delta-label">Delta</div>
+                                                    </div>
+                                                    <div id="scenario-delta-details" class="scenario-delta-details"></div>
+                                                </div>
+                                                <div class="scenario-comparison-column">
+                                                    <h3 class="scenario-comparison-title">Scenario</h3>
+                                                    <div id="scenario-simulation-score" class="scenario-score-display">--</div>
+                                                    <div id="scenario-simulation-radar" class="scenario-chart-mini"></div>
+                                                    <div id="scenario-simulation-drivers" class="scenario-drivers-list"></div>
+                                                </div>
                                             </div>
-                                            <div class="chart-container" style="margin-top: 20px;">
-                                                <div id="scenarioChart" style="height: 350px;"></div>
+                                            
+                                            <!-- Single View: Scenario Results -->
+                                            <div id="scenario-single-view" class="scenario-single-view">
+                                                <div class="scenario-results-header">
+                                                    <div class="scenario-score-card">
+                                                        <div class="scenario-score-label">Risk Score</div>
+                                                        <div id="scenario-current-score" class="scenario-score-large">--</div>
+                                                        <div id="scenario-score-delta" class="scenario-score-delta">+0</div>
+                                                    </div>
+                                                    <div id="scenario-explanation" class="scenario-explanation">
+                                                        Adjust sliders or select a preset to run simulation
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Charts will be updated here -->
+                                                <div class="scenario-charts-grid">
+                                                    <div class="scenario-chart-container">
+                                                        <h4 class="scenario-chart-title">Risk Radar</h4>
+                                                        <div id="scenario-radar-chart" class="scenario-chart"></div>
+                                                    </div>
+                                                    <div class="scenario-chart-container">
+                                                        <h4 class="scenario-chart-title">Key Drivers</h4>
+                                                        <div id="scenario-drivers-chart" class="scenario-chart"></div>
+                                                    </div>
+                                                    <div class="scenario-chart-container full-width">
+                                                        <h4 class="scenario-chart-title">Impact Matrix</h4>
+                                                        <div id="scenario-heatmap-chart" class="scenario-chart"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -2825,8 +3023,6 @@ Trong đó:
             
             // Format inline code
             html = html.replace(/`([^`]+)`/g, '<code class="ai-inline-code">$1</code>');
-            
-            // Format bold
             html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="ai-bold">$1</strong>');
             
             // Format italic
@@ -3363,11 +3559,13 @@ Trong đó:
 
     </script>
 
-    <!-- Logistics Data & Smart Input System -->
-    <script src="/static/js/logistics_data.js"></script>
-    <script src="/static/js/smart_input.js"></script>
+    <!-- Smart Input System -->
+    <script src="/static/js/modules/smart_input.js"></script>
     
-    <script src="/static/js/results.js"></script>
-    <script src="/static/js/ai_chat.js"></script>
+    <script src="/static/js/pages/results.js"></script>
+    <script src="/static/js/modules/ai_chat.js"></script>
+    
+    <!-- RISKCAST Engine v2 Visualizations -->
+    <!-- Charts will initialize automatically when data is available -->
 </body>
 </html>

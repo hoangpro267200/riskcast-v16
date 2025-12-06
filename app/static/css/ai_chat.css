@@ -75,11 +75,11 @@
 /* 2. KHUNG CHAT SLIDE TỪ DƯỚI LÊN */
 .ai-chat-panel {
     position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
+    bottom: 84px !important; /* Above toggle buttons: 24px (space-lg) + 48px (button height) + 12px (gap) = 84px */
+    right: 24px !important;
     width: 380px !important;
     height: 520px !important;
-    max-height: calc(100vh - 40px) !important;
+    max-height: calc(100vh - 120px) !important; /* Account for bottom spacing */
     background: #0f0f1a !important;
     border: 1.5px solid #00d4aa !important;
     border-radius: 16px !important;
@@ -256,18 +256,26 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 212, 170, 0.4);
 }
-
-/* FLOATING WIDGET CONTAINER (Legacy - Hidden) */
 .ai-widget-container {
     position: fixed;
-    bottom: 32px;
-    right: 32px;
+    bottom: 84px !important; /* Above toggle buttons: 24px + 48px + 12px = 84px */
+    right: 24px !important;
     top: auto;
     z-index: 99999 !important;
     display: flex;
     align-items: flex-end;
     gap: 12px;
     pointer-events: none;
+    transition: bottom 0.3s ease, right 0.3s ease;
+}
+
+/* Adjust widget position when chat panel is open - move it above chat panel */
+.input-page-v3 .ai-chat-panel[style*="display: flex"],
+.input-page-v3 .ai-chat-panel:not([style*="display: none"]) {
+    ~ .ai-widget-container,
+    + .ai-widget-container {
+        bottom: 604px !important; /* Above chat panel: 84px + 520px = 604px */
+    }
 }
 
 .ai-widget-container > * {
@@ -1011,9 +1019,6 @@
     }
 }
 
-    flex-direction: row-reverse;
-}
-
 .message-avatar {
     width: 36px;
     height: 36px;
@@ -1269,9 +1274,6 @@
     }
 }
 
-    flex-direction: row-reverse;
-}
-
 .message-avatar {
     width: 36px;
     height: 36px;
@@ -1525,9 +1527,6 @@
         height: 60px;
         font-size: 28px;
     }
-}
-
-    flex-direction: row-reverse;
 }
 
 .message-avatar {

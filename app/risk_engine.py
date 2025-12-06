@@ -4,7 +4,7 @@ Wrapper for risk calculation functions
 """
 
 from typing import Dict, List, Optional, Any
-from app.core.risk_engine_v16 import (
+from app.core.engine.risk_engine_v16 import (
     EnterpriseRiskEngine,
     calculate_enterprise_risk,
     compute_partner_risk
