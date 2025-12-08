@@ -37,37 +37,78 @@ def get_port_info(port_code: str):
     port_code = port_code.upper()
     return PORT_DATABASE.get(port_code, PORT_DATABASE.get('VNSGN'))
 
+def calculate_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate great circle distance between two points in kilometers using Haversine formula"""
+    import math
+    R = 6371  # Earth radius in km
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+    return R * c
+
 # Create router
 router = APIRouter()
 
 @router.get("/overview", response_class=HTMLResponse)
 async def overview_page(request: Request):
-    """Overview page - Global 3D Overview of all shipment data (v31)"""
-    # Priority 1: Get shipment data from session (most recent)
-    shipment_data = request.session.get("shipment_data", {})
+    """
+    Overview page - Global 3D Overview (v34.4 Ultra Vision Pro)
+    Redirects to v34.4 route which uses the new __RISKCAST_STATE__ format
+    """
+    from fastapi.responses import RedirectResponse
+    # Redirect to v34.4 route
+    return RedirectResponse(url="/overview-v34-4", status_code=307)
+
+
+@router.get("/global-overview", response_class=HTMLResponse)
+async def global_overview_page(request: Request):
+    """Global Overview page - Alias for /overview (v32)"""
+    # Reuse the same logic as /overview
+    return await overview_page(request)
+
+
+@router.get("/api/shipment/state")
+async def get_shipment_state():
+    """
+    Return complete shipment state for Overview v31.
+    This is the primary data source for the frontend.
     
-    # Priority 2: Get from memory system
+    Returns:
+    {
+        "cargo": {...},
+        "transport": {...},
+        "parties": {...},
+        "risk": {...},
+        "segments": [
+            {
+                "from": "VNSGN",
+                "to": "SGSIN",
+                "lat1": 10.8231,
+                "lon1": 106.6297,
+                "lat2": 1.3521,
+                "lon2": 103.8198,
+                "distance": 1087
+            },
+            ...
+        ]
+    }
+    """
+    # Get shipment data from memory system
+    shipment_data = memory_system.get("latest_shipment") or {}
+    
+    # If no shipment data, return empty state (not an error)
+    # Frontend will use template fallback
     if not shipment_data:
-        shipment_data = memory_system.get("latest_shipment") or {}
+        return JSONResponse({
+            "cargo": {},
+            "transport": {},
+            "parties": {},
+            "risk": {},
+            "segments": []
+        })
     
-    # Priority 3: Get from LAST_RESULT (legacy)
-    if not shipment_data and LAST_RESULT:
-        shipment = LAST_RESULT.get('shipment', {})
-        if shipment:
-            shipment_data = {
-                'transport_mode': shipment.get('transport_mode', ''),
-                'route': shipment.get('route', ''),
-                'eta': shipment.get('eta', ''),
-                'etd': shipment.get('etd', ''),
-                'cargo_type': shipment.get('cargo_type', ''),
-                'cargo_value': shipment.get('cargo_value', 0),
-                'pol_code': shipment.get('origin', ''),
-                'pod_code': shipment.get('destination', ''),
-                'risk_score': LAST_RESULT.get('overall_risk', 7.2),
-                'risk_level': LAST_RESULT.get('risk_level', 'Medium')
-            }
-    
-    # Get POL/POD info
+    # Extract port codes
     pol_code = shipment_data.get("pol_code") or shipment_data.get("origin") or "VNSGN"
     pod_code = shipment_data.get("pod_code") or shipment_data.get("destination") or "CNSHA"
     pol_info = get_port_info(pol_code)
@@ -79,48 +120,63 @@ async def overview_page(request: Request):
     if transport_mode:
         mode = transport_mode.replace("_fcl", "").replace("_lcl", "").replace("_", "")
     
-    # Build segments (simple 2-segment route: POL -> Singapore -> POD)
+    # Build segments
     singapore = get_port_info("SGSIN")
-    segments = [
-        {
-            "fromCode": pol_info['code'],
-            "toCode": singapore['code'],
-            "fromName": pol_info['name'],
-            "toName": singapore['name'],
-            "fromLat": pol_info['lat'],
-            "fromLon": pol_info['lon'],
-            "toLat": singapore['lat'],
-            "toLon": singapore['lon'],
-            "mode": mode
-        },
-        {
-            "fromCode": singapore['code'],
-            "toCode": pod_info['code'],
-            "fromName": singapore['name'],
-            "toName": pod_info['name'],
-            "fromLat": singapore['lat'],
-            "fromLon": singapore['lon'],
-            "toLat": pod_info['lat'],
-            "toLon": pod_info['lon'],
-            "mode": mode
-        }
-    ]
+    direct_distance = calculate_distance_km(pol_info['lat'], pol_info['lon'], pod_info['lat'], pod_info['lon'])
     
-    # Build overview_state_json for frontend
-    overview_state_json = {
-        "transport": {
-            "mode": mode,
-            "pol": pol_info,
-            "pod": pod_info,
-            "etd": shipment_data.get("etd", "2025-12-10"),
-            "eta": shipment_data.get("eta", "2025-12-25")
-        },
+    segments = []
+    if direct_distance > 8000:
+        seg1_distance = calculate_distance_km(pol_info['lat'], pol_info['lon'], singapore['lat'], singapore['lon'])
+        seg2_distance = calculate_distance_km(singapore['lat'], singapore['lon'], pod_info['lat'], pod_info['lon'])
+        
+        segments = [
+            {
+                "from": pol_info['code'],
+                "to": singapore['code'],
+                "lat1": pol_info['lat'],
+                "lon1": pol_info['lon'],
+                "lat2": singapore['lat'],
+                "lon2": singapore['lon'],
+                "distance": round(seg1_distance, 1)
+            },
+            {
+                "from": singapore['code'],
+                "to": pod_info['code'],
+                "lat1": singapore['lat'],
+                "lon1": singapore['lon'],
+                "lat2": pod_info['lat'],
+                "lon2": pod_info['lon'],
+                "distance": round(seg2_distance, 1)
+            }
+        ]
+    else:
+        segments = [
+            {
+                "from": pol_info['code'],
+                "to": pod_info['code'],
+                "lat1": pol_info['lat'],
+                "lon1": pol_info['lon'],
+                "lat2": pod_info['lat'],
+                "lon2": pod_info['lon'],
+                "distance": round(direct_distance, 1)
+            }
+        ]
+    
+    # Build complete state
+    state = {
         "cargo": {
             "type": shipment_data.get("cargo_type", "Electronics") or "Electronics",
             "hsCode": "8471.30",
             "quantity": "2 x 40' HC",
             "weight": "24,000 kg",
             "value": f"${shipment_data.get('cargo_value', 150000):,}" if shipment_data.get('cargo_value') else "$150,000"
+        },
+        "transport": {
+            "mode": mode,
+            "pol": f"{pol_info['name']}, {pol_info['country']} ({pol_info['code']})",
+            "pod": f"{pod_info['name']}, {pod_info['country']} ({pod_info['code']})",
+            "etd": shipment_data.get("etd", "2025-12-10"),
+            "eta": shipment_data.get("eta", "2025-12-25")
         },
         "parties": {
             "seller": shipment_data.get("seller", "VN Tech Export Ltd.") or "VN Tech Export Ltd.",
@@ -137,25 +193,10 @@ async def overview_page(request: Request):
                 {"icon": "📋", "label": "Documentation: OK"}
             ]
         },
-        "segments": segments,
-        "ui": {
-            "isNightMode": True,
-            "is3DMode": True
-        }
+        "segments": segments
     }
     
-    return templates.TemplateResponse("overview_v31.html", {
-        "request": request,
-        "data": shipment_data,  # Pass raw shipment data for JavaScript
-        "overview_state_json": overview_state_json  # Pass formatted state for bootstrap
-    })
-
-
-@router.get("/global-overview", response_class=HTMLResponse)
-async def global_overview_page(request: Request):
-    """Global Overview page - Alias for /overview (v31)"""
-    # Reuse the same logic as /overview
-    return await overview_page(request)
+    return JSONResponse(state)
 
 
 @router.get("/api/overview_data")

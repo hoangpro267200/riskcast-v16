@@ -1,6 +1,0 @@
-# Placeholder for Cesium Workers
-# Required files:
-# - createVerticesFromHeightmap.js
-# - createGeometry.js
-# - (and other worker files from Cesium build)
-

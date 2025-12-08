@@ -215,3 +215,4 @@ def detect_region(origin: str, destination: str) -> Tuple[str, dict]:
 
 
 
+

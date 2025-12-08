@@ -71,3 +71,4 @@ function getImpactColor(impact) {
 
 
 
+

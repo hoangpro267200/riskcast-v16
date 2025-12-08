@@ -30,6 +30,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import router as api_router
 from app.api_ai import router as ai_router
 from app.routes.overview import router as overview_router
+from app.routes.update_shipment_route_v33 import router as update_shipment_router
+from app.routes.ai_endpoints_v33 import router as ai_endpoints_router
+from app.routes.overview_v34_4 import router as overview_v34_4_router
 
 # Core modules
 from app.core import build_helper
@@ -177,6 +180,13 @@ app.include_router(ai_router, prefix="/api/ai", tags=["AI Adviser"])
 
 # Include Overview router
 app.include_router(overview_router)
+
+# Include Overview v33 routes (FutureOS Edition)
+app.include_router(update_shipment_router)  # PATCH /api/update_shipment
+app.include_router(ai_endpoints_router)  # POST /api/ai/*
+
+# Include Overview v34.4 routes (Ultra Vision Pro)
+app.include_router(overview_v34_4_router)  # GET /overview-v34-4
 import importlib.util
 api_py_path = Path(__file__).parent / "api.py"
 if api_py_path.exists():

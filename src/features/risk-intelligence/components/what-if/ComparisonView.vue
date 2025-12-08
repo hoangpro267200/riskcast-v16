@@ -70,3 +70,4 @@ function getChangeClass(simulated, baseline, higherIsBad = true) {
 
 
 
+

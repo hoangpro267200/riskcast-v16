@@ -132,7 +132,7 @@ async def analyze(shipment: Shipment):
         advanced_metrics = result.get('advanced_metrics', {})
         response_payload = {
             "status": "ok",
-            "redirect_url": "/results",
+            "redirect_url": "/overview",  # Redirect to Overview v33 (FutureOS Edition)
             "result": result,
             "overall_risk": result.get("overall_risk", result.get("risk_score", 0.5) * 100),
             "risk_level": result.get("risk_level", "MODERATE"),

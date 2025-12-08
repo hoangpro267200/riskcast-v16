@@ -1,0 +1,386 @@
+{% extends "layouts/base.html" %}
+{% block title %}RISKCAST FutureOS – Global Route Overview v34.4 Ultra Vision Pro{% endblock %}
+
+{% block page_styles %}
+    <!-- Ultra Vision Pro styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/overview_v34_4.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{# Chuẩn bị JSON state an toàn cho data-attribute #}
+{% if RISKCAST_STATE is defined %}
+    {% set state_json = RISKCAST_STATE|tojson %}
+{% else %}
+    {% set state_json = '{}' %}
+{% endif %}
+
+<div id="riskcast-root"
+     class="rc-container rc-ultra-container"
+     data-riskcast-state='{{ state_json|e }}'>
+
+    <!-- Top Header Bar -->
+    <header class="rc-header rc-ultra-header">
+        <div class="rc-header-left">
+            <div class="rc-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <path d="M8 8L16 4L24 8L16 12L8 8Z" fill="#FFD65A"/>
+                    <path d="M8 14L16 10L24 14L16 18L8 14Z" fill="#4C8BFF" opacity="0.7"/>
+                    <path d="M8 20L16 16L24 20L16 24L8 20Z" fill="#FFD65A" opacity="0.5"/>
+                </svg>
+                <span>RISKCAST</span>
+            </div>
+        </div>
+
+        <div class="rc-header-center">
+            <h1 class="rc-page-title">Global Route Overview</h1>
+            <div class="rc-live-indicator">
+                <span class="rc-live-dot"></span>
+                <span class="rc-live-text">LIVE</span>
+                <span class="rc-latency" id="latencyDisplay"></span>
+            </div>
+        </div>
+
+        <div class="rc-header-right">
+            <button class="rc-edit-toggle" id="editToggle">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M14.5 2.5C14.5 2.5 15.5 1.5 16.5 2.5L17.5 3.5C18.5 4.5 17.5 5.5 17.5 5.5L7 16H4V13L14.5 2.5Z"
+                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Smart Edit</span>
+            </button>
+
+            <button class="rc-notifications">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M15 6.66667C15 5.34058 14.4732 4.06881 13.5355 3.13113C12.5979 2.19345 11.3261 1.66667 10 1.66667C8.67392 1.66667 7.40215 2.19345 6.46447 3.13113C5.52678 4.06881 5 5.34058 5 6.66667C5 12.5 2.5 14.1667 2.5 14.1667H17.5C17.5 14.1667 15 12.5 15 6.66667Z"
+                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M11.4417 17.5C11.2952 17.7526 11.0849 17.9622 10.8319 18.1079C10.5789 18.2537 10.292 18.3304 10 18.3304C9.70802 18.3304 9.42113 18.2537 9.16811 18.1079C8.91509 17.9622 8.70484 17.7526 8.55835 17.5"
+                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="rc-notification-badge" id="notifCount"></span>
+            </button>
+
+            <div class="rc-user-dropdown">
+                <div class="rc-user-avatar"></div>
+                <span class="rc-user-name" id="usernameDisplay"></span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="rc-main">
+        <!-- Left: Cesium Globe -->
+        <section class="rc-globe-section rc-ultra-globe">
+            <!-- Neon depth halo & particles -->
+            <div class="rc-neon-halo rc-neon-halo-back"></div>
+            <div class="rc-neon-halo rc-neon-halo-front"></div>
+
+            <div class="rc-globe-container" id="cesiumContainer">
+                <div class="rc-globe-placeholder">
+                    <div class="rc-earth-visual"></div>
+                    <div class="rc-globe-particles"></div>
+                </div>
+            </div>
+
+            <!-- Globe Controls -->
+            <div class="rc-globe-controls">
+                <div class="rc-coordinates">
+                    <div class="rc-coord-item">
+                        <span class="rc-coord-label">LAT</span>
+                        <span class="rc-coord-value" id="coordX"></span>
+                    </div>
+                    <div class="rc-coord-item">
+                        <span class="rc-coord-label">LNG</span>
+                        <span class="rc-coord-value" id="coordY"></span>
+                    </div>
+                </div>
+
+                <div class="rc-view-toggle">
+                    <button class="rc-view-btn active" data-view="3d">
+                        <span>3D</span>
+                    </button>
+                    <button class="rc-view-btn" data-view="2d">
+                        <span>2D</span>
+                    </button>
+                </div>
+
+                <div class="rc-zoom-controls">
+                    <button class="rc-zoom-btn" id="zoomOut">−</button>
+                    <button class="rc-zoom-btn" id="zoomIn">+</button>
+                    <button class="rc-zoom-btn" id="resetViewBtn">⟳</button>
+                </div>
+            </div>
+
+            <!-- AI Badge & CTA -->
+            <div class="rc-ai-badge rc-ultra-ai-badge">
+                <span class="rc-ai-badge-dot"></span>
+                <span>AI-Optimized Route</span>
+            </div>
+
+            <button class="rc-action-btn rc-ultra-action-btn" id="analyzeBtn">
+                <span>Analyze Shipment</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </section>
+
+        <!-- Right: Info Cards -->
+        <section class="rc-info-section rc-ultra-info">
+            <!-- Transport Details Card -->
+            <article class="rc-card rc-card-vision rc-card-transport">
+                <div class="rc-card-header">
+                    <h3 class="rc-card-title">Transport Details</h3>
+                    <div class="rc-card-icon">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 15H17L15.5 10H4.5L3 15Z"
+                                  stroke="currentColor" stroke-width="1.4"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M5 10L7 5H13L15 10"
+                                  stroke="currentColor" stroke-width="1.4"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rc-card-content">
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Transport Mode</span>
+                        <span class="rc-info-value editable" id="transportMode" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Vessel Name</span>
+                        <span class="rc-info-value editable" id="vesselName" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Port of Loading</span>
+                        <span class="rc-info-value editable" id="pol" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Port of Discharge</span>
+                        <span class="rc-info-value editable" id="pod" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Total Distance</span>
+                        <span class="rc-info-value" id="totalDistance"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Segments</span>
+                        <span class="rc-info-value" id="segmentCount"></span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Cargo Details Card -->
+            <article class="rc-card rc-card-vision rc-card-cargo">
+                <div class="rc-card-header">
+                    <h3 class="rc-card-title">Cargo Details</h3>
+                    <div class="rc-card-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <rect x="3" y="5" width="14" height="12" rx="2"
+                                  stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M3 9H17" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rc-card-content">
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Commodity</span>
+                        <span class="rc-info-value editable" id="commodity" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Weight</span>
+                        <span class="rc-info-value editable" id="cargoWeight" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Volume</span>
+                        <span class="rc-info-value editable" id="cargoVolume" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Container Type</span>
+                        <span class="rc-info-value editable" id="containerType" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">HS Code</span>
+                        <span class="rc-info-value editable" id="hsCode" contenteditable="false"></span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Parties Card -->
+            <article class="rc-card rc-card-vision rc-card-parties">
+                <div class="rc-card-header">
+                    <h3 class="rc-card-title">Parties</h3>
+                    <div class="rc-card-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="7" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                            <circle cx="14" cy="7" r="2" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M2 17C2 14.7909 3.79086 13 6 13H8C10.2091 13 12 14.7909 12 17"
+                                  stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M14 12C15.6569 12 17 13.3431 17 15V17"
+                                  stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rc-card-content">
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Shipper</span>
+                        <span class="rc-info-value editable" id="shipper" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Consignee</span>
+                        <span class="rc-info-value editable" id="consignee" contenteditable="false"></span>
+                    </div>
+                    <div class="rc-info-row">
+                        <span class="rc-info-label">Forwarder</span>
+                        <span class="rc-info-value editable" id="forwarder" contenteditable="false"></span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Risk Assessment Card -->
+            <article class="rc-card rc-card-vision rc-card-risk rc-card-risk-ultra">
+                <div class="rc-card-header">
+                    <h3 class="rc-card-title">Risk Assessment</h3>
+                    <div class="rc-card-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M10 2L3 7V13C3 16 10 18 10 18C10 18 17 16 17 13V7L10 2Z"
+                                  stroke="currentColor" stroke-width="1.5"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rc-card-content rc-risk-content">
+                    <div class="rc-risk-gauge">
+                        <svg class="rc-gauge" viewBox="0 0 200 200">
+                            <defs>
+                                <linearGradient id="rcGaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#00FF9D"/>
+                                    <stop offset="50%" stop-color="#FFD65A"/>
+                                    <stop offset="100%" stop-color="#FF4757"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="100" cy="100" r="80" fill="none"
+                                    stroke="rgba(255,255,255,0.12)" stroke-width="18"/>
+                            <circle cx="100" cy="100" r="80"
+                                    fill="none"
+                                    stroke="url(#rcGaugeGradient)"
+                                    stroke-width="18"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="502.65"
+                                    stroke-dashoffset="502.65"
+                                    transform="rotate(-90 100 100)"
+                                    class="rc-gauge-progress"/>
+                            <text x="100" y="95" text-anchor="middle"
+                                  fill="#FFFFFF" font-size="40"
+                                  font-weight="700" id="riskScore">0</text>
+                            <text x="100" y="120" text-anchor="middle"
+                                  fill="#CBD5F5" font-size="14">Risk Score</text>
+                        </svg>
+                    </div>
+                    <div class="rc-risk-factors">
+                        <div class="rc-risk-factor">
+                            <span class="rc-risk-label">Weather Risk</span>
+                            <span class="rc-risk-value" id="weatherRisk"></span>
+                        </div>
+                        <div class="rc-risk-factor">
+                            <span class="rc-risk-label">Congestion</span>
+                            <span class="rc-risk-value" id="congestion"></span>
+                        </div>
+                        <div class="rc-risk-factor">
+                            <span class="rc-risk-label">Delay Probability</span>
+                            <span class="rc-risk-value" id="delayProb"></span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </div>
+
+    <!-- Bottom: Route Legs -->
+    <section class="rc-activities-section rc-ultra-activities">
+        <div class="rc-activities-card">
+            <div class="rc-activities-header">
+                <h3 class="rc-activities-title">Route Legs</h3>
+            </div>
+            <div class="rc-activities-content" id="routeLegsContainer">
+                <!-- Route legs populated by JS -->
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Floating AI Smart Assist -->
+<button class="rc-ai-assist-btn rc-ultra-ai-button" id="aiAssistBtn">
+    <span class="rc-ai-orb"></span>
+    <span class="rc-ai-icon">AI</span>
+</button>
+
+<!-- Slide-in AI Panel -->
+<aside class="rc-ai-panel" id="aiPanel">
+    <div class="rc-ai-panel-header">
+        <h3>AI Smart Assist</h3>
+        <button class="rc-ai-close" id="aiCloseBtn">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M4 4L12 12M12 4L4 12"
+                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+    <div class="rc-ai-panel-content">
+        <div class="rc-ai-suggestions">
+            <div class="rc-ai-suggestion">Optimize route for lower lead time</div>
+            <div class="rc-ai-suggestion">Explain current risk drivers</div>
+            <div class="rc-ai-suggestion">Suggest alternative transport mode</div>
+        </div>
+        <div class="rc-ai-input-wrapper">
+            <input type="text" class="rc-ai-input"
+                   placeholder="Ask AI anything about this shipment...">
+            <button class="rc-ai-send">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                    <path d="M3 10L17 3L10 17L8 11L3 10Z"
+                          stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</aside>
+{% endblock %}
+
+{% block extra_js %}
+    <!-- Cesium Config (must load before Cesium.js) -->
+    <script src="{{ url_for('static', filename='js/cesium_config.js') }}"></script>
+    <!-- Cesium Library - Local -->
+    <script src="{{ url_for('static', filename='cesium/Cesium.js') }}"></script>
+    <!-- Logistics Data -->
+    <script src="{{ url_for('static', filename='js/data/logistics_data.js') }}"></script>
+
+    <!-- Inject RISKCAST_STATE from data-attribute into window.__RISKCAST_STATE__ -->
+    <script type="text/javascript">
+        (function () {
+            var root = document.getElementById('riskcast-root');
+            var parsed = {};
+            if (root) {
+                var raw = root.getAttribute('data-riskcast-state');
+                if (raw) {
+                    try {
+                        parsed = JSON.parse(raw);
+                    } catch (e) {
+                        console.error('Failed to parse RISKCAST_STATE JSON:', e, raw);
+                        parsed = {};
+                    }
+                }
+            }
+            window.__RISKCAST_STATE__ = parsed;
+            console.log('✅ __RISKCAST_STATE__ injected from data attribute:', window.__RISKCAST_STATE__);
+        })();
+    </script>
+
+    <!-- Overview v34.4 Controller -->
+    <script src="{{ url_for('static', filename='js/pages/overview_v34_4.js') }}"></script>
+{% endblock %}

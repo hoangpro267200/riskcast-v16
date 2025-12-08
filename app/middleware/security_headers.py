@@ -8,64 +8,28 @@ from starlette.responses import Response
 import os
 
 # CSP Policy - Content Security Policy configuration
-# Allows: Google Fonts, Phosphor Icons from unpkg.com, Plotly, Chart.js, Google Translate, Cesium, Leaflet, and necessary inline scripts/styles
+# FULL ALLOW Cesium CSP - Allows CesiumJS, Web Workers, imagery providers, and all tiles
+# This CSP is permissive to ensure CesiumJS works correctly with all its features:
+# - Web Workers (blob: workers)
+# - Imagery tiles (ArcGIS, Carto, OpenStreetMap, Cesium Ion)
+# - Terrain data
+# - All Cesium services
 
-# Build CSP directives as lists for cleaner management
-script_src = [
-    "'self'",
-    "'unsafe-inline'",
-    "'unsafe-eval'",
-    "https://unpkg.com",
-    "https://cdn.jsdelivr.net",
-    "https://cdn.plot.ly",
-    "https://translate.google.com",
-    "https://translate.googleapis.com",
-    "https://cesium.com",
-    "https://*.cesium.com"
-]
-
-style_src = [
-    "'self'",
-    "'unsafe-inline'",
-    "https://fonts.googleapis.com",
-    "https://fonts.gstatic.com",
-    "https://unpkg.com",
-    "https://cdn.jsdelivr.net",
-    "https://www.gstatic.com",
-    "https://cesium.com",
-    "https://*.cesium.com"
-]
-
-img_src = [
-    "'self'",
-    "data:",
-    "https://unpkg.com",
-    "https://fonts.gstatic.com",
-    "https://cdn.plot.ly",
-    "https://www.gstatic.com",
-    "https://cesium.com",
-    "https://*.cesium.com",
-    "https://a.basemaps.cartocdn.com",
-    "https://b.basemaps.cartocdn.com",
-    "https://c.basemaps.cartocdn.com",
-    "https://*.cartocdn.com",
-    "https://*.carto.com"
-]
-
-csp = {
-    "default-src": "'self'",
-    "img-src": " ".join(img_src),
-    "style-src": " ".join(style_src),
-    "script-src": " ".join(script_src),
-    "font-src": "'self' data: https://fonts.gstatic.com https://unpkg.com https://cdn.jsdelivr.net https://cesium.com https://*.cesium.com",
-    "connect-src": "'self' https://fonts.googleapis.com https://unpkg.com https://cdn.plot.ly https://cdn.jsdelivr.net https://translate.google.com https://translate.googleapis.com https://cesium.com https://*.cesium.com https://api.cesium.com https://a.basemaps.cartocdn.com https://b.basemaps.cartocdn.com https://c.basemaps.cartocdn.com https://*.cartocdn.com https://*.carto.com",
-    "worker-src": "'self' blob: https://cesium.com https://*.cesium.com",
-}
-
-# Build CSP policy string from dictionary
+# Build comprehensive CSP that allows CesiumJS to function fully with local files
+# Note: CSP doesn't accept absolute paths like /static/cesium/ - use 'self' which covers same-origin
 CSP_POLICY = os.getenv(
     "CSP_POLICY",
-    "; ".join([f"{k} {v}" for k, v in csp.items()])
+    (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; "
+        "img-src 'self' data: blob: https://*; "
+        "connect-src 'self' https://*; "
+        "font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com; "
+        "worker-src 'self' blob: data:; "
+        "child-src 'self' blob: data:; "
+        "frame-src 'self';"
+    )
 )
 
 

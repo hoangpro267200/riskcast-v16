@@ -670,3 +670,4 @@ The Global Freight Index Engine is now an **active component** of RiskCast V22, 
 
 
 
+
